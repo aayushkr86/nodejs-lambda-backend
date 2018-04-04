@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Offline test of salestool-nodejs-backend
+Resources:
+# List of sns microservice ==================================================================
+  microservice_db:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/sns/DB/index.handler
+      timeout: 30
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /sns/DB
+            Method: any
+  microservice_permission:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/sns/Permission/index.handler
+      timeout: 30
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /sns/permission
+            Method: any
+  microservice_email:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/sns/Email/index.handler
+      timeout: 30
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /sns/Email
+            Method: any
+# List of lambda microservice ==================================================================
+  lambda_sample:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/sample/index.handler
+      timeout: 30
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /lambda/sample
+            Method: any
