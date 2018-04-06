@@ -1,59 +1,83 @@
-
+///// ...................................... start default setup ............................................////
 var mode,sns,dynamodb,docClient,S3;
-
 var AWS = require('aws-sdk');
-var uuid = require('uuid');
+var response = require('./response.js');
 
-if(AWS.Region == undefined){
-	mode = "offline";
+if(process.env.AWS_REGION == "local"){
+	mode 		= "offline";
 	sns 		= require('../../../offline/sns');
 	docClient 	= require('../../../offline/dynamodb').docClient;
-	// dynamodb = require('../../../offline/dynamodb').dynamodb;
 	S3 			= require('../../../offline/S3');
-	
+	// dynamodb = require('../../../offline/dynamodb').dynamodb;
 }else{
-	mode = "online";
-	sns = new AWS.SNS();
+	mode 		= "online";
+	sns 		= new AWS.SNS();
+	docClient 	= new AWS.DynamoDB.DocumentClient({});
+	S3 			= new AWS.S3();
 	// dynamodb = new AWS.DynamoDB();
-	docClient = new AWS.DynamoDB.DocumentClient({});
-	S3 = new AWS.S3({
-		s3ForcePathStyle: true,
-    	endpoint: new AWS.Endpoint('http://localhost:8000')
-    });
 }
+///// ...................................... end default setup ............................................////
 
-//offline
-//online
+//modules defined here
+var uuid = require('uuid');
+//call another lambda
+var execute_lambda = require('./lambda')('sample2');
+
 exports.handler = function  (event,context,callback) {
-	console.log(uuid.v4());
-	console.log(S3);
-	// S3.putObject({
-	// 	Bucket: 'local-bucket',
- //    	Key: '1234',
- //    Body: new Buffer('abcd')
-	// },function(err,grab){
-	// 	console.log(arguments);
-	// })
+	//promise function calls that will be passed as list of function 
+	/**
+	 * execute nother lambda function
+	 */
+		// execute_lambda.run(event,function(err,data){
+		// 	if(err){
+		// 		console.log(err);
+		// 		response({"err":"someerror occeured"},callback);
+		// 	}
+		// 	response({"body":"asdasdasd"},callback);
+		// })
+	 
+	/**
+	 * sns 
+	 */
+		 // sns.publish({
+		 // 	TopicArn: "arn:aws:sns:us-west-2:123456789012:Email",
+		 // 	Message: "eventText", 
+   //      	Subject: "Test SNS From Lambda",
+		 // },function(err,data){
+		 // 	console.log(err,data);
+		 // });
+	
+	/**
+	 * S3
+	 * Note - before run docker to open minio(development purposes)
+	 */
+		// S3.PutObject("hello world",(err,data)=>{
+		// 
+		// })
+	
+	/**
+	 * dynamodb docClient
+	 * Note - Start dynamodb server
+	 */
+		 // docClient.query({},(err,data)=>{
+		 // 	console.log(err,data);
+		 // })
+	
+	/**
+	 * send response to the server
+	 */
+	 // response({"code":200,"body":"asdlkansdnas","headers":{}},callback)
+	 // a().then(function(data){
+	 // 	console.log(data);
+	 // }).catch(function(err){
+	 // 	console.log(err);
+	 // })
+
 }
 
-/*
-var data={};
-		var body = event.body;
-		/**
-		 * All request vise action (module wise for every request)
-		 * Module wise Permission utils
-		 * Now remainig functions
-		 * Validitor (test case execution)
-		 * response (error handled)
-		 * 
-		 */
-/*
-		callback(null,{
-			statusCode: 300,
-		    headers: {
-		      'x-custom-header': 'my custom header value',
-		      "Access-Control-Allow-Origin":"*"
-		    },
-		    body: JSON.stringify(data)
-		});
-		*/
+// function a(){
+// 	return new Promise((resolve,reject)=>{
+// 		// reject("some error occured")
+// 		resolve("done");
+// 	});
+// }

@@ -2,7 +2,7 @@ var Minio = require('minio')
 
 var ip = require('ip');
 var Minio = require('minio');
-console.log("some");
+
 try{
 	var minioClient = new Minio.Client({
      endPoint: "172.17.0.2",
@@ -11,10 +11,10 @@ try{
      accessKey: 'V5ZGL06ITLYXVFCBB4VS',
      secretKey: 'NBHRoCLFVGk3AczTf6bPGzHlPqh4y80WhcfxnbAZ'
 	});
-	minioClient.listBuckets(function(err, buckets) {
-	  if (err) return console.log(err)
-	  console.log('buckets :', buckets)
-	});
+	// minioClient.listBuckets(function(err, buckets) {
+	//   if (err) return console.log(err)
+	//   console.log('buckets :', buckets)
+	// });
 
 }catch (e){
 	console.log(e);
@@ -29,5 +29,5 @@ try{
 
 // console.log(S3);
 
-module.exports = {minioClient};
+module.exports = minioClient;
 
