@@ -1,7 +1,6 @@
 var Minio = require('minio')
-
 var ip = require('ip');
-var Minio = require('minio');
+
 
 try{
 	var minioClient = new Minio.Client({

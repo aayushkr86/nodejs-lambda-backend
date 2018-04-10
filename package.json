@@ -8,13 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://vinay_code5@bitbucket.org/code_5/salestool-nodejs-backend.git"
+    "url": "https://aayushkr86@bitbucket.org/code_5/salestool-nodejs-backend.git"
   },
   "author": "",
   "license": "ISC",
   "homepage": "https://bitbucket.org/code_5/salestool-nodejs-backend#readme",
   "dependencies": {
-    "chai": "^4.1.2",
+    "aws-sdk": "^2.222.1",
     "ip": "^1.1.5",
     "jsonschema": "^1.2.4",
     "minio": "^5.0.0",

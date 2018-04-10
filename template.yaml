@@ -46,7 +46,7 @@ Resources:
     Properties:
       Runtime: nodejs6.10
       Handler: src/lambda/sample/index.handler
-      timeout: 30
+      # timeout: 30
       Environment:
         Variables:
           AWS_REGION: local
