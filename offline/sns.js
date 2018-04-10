@@ -21,7 +21,7 @@ var publish=function (publish,callback) {
 					};
 					var execute = require(ele.path);
 					//be more specific about the message send on the event
-					execute.handler(event,{},function(err,data){
+					execute.handler(event,{},function(err,data) {
 						if(err){
 							callback(err,{});
 						}

@@ -1,12 +1,12 @@
 
 var lambda_wrapper = require('lambda-wrapper');
 
-module.exports=function (name_of_lambda) {
+module.exports = function (name_of_lambda) {
 	var lambdaFunc;
-	if(process.env.AWS_REGION == "local"){
+	if(process.env.AWS_REGION == "local") {
 		//offline mode
 		lambdaFunc = require('../'+name_of_lambda);
-	}else{
+	}else {
 		//online mode
 		lambdaFunc = {
 			region:AWS_Region,
