@@ -1,7 +1,7 @@
 ///// ...................................... start default setup ............................................////
-var mode,sns,dynamodb,docClient,S3;
-var AWS = require('aws-sdk');
-var response = require('./lib/response.js');
+let mode,sns,dynamodb,docClient,S3;
+const AWS 		= require('aws-sdk');
+const response 	= require('./lib/response.js');
 
 if(process.env.AWS_REGION == "local"){
 	mode 		= "offline";
@@ -19,11 +19,38 @@ if(process.env.AWS_REGION == "local"){
 ///// ...................................... end default setup ............................................////
 
 //modules defined here
-var uuid = require('uuid');
+const uuid 		= require('uuid');
 //call another lambda
-var execute_lambda = require('./lib/lambda')('sample2');
+// const execute_lambda = require('./lib/lambda')('sample2');
 
-exports.handler = function  (event,context,callback) {
+module.exports={execute};
+
+/**
+ * This is the Promise caller which will call each and every function based
+ * @param  {[type]}   data     [content to manipulate the data]
+ * @param  {Function} callback [need to send response with]
+ * @return {[type]}            [description]
+ */
+function execute(data,callback){
+	validate(data)
+		.then(function(result){
+			return somerandon(result);
+		})
+		.then(function(another_result){
+			return another_result(another_result)
+		})
+		.then(function(series_execution){
+			return new Promise((resolve,reject){
+				reject(:asd)
+			})
+			
+		})
+		.catch(function(err){
+			console.log(err);
+		})
+}
+
+//-----------For reference
 	//promise function calls that will be passed as list of function 
 	/**
 	 * execute nother lambda function
@@ -72,9 +99,7 @@ exports.handler = function  (event,context,callback) {
 	 // }).catch(function(err){
 	 // 	console.log(err);
 	 // })
-
-}
-
+//}
 // function a(){
 // 	return new Promise((resolve,reject)=>{
 // 		// reject("some error occured")
