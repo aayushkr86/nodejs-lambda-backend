@@ -1,77 +1,68 @@
 var data = require('../../log/sample-4-4-2018')
-var Validator = require('schema-validator')
+var Ajv = require('ajv');
 
-var StreamSchema = {
-  userid: {
-    type: String,
-    required: true,
-    test: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-  },
-  title: {
-    type: String,
-    required: true,
-    length: {
-      min: 5,
-      max: 36
-    }
-  },
-  date: {
-    type: String,
-    require: true,
-    test: /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
-  },
-  intro_text: {
-    type: String,
-    required: true,
-    length: {
-      min: 5,
-      max: 50
-    }
-  },
-  news_text: {
-    type: String,
-    required: true,
-    length: {
-      min: 5,
-      max: 50
-    }
-  },
-  image: {
-    type: String
-  },
-  pdf: {
-    type: String
-  },
-  publish: {
-    type: Boolean
-  },
-  show_at_first_place: {
-    type: Boolean
-  }
-}
+// foo: { regexp: '/foo/i' },
+ var ajv = new Ajv({allErrors : true});
+//  var ajv = new Ajv({ useDefaults: true });
+// var ajv = new Ajv({ coerceTypes: true });
+var schema = {
+    type: "object",
+    properties: {
+    userid : {
+        type: "string",
+        pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+    },
+    title : {
+        type: "string",
+        minLength: 5,
+        maxLength: 50,
+    },
+    date : {
+        type: "string",
+        format: "date",
+        // pattern: '/(\d{4})-(\d{2})-(\d{2})/',
+    },
+    intro_text : {
+        type: "string",
+        minLength: 2,
+        maxLength: 50,
+    },
+    news_text : {
+        type: "string",
+        minLength: 2,
+        maxLength: 50,
+    },
+    image: {
+        type: "string"
+    },
+    pdf: {
+        type: "string"
+    },
+    publish: {
+        type: "boolean"
+    },
+    show_at_first_place: {
+        type: "boolean"
+    },
+    },
+    required : ["userid", "title", "date", 'intro_text']
+};
 
-function streams (data) {
+
+function streams (data) { //console.log(data)
   return new Promise(function (resolve, reject) {
-    var validator = new Validator(StreamSchema)
+    var validate = ajv.compile(schema);
+    //console.log(validate(data));
+    var valid = validate(data);
 
-    var check = validator.check({
-      userid: data.userid,
-      title: data.title,
-      date: data.date,
-      intro_text: data.intro_text,
-      news_text: data.news_text,
-      image: data.image,
-      pdf: data.pdf,
-      publish: data.publish,
-      show_at_first_place: data.show_at_first_place
-    })
-
-    if (check._error) {
-      reject(check)
+    if (!valid) {
+    //    console.log(validate.errors); 
+       reject(validate.errors)
     }
-    resolve(check)
+       resolve(valid)
   })
 }
+
 
 describe('streams tests', function () {
   it('validation test', function (done) {
