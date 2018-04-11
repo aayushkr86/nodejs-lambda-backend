@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^6.4.0",
+    "ajv-async": "^1.0.1",
     "express-validator": "^5.1.1",
     "mocha": "^5.0.5",
     "schema-validator": "^3.3.1",

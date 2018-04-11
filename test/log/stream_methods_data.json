@@ -1,0 +1,75 @@
+[
+{
+    "post" :[
+        {
+            "id" : "en_1_0",//auto generated
+            "uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",//auto generated
+            "userid" : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
+            "language" : "en",
+            "title" : "asaaad",
+            "date"  : "2018-04-18",
+            "intro_text" : "aaaaa",
+            "news_text"  : "aaaaa",
+            "image"      : "file",
+            "pdf"        : "file",
+            "publish"    : true,
+            "show_at_first_place" : false,
+            "createdAt": 1523368492540,//auto generated
+            "updatedAt": 1523368492540//auto generated
+
+        },
+        {
+            "id" : "en_1_0",//auto generated
+            "uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",//auto generated
+            "userid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "language" : "en",
+            "title" : "asaaad",
+            "date"  : "2018-04-18",
+            "intro_text" : "aaaaa",
+            "news_text"  : "aaaaa",
+            "image"      : "file",
+            "pdf"        : "file",
+            "publish"    : true,
+            "show_at_first_place" : false,
+            "createdAt": 1523368561542,//auto generated
+            "updatedAt": 1523368561542//auto generated
+        }
+    ] 
+},
+{
+    "get" : {
+
+    }
+},
+{
+    "patch" : [{
+        "id" : "en_1_0",//manadatory
+        "updatedAt": 1523368561542,//manadatory
+        "userid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "language" : "en",
+            "title" : "asaaad",
+            "date"  : "2018-04-18",
+            "intro_text" : "aaaaa",
+            "news_text"  : "aaaaa",
+            "image"      : "file",//need altest one pdf or image
+            "pdf"        : "file",
+            "publish"    : true,
+            "show_at_first_place" : false,
+            "createdAt": 1523368561542,//auto generated
+    }]
+},
+{
+    "delete": [{
+        "id" : "en_1_0",//manadatory
+        "updatedAt": 1523368561542,//manadatory
+    }]
+}
+
+
+
+
+
+
+
+
+]

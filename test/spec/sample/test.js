@@ -49,15 +49,11 @@ var schema = {
 };
 
 
-<<<<<<< HEAD
-    var check = validator.check(data);
-=======
 function streams (data) { //console.log(data)
   return new Promise(function (resolve, reject) {
     var validate = ajv.compile(schema);
     //console.log(validate(data));
     var valid = validate(data);
->>>>>>> a8b55115232563d817bf3a65dba40daf44324926
 
     if (!valid) {
     //    console.log(validate.errors); 
