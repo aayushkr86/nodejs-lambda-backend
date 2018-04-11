@@ -54,17 +54,7 @@ function streams (data) {
   return new Promise(function (resolve, reject) {
     var validator = new Validator(StreamSchema)
 
-    var check = validator.check({
-      userid: data.userid,
-      title: data.title,
-      date: data.date,
-      intro_text: data.intro_text,
-      news_text: data.news_text,
-      image: data.image,
-      pdf: data.pdf,
-      publish: data.publish,
-      show_at_first_place: data.show_at_first_place
-    })
+    var check = validator.check(data);
 
     if (check._error) {
       reject(check)

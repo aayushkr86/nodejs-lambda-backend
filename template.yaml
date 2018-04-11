@@ -45,8 +45,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: nodejs6.10
-      Handler: src/lambda/sample/index.handler
-      # timeout: 30
+      Handler: src/lambda/categories/index.handler
+      timeout: 10
       Environment:
         Variables:
           AWS_REGION: local

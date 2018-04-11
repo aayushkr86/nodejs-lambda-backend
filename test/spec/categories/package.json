@@ -1,0 +1,16 @@
+{
+  "name": "testcategories",
+  "version": "1.0.0",
+  "description": "",
+  "main": "unit-testing.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^6.4.0",
+    "ajv-async": "^1.0.1",
+    "schema-validator": "^3.3.1"
+  }
+}

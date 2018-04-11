@@ -1,0 +1,41 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters":{
+        "Bucket":{
+          "Type":"String",
+          "Description":"bucket Name"
+        }
+    },
+    "Resources": {
+        "MaleHorse": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+				"TableName": "FOLDERS",
+				"KeySchema": [
+					{
+						"AttributeName": "id",
+						"KeyType": "HASH"
+					},
+					{
+					"AttributeName": "list_number",
+					"KeyType": "RANGE"
+					}
+				],
+				"AttributeDefinitions": [
+					{
+						"AttributeName": "id",
+						"AttributeType": "S"
+					},
+					{
+						"AttributeName": "list_number",
+						"AttributeType": "N"
+					}
+				],
+				"ProvisionedThroughput": {
+					"ReadCapacityUnits": 1,
+					"WriteCapacityUnits": 1
+				}
+			}
+        }
+    }
+}

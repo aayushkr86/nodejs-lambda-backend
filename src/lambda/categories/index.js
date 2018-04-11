@@ -1,83 +1,28 @@
-///// ...................................... start default setup ............................................////
-var mode,sns,dynamodb,docClient,S3;
-var AWS = require('aws-sdk');
-var response = require('./lib/response.js');
 
-if(process.env.AWS_REGION == "local"){
-	mode 		= "offline";
-	sns 		= require('../../../offline/sns');
-	docClient 	= require('../../../offline/dynamodb').docClient;
-	S3 			= require('../../../offline/S3');
-	// dynamodb = require('../../../offline/dynamodb').dynamodb;
-}else{
-	mode 		= "online";
-	sns 		= new AWS.SNS();
-	docClient 	= new AWS.DynamoDB.DocumentClient({});
-	S3 			= new AWS.S3();
-	// dynamodb = new AWS.DynamoDB();
-}
-///// ...................................... end default setup ............................................////
 
-//modules defined here
-var uuid = require('uuid');
-//call another lambda
-var execute_lambda = require('./lib/lambda')('sample2');
-
+let GET = require('./GET.js');
+// let POST = require('./POST');
+// let UPDATE = require('./UPDATE');
+// let DELETE = require('./DELETE');
+// let DUMP = require('./DUMP');
+/**
+ * Main field where we will fetch all the content and passer
+ * @param  {[type]}   event    [description]
+ * @param  {[type]}   context  [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
 exports.handler = function  (event,context,callback) {
-	//promise function calls that will be passed as list of function 
-	/**
-	 * execute nother lambda function
-	 */
-		// execute_lambda.run(event,function(err,data){
-		// 	if(err){
-		// 		console.log(err);
-		// 		response({"err":"someerror occeured"},callback);
-		// 	}
-		// 	response({"body":"asdasdasd"},callback);
-		// })
-	 
-	/**
-	 * sns 
-	 */
-		 // sns.publish({
-		 // 	TopicArn: "arn:aws:sns:us-west-2:123456789012:Email",
-		 // 	Message: "eventText", 
-   //      	Subject: "Test SNS From Lambda",
-		 // },function(err,data){
-		 // 	console.log(err,data);
-		 // });
-	
-	/**
-	 * S3
-	 * Note - before run docker to open minio(development purposes)
-	 */
-		// S3.PutObject("hello world",(err,data)=>{
-		// 
-		// })
-	
-	/**
-	 * dynamodb docClient
-	 * Note - Start dynamodb server
-	 */
-		 // docClient.query({},(err,data)=>{
-		 // 	console.log(err,data);
-		 // })
-	
-	/**
-	 * send response to the server
-	 */
-	 // response({"code":200,"body":"asdlkansdnas","headers":{}},callback)
-	 // a().then(function(data){
-	 // 	console.log(data);
-	 // }).catch(function(err){
-	 // 	console.log(err);
-	 // })
-
+	switch(event.httpMethod){
+		case 'GET': GET.execute(event.queryStringParameters,callback);
+					break;
+		case 'POST': POST.execute(event.body,callback);
+					break;
+		case 'UPDATE': UPDATE.execute(event.body,callback);
+					break;
+		case 'DELETE': DELETE.execute(event.body,callback);
+					break;
+		default : DUMP.execute({},callback);
+	}
 }
 
-// function a(){
-// 	return new Promise((resolve,reject)=>{
-// 		// reject("some error occured")
-// 		resolve("done");
-// 	});
-// }

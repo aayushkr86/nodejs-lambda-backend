@@ -1,5 +1,6 @@
 
 module.exports = function (execution,callback) {
+	console.log(execution);
 	if(execution.err){
 		callback(null,{
 			statusCode: execution.code || 406,
