@@ -1,4 +1,3 @@
-[
 {
     "post" :[
         {
@@ -34,14 +33,11 @@
             "createdAt": 1523368561542,//auto generated
             "updatedAt": 1523368561542//auto generated
         }
-    ] 
-},
-{
+    ], 
+
     "get" : {
 
-    }
-},
-{
+    },
     "patch" : [{
         "id" : "en_1_0",//manadatory
         "updatedAt": 1523368561542,//manadatory
@@ -56,20 +52,10 @@
             "publish"    : true,
             "show_at_first_place" : false,
             "createdAt": 1523368561542,//auto generated
-    }]
-},
-{
+    }],
+
     "delete": [{
         "id" : "en_1_0",//manadatory
         "updatedAt": 1523368561542,//manadatory
     }]
 }
-
-
-
-
-
-
-
-
-]

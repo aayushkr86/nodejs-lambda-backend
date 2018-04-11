@@ -90,19 +90,19 @@ function validation(data) { //console.log(data)
 }
 
 
-// describe('streams tests', function () {
-//   it('validation test', function (done) {
-//     data.forEach(function (elem) {
-//         validation(elem)
-//         .then(function (data) {
-//           console.log('Valid:', data)
-//         })
-//         .catch(function (err) {
-//           console.log('Invalid:', err)
-//         })
-//     })
-//     done()
-//   })
-// })
+describe('streams tests', function () {
+  it('validation test', function (done) {
+    data.forEach(function (elem) {
+        validation(elem)
+        .then(function (data) {
+          console.log('Valid:', data)
+        })
+        .catch(function (err) {
+          console.log('Invalid:', err)
+        })
+    })
+    done()
+  })
+})
 
 

@@ -2,9 +2,6 @@ var validate = require('../validation')
 var insert = require('../query/insert')
 var data = require('../../../log/sample-4-4-2018')
 
-
-
-
 function streams(data) { 
     return new Promise(function(resolve, reject) {
         validate.validation(data)
@@ -31,11 +28,11 @@ function streams(data) {
                         },
                     }
                 
-                        insert.INSERT(params).then(function(result){
+                        insert.INSERT(params).then(function(result) {
                         // console.log(result)
                         resolve(result)
                         })
-                        .catch(function(err){
+                        .catch(function(err) {
                         // console.log(err)    
                         reject(err)    
                         })
