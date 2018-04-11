@@ -25,10 +25,11 @@ const uuid 			= require('uuid');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
+
 const getSchema = {
   "$async":true,
   "type":"object",
-  "required":["id"]
+  "required":["id"],
   "properties":{
     "id":{"type":"string"},
     "LastEvaluatedKey":{
@@ -41,7 +42,7 @@ const getSchema = {
   }
 };
 
-validate = ajv.compile(getSchema);
+const validate = ajv.compile(getSchema);
 /**
  * This is the Promise caller which will call each and every function based
  * @param  {[type]}   data     [content to manipulate the data]
@@ -59,7 +60,7 @@ function execute(data,callback){
 		})
 		.catch(function(err){
 			console.log(err);
-			response({code:400,err:err},callback);
+			response({code:400,err:{err}},callback);
 		})
 }
 
@@ -93,7 +94,7 @@ function get_categories(result){
 	    },
 	    ExclusiveStartKey:result.LastEvaluatedKey,
 	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 10, // optional (limit the number of items to evaluate)
+	    Limit: 5, // optional (limit the number of items to evaluate)
 	    ConsistentRead: false
 	};
 	

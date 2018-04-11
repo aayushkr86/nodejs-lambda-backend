@@ -1,7 +1,7 @@
 
 
 let GET = require('./GET.js');
-// let POST = require('./POST');
+let POST = require('./POST');
 // let UPDATE = require('./UPDATE');
 // let DELETE = require('./DELETE');
 // let DUMP = require('./DUMP');

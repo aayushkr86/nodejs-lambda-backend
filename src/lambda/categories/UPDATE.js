@@ -28,8 +28,9 @@ const ajv 			= setupAsync(new Ajv);
 
 const postSchema = {
 	"$async":true,
+  	"additionalProperties": false,
+  	"required": [ "id","name"],
 	"type":"object",
-  	"required": [ "id","listNumbers","name"],
   	"properties":{
     	"id":{"type":"string"},
 		"listNumbers":{"type":"number"},
@@ -48,15 +49,9 @@ const validate = ajv.compile(postSchema);
  * @return {[type]}            [description]
  */
 function execute(data,callback){
-	if(typeof data == "string"){
-		data = JSON.parse(data);
-	}
 	validate_all(validate,data)
 		.then(function(result){
-			//default values
-			result["subcategory"]=uuid.v4();
-			result["subCount"]=0;
-			return post_categories(result);
+			return update_categories(result);
 		})
 		.then(function(result){
 			console.log("result");
@@ -64,7 +59,7 @@ function execute(data,callback){
 		})
 		.catch(function(err){
 			console.log(err);
-			response({code:400,err:{err}},callback);
+			response({code:400,err:err},callback);
 		})
 }
 
@@ -84,23 +79,42 @@ function validate_all (validate,data) {
 	})
 }
 
-function post_categories(result){
-	var params = {
-	    TableName: 'FOLDERS',
-	    Item: result,
-	    ConditionExpression: 'attribute_not_exists(listNumbers)'
-	};
-	
-	return new Promise((resolve,reject)=>{
-		docClient.put(params,function(err,categories){
-			if(err){
-				reject(err.message);
-			}
-			result['result']={"message":"Inserted Successfully"};
+function update_categories(result){
+	// change the attribute_name accordingly
+	    var params = {
+		    TableName: 'table_name',
+		    Key: { // The primary key of the item (a map of attribute name to AttributeValue)
 
-			resolve(result);
-		})
-	});
+		        attribute_name: attribute_value, //(string | number | boolean | null | Binary)
+		        // more attributes...
+		    },
+		    UpdateExpression: 'SET attribute_name :value', // String representation of the update to an attribute
+		        // SET set-action , ... 
+		        // REMOVE remove-action , ...  (for document support)
+		        // ADD add-action , ... 
+		        // DELETE delete-action , ...  (previous DELETE equivalent)
+		    ConditionExpression: 'attribute_exists(attribute_name)', // optional String describing the constraint to be placed on an attribute
+		    ExpressionAttributeNames: { // a map of substitutions for attribute names with special characters
+		        //'#name': 'attribute name'
+		    },
+		    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+		        ':value': 'VALUE'
+		    },
+		    ReturnValues: 'NONE', // optional (NONE | ALL_OLD | UPDATED_OLD | ALL_NEW | UPDATED_NEW)
+		    ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
+		    ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
+		};
+
+		return new Promise((resolve,reject)=>{
+			docClient.put(params,function(err,message){
+				if(err){
+					reject(err.message);
+				}
+				result['result']={"message":"Inserted Successfully"};
+
+				resolve(result);
+			})
+		});
 }
 /**
  * last line of code

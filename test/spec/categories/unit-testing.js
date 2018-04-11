@@ -36,6 +36,7 @@ var postSchema = {
 	"type":"object",
   "properties":{
     "id":{"type":"string"},
+    "listNumbers":{"type":"number"},
     "name":{"type":"string"},
     "description":{"type":"string"},
     "thumbnailId":{"type":"string"}
@@ -75,7 +76,7 @@ var deleteSchema = {
     "id":{"type":"string"},
     "listNumbers":{"type":"number"}
   }
-}
+};
 
 var validate={};
  validate['get'] = ajv.compile(getSchema);
