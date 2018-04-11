@@ -25,4 +25,3 @@ exports.handler = function  (event,context,callback) {
 		default : DUMP.execute({},callback);
 	}
 }
-

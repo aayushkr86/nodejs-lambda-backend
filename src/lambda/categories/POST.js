@@ -25,10 +25,10 @@ const uuid 			= require('uuid');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
-const getSchema = {
+const post = {
   "$async":true,
   "type":"object",
-  "required":["id"]
+  "required":["id"],
   "properties":{
     "id":{"type":"string"},
     "LastEvaluatedKey":{

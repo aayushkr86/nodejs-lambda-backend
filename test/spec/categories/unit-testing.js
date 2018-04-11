@@ -13,7 +13,14 @@ var getSchema = {
   "$async":true,
   "type":"object",
   "properties":{
-    "id":{"type":"string"}
+    "id":{"type":"string"},
+    "LastEvaluatedKey":{
+      "type":"object",
+      "properties":{
+        "id":{"type":"string"},
+        "listNumbers":{"type":"number"}
+      }
+    }
   }
 };
 
@@ -25,9 +32,10 @@ var getSchema = {
 var postSchema = {
 	"$async":true,
   "additionalProperties": false,
-  "required": [ "name"],
+  "required": [ "id","name"],
 	"type":"object",
   "properties":{
+    "id":{"type":"string"},
     "name":{"type":"string"},
     "description":{"type":"string"},
     "thumbnailId":{"type":"string"}

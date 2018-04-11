@@ -59,7 +59,7 @@ docClient.put(params, function(err, data) {
 var params = {
     TableName: 'FOLDERS',
     Item: {
-				"id": "category",
+				"id": "categories",
 				"listNumbers":2,
 				"name": "Systeme",
 				"subcategory":"subcategory",
@@ -95,7 +95,7 @@ docClient.put(params, function(err, data) {
 var params = {
     TableName: 'FOLDERS',
     Item: {
-				"id": "subcategory12",
+				"id": "subcategory",
 				"listNumbers":1,
 				"name": "sub categories1",
 				"subcategory":"subcategory",
