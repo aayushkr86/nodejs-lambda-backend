@@ -2,77 +2,20 @@ var AWS = require('aws-sdk')
 var config = require('./config')
 var docClient = new AWS.DynamoDB.DocumentClient(config)
 
-var data = require('../../../log/stream_update')
-
-var ExpressionString = "set ";
-var ValuesObj = {};
-var ExpressionString_arr = [];
-
-var bodyparams = new Bodyparams()
-var filesparams = new Filesparams()
-
-function Bodyparams() { //console.log(data)
-    // if(data.language != undefined) { 
-    //     ExpressionString_arr.push('language = :language')
-    //     ValuesObj[':language'] = data.language
-    // }
-    if(data.title != undefined) { 
-        ExpressionString_arr.push('title = :title')
-        ValuesObj[':title'] = data.title
-    }
-    if(data.intro_text != undefined) { 
-        ExpressionString_arr.push('intro_text = :intro_text')
-        ValuesObj[':intro_text'] = data.intro_text 
-    }
-    if(data.news_text != undefined) { 
-        ExpressionString_arr.push('news_text = :news_text')
-        ValuesObj[':news_text'] = data.news_text   
-    }
-    if(data.publish != undefined) { 
-        ExpressionString_arr.push('publish = :publish')
-        ValuesObj[':publish'] = data.publish   
-    }
-    if(data.show_at_first_place != undefined) { 
-        ExpressionString_arr.push('show_at_first_place = :show_at_first_place')
-        ValuesObj[':show_at_first_place'] = data.show_at_first_place  
-    } 
-    // if(data.date != undefined) { 
-    //     ExpressionString_arr.push('date = :date')
-    //     ValuesObj[':date'] = data.date
-    // }
-}
-
-function Filesparams() { // console.log(data)
-    if(data.image != undefined) { 
-        ExpressionString_arr.push('image = :image')
-        ValuesObj[':image'] = data.image
-    } 
-    if(data.pdf != undefined) { 
-        ExpressionString_arr.push('pdf = :pdf')
-        ValuesObj[':pdf'] = data.pdf  
-    } 
-}
-    // updatedAt
-    ExpressionString_arr.push('updatedAt = :updatedAt')
-    ValuesObj[':updatedAt'] = new Date().getTime()  
-
-    var ExpressionString_arrSplit = ExpressionString_arr.join(", "); //spereate array by commas and space
-    ExpressionString += ExpressionString_arrSplit; 
+var updateData = require('../../../log/stream_update')
 
 var params = {
     TableName: "streams",
     Key: {
         "id": "en_1_0",
-        "updatedAt": 1523368694193
+        "date": 1523736359000
     },
-    UpdateExpression : ExpressionString,
-    ExpressionAttributeValues : ValuesObj,
-    ReturnValues: 'ALL_NEW', 
+    ReturnValues: 'ALL_OLD', // optional (NONE | ALL_OLD)
 }
 
 function UPDATE() {
     return new Promise(function(resolve, reject) {
-        docClient.update(params, function(err, data) {
+        docClient.delete(params, function(err, data) {
             if (err) {
                 console.error("Unable to update. Error:", JSON.stringify(err, null, 2));
                 reject(err.message)
@@ -80,8 +23,41 @@ function UPDATE() {
                 reject("no item found")
             } 
             else {
-                console.log("updation succeeded",data);
-                resolve(data)   
+                console.log("deleted succeeded",data);
+                
+                params = {
+                    TableName: "streams",
+                    Item: {
+                        "updatedAt" : new Date().getTime()
+                    },
+                   
+                }
+
+                params.Item.id         = updateData.id ? updateData.id : data.id,
+                params.Item.date       = updateData.newdate ? updateData.newdate : data.date,
+                params.Item.uuid       = updateData.uuid ? updateData.uuid : data.uuid,
+                params.Item.userid     = updateData.userid ? updateData.userid : data.userid,
+                params.Item.language   = updateData.language ? updateData.language : data.language,
+                params.Item.title      = updateData.title ? updateData.title : data.title,
+                params.Item.intro_text = updateData.intro_text ? updateData.intro_text : data.intro_text,
+                params.Item.news_text  = updateData.news_text ? updateData.news_text : data.news_text,
+                params.Item.image      = updateData.image ? updateData.image : data.image,
+                params.Item.pdf        = updateData.pdf ? updateData.pdf : data.pdf,
+                params.Item.publish    = updateData.publish ? updateData.publish : data.publish,
+                params.Item.show_at_first_place = updateData.show_at_first_place ? updateData.show_at_first_place : data.show_at_first_place,
+                params.Item.createdAt  = updateData.createdAt ? updateData.createdAt : data.createdAt,
+
+                // console.log(params)
+                docClient.put(params, function(err, data) {
+                    if (err) {
+                        console.error("Error:", JSON.stringify(err, null, 2));
+                        reject(err.message)
+                    } else {
+                        console.log("Successfully updated:", data);
+                        resolve({"Successfully updated" : data})
+                    }
+                    }) 
+
             }
         })
     });

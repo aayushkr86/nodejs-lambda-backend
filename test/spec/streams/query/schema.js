@@ -6,11 +6,11 @@ var params = {
     TableName : "streams",
     KeySchema: [       
         { AttributeName: "id", KeyType: "HASH" },
-        { AttributeName: "updatedAt", KeyType: "RANGE" } 
+        { AttributeName: "date", KeyType: "RANGE" } 
     ],
     AttributeDefinitions: [       
         { AttributeName: "id", AttributeType: "S" },
-        { AttributeName: "updatedAt", AttributeType: "N" },
+        { AttributeName: "date", AttributeType: "N" },
     ],
     ProvisionedThroughput: {       
         ReadCapacityUnits: 1, 

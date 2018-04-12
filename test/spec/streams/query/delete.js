@@ -7,7 +7,7 @@ var params = {
     TableName: "streams",
     Key: {
         "id": "en_1_0",
-        "updatedAt": 1523368694193
+        "date": 1523780390000,
     },
     ReturnValues: 'ALL_OLD', // optional (NONE | ALL_OLD)
 }

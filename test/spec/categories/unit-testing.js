@@ -83,12 +83,13 @@ var validate={};
  validate['update'] = ajv.compile(updateSchema);
  validate['delete'] = ajv.compile(deleteSchema);
 
-function validate_all (validate,data) {
+function validate_all (validate,data) { 
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
-		    console.log(res);
+        console.log(res);
+        // resolve(res)
 		}).catch(function(err){
-		  console.log(JSON.stringify( err,null,6) );
+		  console.log(JSON.stringify( err,null,6));
 		  reject(err.errors[0].dataPath+" "+err.errors[0].message);
 		})
 	})
@@ -101,7 +102,7 @@ describe('categories tests', function () {
   it('validation test', function (done) {
     for(d in data){
       // console.log(data[d]);
-      data[d].forEach(function (elem) {
+      data[d].forEach(function (elem) { 
       validate_all(validate[d],elem)
         .then(function (data) {
           console.log('Valid:', data)

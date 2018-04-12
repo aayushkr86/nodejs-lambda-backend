@@ -4,15 +4,22 @@ var docClient = new AWS.DynamoDB.DocumentClient(config)
 
 exports.INSERT = INSERT
 
+var d = new Date();
+
+var x = "2018-04-15"
+var y = " "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()
+var z = x + y
+console.log(z)
+
 var params = {
     TableName: "streams",
     Item: {
-        "id" : "en_1_1",
+        "id" : "en_1_0",
+        "date"  : Date.parse(new Date(z)),
         "uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
         "userid" : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
         "language" : "en",
         "title" : "asaaad",
-        "date"  : "2018-04-18",
         "intro_text" : "aaaaa",
         "news_text"  : "aaaaa",
         "image"      : "none",
@@ -41,17 +48,17 @@ function INSERT(params) { //console.log(params)
 
 
 
-// describe('streams queries', function() {
-//     it('new stream insertion', function(done) { 
-//         INSERT(params)
-//         .then(function(data){
-//            console.log(data)
-//            done(null, data);
-//         })
-//         .catch(function(err){
-//             console.log(err)
-//             done(err);
-//         })
-//     })
+describe('streams queries', function() {
+    it('new stream insertion', function(done) { 
+        INSERT(params)
+        .then(function(data){
+           console.log(data)
+           done(null, data);
+        })
+        .catch(function(err){
+            console.log(err)
+            done(err);
+        })
+    })
 
-// })
+})

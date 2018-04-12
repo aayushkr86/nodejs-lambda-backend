@@ -25,23 +25,61 @@ const uuid 			= require('uuid');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
-const getSchema = {
-  "$async":true,
-  "type":"object",
-  "required":["id"],
-  "properties":{
-    "id":{"type":"string"},
-    "LastEvaluatedKey":{
-      "type":"object",
-      "properties":{
-        "id":{"type":"string"},
-        "listNumbers":{"type":"number"}
-      }
-    }
-  }
+var postSchema = {
+	$async:true,
+	type: "object",
+	properties: {
+	id : {
+			type: "string"
+	},   
+	uuid : {
+			type: "string",
+			pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+	},
+	userid : {
+			type: "string",
+			pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+	},
+	language:{
+			type: "string" ,
+			enum : ['en','de']
+	},
+	title : {
+			type: "string",
+			minLength: 5,
+			maxLength: 50,
+	},
+	date : {
+			type: "string",
+			format: "date",
+	},
+	intro_text : {
+			type: "string",
+			minLength: 2,
+			maxLength: 50,
+	},
+	news_text : {
+			type: "string",
+			minLength: 2,
+			maxLength: 50,
+	},
+	image: {
+			type: "string"
+	},
+	pdf: {
+			type: "string"
+	},
+	publish: {
+			type: "boolean"
+	},
+	show_at_first_place: {
+			type: "boolean"
+	}
+	},
+	required : ["userid", "title", "date", 'intro_text']
 };
 
-validate = ajv.compile(getSchema);
+validate = ajv.compile(postSchema);
 /**
  * This is the Promise caller which will call each and every function based
  * @param  {[type]}   data     [content to manipulate the data]
@@ -51,7 +89,7 @@ validate = ajv.compile(getSchema);
 function execute(data,callback){
 	validate_all(validate,data)
 		.then(function(result){
-			return get_categories(result);
+			return post_stream(result);
 		})
 		.then(function(result){
 			console.log("result");
@@ -79,33 +117,44 @@ function validate_all (validate,data) {
 	})
 }
 
-function get_categories(result){
+function post_stream(result){
+	var d = new Date();
+	var x = "2018-04-15"
+	var y = " "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()
+	var z = x + y
+	console.log(z)
+	
 	var params = {
-	    TableName: 'FOLDERS',
-	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
-	    ExpressionAttributeNames: {
-	        '#HASH': 'id',
-	        "#RANGE": 'listNumbers'
-	    },
-	    ExpressionAttributeValues: {
-	      ':HASH_VALUE': result.id,
-	      ':RANGE_VALUE': 0
-	    },
-	    ExclusiveStartKey:result.LastEvaluatedKey,
-	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 10, // optional (limit the number of items to evaluate)
-	    ConsistentRead: false
-	};
+			TableName: "streams",
+			Item: {
+					"id" : "en_1_0",
+					"date"  : Date.parse(new Date(z)),
+					"uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+					"userid" : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
+					"language" : "en",
+					"title" : "asaaad",
+					"intro_text" : "aaaaa",
+					"news_text"  : "aaaaa",
+					"image"      : "none",
+					"pdf"        : "2018-04-04T07:58:36.145Z-pdf2.pdf",
+					"publish"    : true,
+					"show_at_first_place" : false,
+					"createdAt" : new Date().getTime(),
+					"updatedAt" : new Date().getTime()
+			},
+			ReturnValues: 'ALL_OLD',
+	}
 	
 	return new Promise((resolve,reject)=>{
-		docClient.query(params,function(err,categories){
-			if(err){
-				reject(err);
+			docClient.put(params, function(err, data) {
+			if (err) {
+					console.error("Error:", JSON.stringify(err, null, 2));
+					reject(err.message)
+			} else {
+					console.log("Item added:", data);
+					resolve({"Successfully added new stream" : data})
 			}
-			result['result']=categories;
-
-			resolve(result);
-		})
+			})  
 	});
 }
 /**
