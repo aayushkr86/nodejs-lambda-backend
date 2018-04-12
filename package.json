@@ -15,11 +15,9 @@
   "homepage": "https://bitbucket.org/code_5/salestool-nodejs-backend#readme",
   "dependencies": {
     "aws-sdk": "^2.224.1",
-    "docker-host-ip": "^1.0.1",
-    "ip": "^1.1.5",
-    "jsonschema": "^1.2.4",
     "minio": "^5.0.0",
     "neo4j": "^2.0.0-RC2",
-    "neo4j-driver": "^1.5.0"
+    "neo4j-driver": "^1.5.0",
+    "uuid": "^3.2.1"
   }
 }

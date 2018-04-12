@@ -1,48 +1,48 @@
 {
 	"get":[
 		{
-			"id":"category"
+			"folderId":"category"
 		},
 		{
-			"id":"subcategory"
+			"folderId":"subcategory"
 		},
 		{
-			"id":"documents",
-			"LastEvaluatedKey":{"id":"1","listNumbers":1}
+			"folderId":"documents",
+			"LastEvaluatedKey":{"folderId":"1","folderOrder":1}
 		}
 	],
 	"post":[
 		{
-			"id":"category",
-			"name":"Systeme",
-			"description":"kdjk asdjnksdjnksd asjnksdjksd",
-			"thumbnailId":"asdj"
+			"folderId":"category",
+			"folderName":"Systeme",
+			"folderDescription":"kdjk asdjnksdjnksd asjnksdjksd",
+			"folderThumbnailId":"asdj"
 		},
 		{
-			"id":"subcategory",
-			"name":"rangeom",
-			"description":"kdjk asd asdjnksdjnksd asjnksdjksd", 
-			"thumbnailId":"cat_thumb_001"
+			"folderId":"subcategory",
+			"folderName":"rangeom",
+			"folderDescription":"kdjk asd asdjnksdjnksd asjnksdjksd", 
+			"folderThumbnailId":"cat_thumb_001"
 		}
 	],
 	"update":[
 		{
-			"id":"category",
-			"listNumbers":1,
-			"name":"adasd", 
-			"description":"asd", 
-			"thumbnailId":"asd"
+			"folderId":"category",
+			"folderOrder":1,
+			"folderName":"adasd", 
+			"folderDescription":"asd",
+			"folderThumbnailId":"asd"
 		},
 		{
-			"id":"category",
-			"listNumbers":2,
-			"name":"asds"
+			"folderId":"category",
+			"folderOrder":2,
+			"folderName":"asds"
 		}
 	],
 	"delete":[
 		{
-			"id":"category",
-			"listNumbers":2
+			"folderId":"category",
+			"folderOrder":2
 		}
 	]
 }

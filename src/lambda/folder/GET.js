@@ -21,27 +21,28 @@ if(process.env.AWS_REGION == "local"){
 /**
  * modules list
  */
-const uuid 			= require('uuid');
+// const uuid 			= require('uuid');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
-const post = {
+
+const getSchema = {
   "$async":true,
   "type":"object",
-  "required":["id"],
+  "required":["folderId"],
   "properties":{
-    "id":{"type":"string"},
+    "folderId":{"type":"string"},
     "LastEvaluatedKey":{
       "type":"object",
       "properties":{
-        "id":{"type":"string"},
-        "listNumbers":{"type":"number"}
+        "folderId":{"type":"string"},
+        "folderOrder":{"type":"number"}
       }
     }
   }
 };
 
-validate = ajv.compile(getSchema);
+const validate = ajv.compile(getSchema);
 /**
  * This is the Promise caller which will call each and every function based
  * @param  {[type]}   data     [content to manipulate the data]
@@ -59,7 +60,7 @@ function execute(data,callback){
 		})
 		.catch(function(err){
 			console.log(err);
-			response({code:400,err:err},callback);
+			response({code:400,err:{err}},callback);
 		})
 }
 
@@ -84,25 +85,27 @@ function get_categories(result){
 	    TableName: 'FOLDERS',
 	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
 	    ExpressionAttributeNames: {
-	        '#HASH': 'id',
-	        "#RANGE": 'listNumbers'
+	        '#HASH': 'folderId',
+	        "#RANGE": 'folderOrder'
 	    },
 	    ExpressionAttributeValues: {
-	      ':HASH_VALUE': result.id,
+	      ':HASH_VALUE': result.folderId,
 	      ':RANGE_VALUE': 0
 	    },
 	    ExclusiveStartKey:result.LastEvaluatedKey,
 	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 10, // optional (limit the number of items to evaluate)
+	    Limit: 5, // optional (limit the number of items to evaluate)
 	    ConsistentRead: false
 	};
 	
 	return new Promise((resolve,reject)=>{
-		docClient.query(params,function(err,categories){
+		docClient.query(params,function(err,folder){
 			if(err){
 				reject(err);
 			}
-			result['result']=categories;
+			
+			result['result']={};
+			result.result['items']=folder.Items;
 
 			resolve(result);
 		})

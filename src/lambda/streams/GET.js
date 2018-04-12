@@ -112,6 +112,11 @@ function get_streams(result) {
 			//     id: 'en_1_0', date: 1523771296000 
 			// }
 	};
+
+	if(typeof LastEvaluatedKey != undefined){
+    params.ExclusiveStartKey = LastEvaluatedKey;
+	}
+	
 	var params1 = {
 			TableName: 'streams',
 			KeyConditionExpression: 'id = :value and #dt BETWEEN :from AND :to', 

@@ -25,23 +25,24 @@ const uuid 			= require('uuid');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
-const getSchema = {
+
+const updateSchema = {
   "$async":true,
   "type":"object",
-  "required":["id"],
+  "additionalProperties": false,
+  "required": [ "folderId","folderOrder" ],
   "properties":{
-    "id":{"type":"string"},
-    "LastEvaluatedKey":{
-      "type":"object",
-      "properties":{
-        "id":{"type":"string"},
-        "listNumbers":{"type":"number"}
-      }
-    }
+    "folderId":{"type":"string"},
+    "folderOrder":{"type":"number"},
+    "folderName":{"type":"string"},
+    "folderDescription":{"type":"string"},
+    "folderThumbnailId":{"type":"string"},
+    "newfolderOrder":{"type":"number"}
   }
 };
 
-validate = ajv.compile(getSchema);
+const validate = ajv.compile(updateSchema);
+
 /**
  * This is the Promise caller which will call each and every function based
  * @param  {[type]}   data     [content to manipulate the data]
@@ -49,9 +50,15 @@ validate = ajv.compile(getSchema);
  * @return {[type]}            [description]
  */
 function execute(data,callback){
+	if(typeof data == "string"){
+		data = JSON.parse(data);
+	}
 	validate_all(validate,data)
 		.then(function(result){
-			return get_categories(result);
+			return JSON_to_querystring(result);
+		})
+		.then(function(result){
+			return update_categories(result);
 		})
 		.then(function(result){
 			console.log("result");
@@ -59,7 +66,7 @@ function execute(data,callback){
 		})
 		.catch(function(err){
 			console.log(err);
-			response({code:400,err:err},callback);
+			response({code:400,err:{err}},callback);
 		})
 }
 
@@ -71,6 +78,7 @@ function execute(data,callback){
 function validate_all (validate,data) {
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
+			console.log(res);
 		    resolve(res);
 		}).catch(function(err){
 		  console.log(JSON.stringify( err,null,6) );
@@ -79,34 +87,53 @@ function validate_all (validate,data) {
 	})
 }
 
-function get_categories(result){
-	var params = {
-	    TableName: 'FOLDERS',
-	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
-	    ExpressionAttributeNames: {
-	        '#HASH': 'id',
-	        "#RANGE": 'listNumbers'
-	    },
-	    ExpressionAttributeValues: {
-	      ':HASH_VALUE': result.id,
-	      ':RANGE_VALUE': 0
-	    },
-	    ExclusiveStartKey:result.LastEvaluatedKey,
-	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 10, // optional (limit the number of items to evaluate)
-	    ConsistentRead: false
-	};
-	
+function JSON_to_querystring(result){
 	return new Promise((resolve,reject)=>{
-		docClient.query(params,function(err,categories){
-			if(err){
-				reject(err);
+		let querystring="";
+		let queryvalue = {};
+		let count=0;
+		for(key in result){
+			if(key != "folderId" && key != "folderOrder"){
+				++count;
+				if(count>1){
+					querystring+=" ,";
+				}
+				querystring+=""+key +"=:"+key;
+				queryvalue[":"+key]=result[key]
 			}
-			result['result']=categories;
-
+		}
+		if(querystring == ""){
+			reject("Nothing to update");
+		}else{
+			result['querystring']=querystring;
+			result['queryvalue']=queryvalue;
 			resolve(result);
-		})
-	});
+		}
+	})
+}
+
+function update_categories(result){
+	// change the attribute_name accordingly
+	    var params = {
+		    TableName: 'FOLDERS',
+		    Key: {
+		    	folderId: result.folderId,
+		    	folderOrder: result.folderOrder      
+		    },
+		    UpdateExpression: 'SET '+result.querystring,
+		    ExpressionAttributeValues:result.queryvalue,
+		    ConditionExpression: 'attribute_exists(folderId) AND attribute_exists(folderOrder)'
+		};
+		console.log(params);
+		return new Promise((resolve,reject)=>{
+			docClient.update(params,function(err,message){
+				if(err){
+					reject(err.message);
+				}
+				result['result']={"message":"Updated Successfully"};
+				resolve(result);
+			})
+		});
 }
 /**
  * last line of code

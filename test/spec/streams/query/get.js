@@ -29,6 +29,9 @@ var params = {
     // }
 };
 
+if(typeof LastEvaluatedKey != undefined){
+    params.ExclusiveStartKey = LastEvaluatedKey;
+}
 
 var params1 = {
     TableName: 'streams',
