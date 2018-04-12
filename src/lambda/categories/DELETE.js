@@ -26,22 +26,30 @@ const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
 
-const updateSchema = {
+// const postSchema = {
+// 	"$async":true,
+// 	"type":"object",
+//   	"required": [ "id","listNumbers","name"],
+//   	"properties":{
+//     	"id":{"type":"string"},
+// 		"listNumbers":{"type":"number"},
+//     	"name":{"type":"string"},
+//     	"description":{"type":"string"},
+//     	"thumbnailId":{"type":"string"}
+//   	}
+// };
+const deleteSchema = {
   "$async":true,
   "type":"object",
   "additionalProperties": false,
   "required": [ "folderId","folderOrder" ],
   "properties":{
     "folderId":{"type":"string"},
-    "folderOrder":{"type":"number"},
-    "folderName":{"type":"string"},
-    "folderDescription":{"type":"string"},
-    "folderThumbnailId":{"type":"string"},
-    "newfolderOrder":{"type":"number"}
+    "folderOrder":{"type":"number"}
   }
 };
 
-const validate = ajv.compile(updateSchema);
+const validate = ajv.compile(deleteSchema);
 
 /**
  * This is the Promise caller which will call each and every function based
@@ -55,10 +63,7 @@ function execute(data,callback){
 	}
 	validate_all(validate,data)
 		.then(function(result){
-			return JSON_to_querystring(result);
-		})
-		.then(function(result){
-			return update_categories(result);
+			return delete_categories(result);
 		})
 		.then(function(result){
 			console.log("result");
@@ -78,7 +83,6 @@ function execute(data,callback){
 function validate_all (validate,data) {
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
-			console.log(res);
 		    resolve(res);
 		}).catch(function(err){
 		  console.log(JSON.stringify( err,null,6) );
@@ -87,53 +91,25 @@ function validate_all (validate,data) {
 	})
 }
 
-function JSON_to_querystring(result){
+function delete_categories(result){
+	var params = {
+	     TableName: 'FOLDERS',
+	    Key: {
+	    	"folderId":result.folderId,
+	    	"folderOrder":result.folderOrder
+	    }
+	};
+	console.log(params);
 	return new Promise((resolve,reject)=>{
-		let querystring="";
-		let queryvalue = {};
-		let count=0;
-		for(key in result){
-			if(key != "folderId" && key != "folderOrder"){
-				++count;
-				if(count>1){
-					querystring+=" ,";
-				}
-				querystring+=""+key +"=:"+key;
-				queryvalue[":"+key]=result[key]
+		docClient.delete(params,function(err,categories){
+			if(err){
+				reject(err.message);
 			}
-		}
-		if(querystring == ""){
-			reject("Nothing to update");
-		}else{
-			result['querystring']=querystring;
-			result['queryvalue']=queryvalue;
-			resolve(result);
-		}
-	})
-}
+			result['result']={"message":"Deleted Successfully"};
 
-function update_categories(result){
-	// change the attribute_name accordingly
-	    var params = {
-		    TableName: 'FOLDERS',
-		    Key: {
-		    	folderId: result.folderId,
-		    	folderOrder: result.folderOrder      
-		    },
-		    UpdateExpression: 'SET '+result.querystring,
-		    ExpressionAttributeValues:result.queryvalue,
-		    ConditionExpression: 'attribute_exists(folderId) AND attribute_exists(folderOrder)'
-		};
-		console.log(params);
-		return new Promise((resolve,reject)=>{
-			docClient.update(params,function(err,message){
-				if(err){
-					reject(err.message);
-				}
-				result['result']={"message":"Updated Successfully"};
-				resolve(result);
-			})
-		});
+			resolve(result);
+		})
+	});
 }
 /**
  * last line of code

@@ -29,14 +29,13 @@ const ajv 			= setupAsync(new Ajv);
 const getSchema = {
   "$async":true,
   "type":"object",
-  "required":["id"],
   "properties":{
-    "id":{"type":"string"},
+    "folderId":{"type":"string"},
     "LastEvaluatedKey":{
       "type":"object",
       "properties":{
-        "id":{"type":"string"},
-        "listNumbers":{"type":"number"}
+        "folderId":{"type":"string"},
+        "folderOrder":{"type":"number"}
       }
     }
   }
@@ -85,11 +84,11 @@ function get_categories(result){
 	    TableName: 'FOLDERS',
 	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
 	    ExpressionAttributeNames: {
-	        '#HASH': 'id',
-	        "#RANGE": 'listNumbers'
+	        '#HASH': 'folderId',
+	        "#RANGE": 'folderOrder'
 	    },
 	    ExpressionAttributeValues: {
-	      ':HASH_VALUE': result.id,
+	      ':HASH_VALUE': result.folderId,
 	      ':RANGE_VALUE': 0
 	    },
 	    ExclusiveStartKey:result.LastEvaluatedKey,
@@ -99,11 +98,11 @@ function get_categories(result){
 	};
 	
 	return new Promise((resolve,reject)=>{
-		docClient.query(params,function(err,categories){
+		docClient.query(params,function(err,folderOrder){
 			if(err){
 				reject(err);
 			}
-			result['result']=categories;
+			result['result']=folderOrder;
 
 			resolve(result);
 		})

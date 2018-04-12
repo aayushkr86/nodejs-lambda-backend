@@ -2,8 +2,8 @@
 
 let GET = require('./GET.js');
 let POST = require('./POST');
-// let UPDATE = require('./UPDATE');
-// let DELETE = require('./DELETE');
+let UPDATE = require('./UPDATE');
+let DELETE = require('./DELETE');
 // let DUMP = require('./DUMP');
 /**
  * Main field where we will fetch all the content and passer
@@ -18,7 +18,7 @@ exports.handler = function  (event,context,callback) {
 					break;
 		case 'POST': POST.execute(event.body,callback);
 					break;
-		case 'UPDATE': UPDATE.execute(event.body,callback);
+		case 'PUT': UPDATE.execute(event.body,callback);
 					break;
 		case 'DELETE': DELETE.execute(event.body,callback);
 					break;

@@ -20,6 +20,7 @@
     "jsonschema": "^1.2.4",
     "minio": "^5.0.0",
     "neo4j": "^2.0.0-RC2",
-    "neo4j-driver": "^1.5.0"
+    "neo4j-driver": "^1.5.0",
+    "uuid": "^3.2.1"
   }
 }

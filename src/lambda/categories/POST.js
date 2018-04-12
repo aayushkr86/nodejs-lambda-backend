@@ -26,17 +26,30 @@ const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
 
+// const postSchema = {
+// 	"$async":true,
+// 	"type":"object",
+//   	"required": [ "id","listNumbers","name"],
+//   	"properties":{
+//     	"id":{"type":"string"},
+// 		"listNumbers":{"type":"number"},
+//     	"name":{"type":"string"},
+//     	"description":{"type":"string"},
+//     	"thumbnailId":{"type":"string"}
+//   	}
+// };
 const postSchema = {
 	"$async":true,
+	"additionalProperties": false,
+	"required": [ "folderId","folderOrder","folderName"],
 	"type":"object",
-  	"required": [ "id","listNumbers","name"],
-  	"properties":{
-    	"id":{"type":"string"},
-		"listNumbers":{"type":"number"},
-    	"name":{"type":"string"},
-    	"description":{"type":"string"},
-    	"thumbnailId":{"type":"string"}
-  	}
+	"properties":{
+	    "folderId":{"type":"string"},
+	    "folderOrder":{"type":"number"},
+	    "folderName":{"type":"string"},
+	    "folderDescription":{"type":"string"},
+	    "folderThumbnailId":{"type":"string"}
+	 }
 };
 
 const validate = ajv.compile(postSchema);
@@ -54,8 +67,8 @@ function execute(data,callback){
 	validate_all(validate,data)
 		.then(function(result){
 			//default values
-			result["subcategory"]=uuid.v4();
-			result["subCount"]=0;
+			result["folderSub"]=uuid.v4();
+			result["folderSubCount"]=0;
 			return post_categories(result);
 		})
 		.then(function(result){
@@ -88,7 +101,7 @@ function post_categories(result){
 	var params = {
 	    TableName: 'FOLDERS',
 	    Item: result,
-	    ConditionExpression: 'attribute_not_exists(listNumbers)'
+	    ConditionExpression: 'attribute_not_exists(folderOrder)'
 	};
 	
 	return new Promise((resolve,reject)=>{

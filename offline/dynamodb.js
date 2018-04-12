@@ -1,4 +1,3 @@
-var ip = require('ip');
 var AWS = require('aws-sdk');
 
 var dynamodb = new AWS.DynamoDB({

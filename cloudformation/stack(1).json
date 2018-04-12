@@ -1,0 +1,74 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters":{
+        "Name":{
+            "Type" : "String",
+            "Description":"Project Name"
+        },
+        "ETag":{
+            "Type":"String",
+            "Description":"swagger file s3 ETag"
+        },
+        "Bucket2":{
+            "Type":"String",
+            "Description":"bucket Name"
+        }
+    },
+    "Resources": {
+        "MicroserviceStack":{
+            "Type":"AWS::CloudFormation::Stack",
+            "Properties":{
+                "TemplateURL":"https://s3.eu-central-1.amazonaws.com/hochform/cloudformation/(4)microservices.json",
+                "TimeoutInMinutes":"60",
+                "Parameters":{
+                    "Bucket":{ "Ref":"Bucket2"}
+                }
+            }
+        },
+        "Userpool":{
+            "Type":"AWS::Cognito::UserPool",
+            "Properties":{
+                "AliasAttributes":["email"],
+                "AutoVerifiedAttributes":["email"],
+                "EmailVerificationMessage":"{####} is your verification",
+                "EmailVerificationSubject":"Verification",
+                "UserPoolName":{ "Fn::Sub": [ "${NAME}pool", { "NAME": {"Ref" : "Name" }} ]}
+            }
+        },
+        "Userpoolclient":{
+            "Type":"AWS::Cognito::UserPoolClient",
+            "Properties":{
+                "ClientName":"HF_Clients",
+                "ExplicitAuthFlows":["ADMIN_NO_SRP_AUTH"],
+                "GenerateSecret": "false",
+                "UserPoolId":{ "Ref":"Userpool"}
+            }
+        },
+        "MyRestApi":{
+            "Type":"AWS::ApiGateway::RestApi",
+            "Properties":{
+                "BodyS3Location":{
+                    "Bucket" : {"Ref":"Bucket2"},
+                    "ETag" : {"Ref":"ETag"},
+                    "Key" : "cloudformation/(2)swagger.json"
+                    },
+                "Description":"Sample API for Edare",
+                "Name":{ "Fn::Sub": [ "${NAME}API", { "NAME": {"Ref" : "Name" }} ]}
+            }
+        },
+        "Cognitoaut":{
+            "Type":"AWS::ApiGateway::Authorizer",
+            "Properties":{
+                "IdentitySource":"method.request.header.Authorization",
+                "Name":"Cognitoaut",
+                "Type":"COGNITO_USER_POOLS",
+                "ProviderARNs":[{
+                    "Fn::GetAtt":[ "Userpool","Arn" ]
+                }],
+                "RestApiId": {
+                    "Ref":"MyRestApi"
+                }
+            }
+        }
+    }
+}
