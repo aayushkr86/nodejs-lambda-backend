@@ -21,7 +21,7 @@ if(process.env.AWS_REGION == "local"){
 /**
  * modules list
  */
-const uuid 			= require('uuid');
+// const uuid 			= require('uuid');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
@@ -29,6 +29,7 @@ const ajv 			= setupAsync(new Ajv);
 const getSchema = {
   "$async":true,
   "type":"object",
+  "required":["folderId"],
   "properties":{
     "folderId":{"type":"string"},
     "LastEvaluatedKey":{
@@ -98,11 +99,13 @@ function get_categories(result){
 	};
 	
 	return new Promise((resolve,reject)=>{
-		docClient.query(params,function(err,folderOrder){
+		docClient.query(params,function(err,folder){
 			if(err){
 				reject(err);
 			}
-			result['result']=folderOrder;
+			
+			result['result']={};
+			result.result['items']=folder.Items;
 
 			resolve(result);
 		})

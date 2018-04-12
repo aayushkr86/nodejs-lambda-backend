@@ -18,7 +18,7 @@
         "MicroserviceStack":{
             "Type":"AWS::CloudFormation::Stack",
             "Properties":{
-                "TemplateURL":"https://s3.eu-central-1.amazonaws.com/hochform/cloudformation/(4)microservices.json",
+                "TemplateURL":"https://s3.eu-central-1.amazonaws.com/salestoool-nodejs-backend/cloudformation/(4)microservices.json",
                 "TimeoutInMinutes":"60",
                 "Parameters":{
                     "Bucket":{ "Ref":"Bucket2"}

@@ -45,7 +45,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: nodejs6.10
-      Handler: src/lambda/categories/index.handler
+      Handler: src/lambda/folder/index.handler
       timeout: 10
       Environment:
         Variables:
@@ -54,5 +54,5 @@ Resources:
         AllProduct:
           Type: Api
           Properties:
-            Path: /lambda/sample
+            Path: /folder
             Method: any

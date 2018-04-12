@@ -4,7 +4,7 @@ let GET = require('./GET.js');
 let POST = require('./POST');
 let UPDATE = require('./UPDATE');
 let DELETE = require('./DELETE');
-// let DUMP = require('./DUMP');
+let DUMP = require('./DUMP');
 /**
  * Main field where we will fetch all the content and passer
  * @param  {[type]}   event    [description]
@@ -13,6 +13,7 @@ let DELETE = require('./DELETE');
  * @return {[type]}            [description]
  */
 exports.handler = function  (event,context,callback) {
+	console.log(event);
 	switch(event.httpMethod){
 		case 'GET': GET.execute(event.queryStringParameters,callback);
 					break;
