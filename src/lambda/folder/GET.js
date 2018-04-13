@@ -34,6 +34,7 @@ const getSchema = {
     "folderId":{"type":"string"},
     "LastEvaluatedKey":{
       "type":"object",
+      "additionalProperties": false,
       "properties":{
         "folderId":{"type":"string"},
         "folderOrder":{"type":"number"}
@@ -50,6 +51,15 @@ const validate = ajv.compile(getSchema);
  * @return {[type]}            [description]
  */
 function execute(data,callback){
+	if(data.LastEvaluatedKey != undefined){
+		try{
+			data.LastEvaluatedKey = JSON.parse(data.LastEvaluatedKey);
+		}catch(e){
+			console.log("cannot be able to process the LastEvaluatedKey");
+			delete data.LastEvaluatedKey;
+		}
+	}
+	console.log(data);
 	validate_all(validate,data)
 		.then(function(result){
 			return get_categories(result);
@@ -72,6 +82,7 @@ function execute(data,callback){
 function validate_all (validate,data) {
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
+			console.log(res);
 		    resolve(res);
 		}).catch(function(err){
 		  console.log(JSON.stringify( err,null,6) );

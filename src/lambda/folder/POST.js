@@ -1,4 +1,4 @@
-///// ...................................... start default setup ............................................////
+			///// ...................................... start default setup ............................................////
 // let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
@@ -26,18 +26,6 @@ const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
 
-// const postSchema = {
-// 	"$async":true,
-// 	"type":"object",
-//   	"required": [ "id","listNumbers","name"],
-//   	"properties":{
-//     	"id":{"type":"string"},
-// 		"listNumbers":{"type":"number"},
-//     	"name":{"type":"string"},
-//     	"description":{"type":"string"},
-//     	"thumbnailId":{"type":"string"}
-//   	}
-// };
 const postSchema = {
 	"$async":true,
 	"additionalProperties": false,
@@ -70,6 +58,18 @@ function execute(data,callback){
 			result["folderSub"]=uuid.v4();
 			result["folderSubCount"]=0;
 			return post_categories(result);
+		})
+		.then(function(result){
+			console.log(result);
+			return find_count_increase_folder(result);
+		})
+		.then(function(result){
+			console.log(arguments);
+			if(result.increseCount== undefined){
+				return result;
+			}else{
+				return increase_folder_count(result);
+			}
 		})
 		.then(function(result){
 			console.log("result");
@@ -114,6 +114,55 @@ function post_categories(result){
 			resolve(result);
 		})
 	});
+}
+
+function find_count_increase_folder(result){
+	//find the folderid in folderSub 
+	var params = {
+		TableName: 'FOLDERS',
+	    IndexName: 'folderSub-index',
+	    KeyConditionExpression: 'folderSub = :value', 
+	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+	      ':value': result.folderId
+	    },
+	    Limit: 1, // optional (limit the number of items to evaluate)
+	};
+	return new Promise((resolve,reject)=>{
+		docClient.query(params,function(err,folder){
+			if(err){
+				reject(err.message);
+			}
+			console.log(folder);
+			if(folder.Items[0] != undefined){
+				let content = folder.Items[0];
+				result['increseCount']=content;
+			}
+			resolve(result);
+		})
+	})
+}
+
+function increase_folder_count(result){
+	let increseCount = result.increseCount;
+	var params = {
+	    TableName: 'FOLDERS',
+	    Key: {
+	        folderId: increseCount.folderId,
+	        folderOrder: increseCount.folderOrder  
+	    },
+	    UpdateExpression: 'ADD folderSubCount :value', 
+	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+	        ':value': 1
+	    }
+	};
+	return new Promise((resolve,reject)=>{
+		docClient.update(params, function(err, folder) {
+		   	if(err){
+				reject(err.message);
+			}
+				resolve(result);
+		});
+	})
 }
 /**
  * last line of code

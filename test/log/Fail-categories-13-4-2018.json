@@ -1,0 +1,28 @@
+{
+	"get":[
+		{
+			"folderId":"category",
+			"amarkakua":1212
+		},
+		{
+			"folderId":"subcategory",
+			"foo[]":"12"
+		},
+		{
+			"folderId":"documents",
+			"LastEvaluatedKey":{"folderId":"1","folderOrder":"1"}
+		},
+		{
+			"folderId":"fail categories",
+			"LastEvaluatedKey":{"folderId":"12"}
+		}
+	],
+	"post":[
+	],
+	"update":[
+		
+	],
+	"delete":[
+		
+	]
+}

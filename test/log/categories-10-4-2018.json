@@ -9,6 +9,10 @@
 		{
 			"folderId":"documents",
 			"LastEvaluatedKey":{"folderId":"1","folderOrder":1}
+		},
+		{
+			"folderId":"fail categories",
+			"LastEvaluatedKey":{"folderId":"12"}
 		}
 	],
 	"post":[

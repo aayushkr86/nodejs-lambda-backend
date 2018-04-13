@@ -1,5 +1,4 @@
 
-
 let GET = require('./GET.js');
 let POST = require('./POST');
 let UPDATE = require('./UPDATE');

@@ -6,7 +6,7 @@ module.exports = function (execution,callback) {
 		response = {
 			statusCode: execution.code || 406,
 		    headers: execution.headers ||{
-		      'x-custom-header': 'my custom header value',
+		      'xCustomHeader': 'my custom header value',
 		      // "Access-Control-Allow-Origin":"*"
 		    },
 		    body: JSON.stringify(execution.err||{"error":"Some Error Occured"})
