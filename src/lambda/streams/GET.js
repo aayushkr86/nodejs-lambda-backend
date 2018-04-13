@@ -32,7 +32,7 @@ const getSchema = {
 	properties: {
 	id : {
 			type: "string",
-			enum : ['en_1_0','en_1_1']
+			enum : ['en_1_0']
 	},
 	date : {
 			type: "string",
@@ -51,7 +51,7 @@ const getSchema = {
 			required : ["id", "date"]
 	}
 	},
-	required : ["id", "date"]
+	required : ["id"]
 }
 
 var validate = ajv.compile(getSchema);
@@ -69,11 +69,11 @@ function execute(data, callback){
 		})
 		.then(function(result){
 			// console.log("result",result);
-			response({code:200,body:result},callback);
+			response({code:200,body:result.result},callback);
 		})
 		.catch(function(err){
 			console.log(err);
-			response({code:400,err:err},callback);
+			response({code:400,err:{err}},callback);
 		})
 }
 
@@ -94,20 +94,21 @@ function validate_all (validate,data) { console.log(data)
 }
 
 function get_streams(result) { //console.log("result" , result)
-	var date = result.date;
-	var from = date+" 00:00:00"
-	var to = date+" 23:59:59"
+	// var date = result.date;
+	// var from = date+" 00:00:00"
+	// var to = date+" 23:59:59"
 
 	var params = {
 			TableName: 'streams',
-			KeyConditionExpression: 'id = :value and #dt BETWEEN :from AND :to', 
-			ExpressionAttributeNames: { 
-					'#dt': 'date'
-			},
+			KeyConditionExpression: 'id = :value', 
+			// and #dt BETWEEN :from AND :to', 
+			// ExpressionAttributeNames: { 
+			// 		'#dt': 'date'
+			// },
 			ExpressionAttributeValues: { 
 				':value': 'en_1_0',
-				":from": new Date(from).getTime(),
-				":to":   new Date(to).getTime(),
+				// ":from": new Date(from).getTime(),
+				// ":to":   new Date(to).getTime(),
 			},
 			ScanIndexForward: false, 
 			Limit: 5,
@@ -123,17 +124,18 @@ function get_streams(result) { //console.log("result" , result)
 	
 	var params1 = {
 			TableName: 'streams',
-			KeyConditionExpression: 'id = :value and #dt BETWEEN :from AND :to', 
-			ExpressionAttributeNames: { 
-					'#dt': 'date'
-			},
+			KeyConditionExpression: 'id = :value', 
+			// and #dt BETWEEN :from AND :to', 
+			// ExpressionAttributeNames: { 
+			// 		'#dt': 'date'
+			// },
 			ExpressionAttributeValues: { 
 				':value': 'en_1_1',
-				":from": new Date(from).getTime(),
-				":to":   new Date(to).getTime(),
+				// ":from": new Date(from).getTime(),
+				// ":to":   new Date(to).getTime(),
 			},
 			ScanIndexForward: false, 
-			// Limit: 1,
+			Limit: 1,
 	};
 		
 	return new Promise(function(resolve, reject) { 
@@ -168,7 +170,8 @@ function get_streams(result) { //console.log("result" , result)
 								publish.LastEvaluatedKey.date = publish.Items[4].date
 								publish.LastEvaluatedKey.id   = publish.Items[4].id
 						}
-				resolve(publish)
+				result['result']={"message": publish};
+				resolve(result)
 				}
 				],function(err,data) { 
 				reject(data)

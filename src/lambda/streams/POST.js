@@ -87,18 +87,18 @@ var validate = ajv.compile(postSchema);
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute(data,callback){ //console.log(data)
+function execute(data,callback) { //console.log(data)
 	validate_all(validate,data)
 		.then(function(result){
 			return post_stream(result);
 		})
 		.then(function(result){
 			// console.log("result",result);
-			response({code:200,body:result},callback);
+			response({code:200, body:result.result}, callback);
 		})
 		.catch(function(err){
 			// console.log(err);
-			response({code:400,err:err},callback);
+			response({code:400, err:{err}}, callback);
 		})
 }
 
@@ -241,8 +241,9 @@ function post_stream(result) {  console.log(result.show_at_first_place)
             console.error("Error:", JSON.stringify(err, null, 2));
             reject(err.message)
         } else {
-            console.log("Item added:", data);
-            resolve("Successfully added new stream")
+			console.log("Item added:", data);
+			result['result']={"message":"Inserted Successfully"};
+            resolve(result)
         }
         })  
     });
