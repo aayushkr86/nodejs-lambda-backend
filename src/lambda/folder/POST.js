@@ -60,6 +60,18 @@ function execute(data,callback){
 			return post_categories(result);
 		})
 		.then(function(result){
+			console.log(result);
+			return find_count_increase_folder(result);
+		})
+		.then(function(result){
+			console.log(arguments);
+			if(result.increseCount== undefined){
+				return result;
+			}else{
+				return increase_folder_count(result);
+			}
+		})
+		.then(function(result){
 			console.log("result");
 			response({code:200,body:result.result},callback);
 		})
@@ -102,6 +114,55 @@ function post_categories(result){
 			resolve(result);
 		})
 	});
+}
+
+function find_count_increase_folder(result){
+	//find the folderid in folderSub 
+	var params = {
+		TableName: 'FOLDERS',
+	    IndexName: 'folderSub-index',
+	    KeyConditionExpression: 'folderSub = :value', 
+	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+	      ':value': result.folderId
+	    },
+	    Limit: 1, // optional (limit the number of items to evaluate)
+	};
+	return new Promise((resolve,reject)=>{
+		docClient.query(params,function(err,folder){
+			if(err){
+				reject(err.message);
+			}
+			console.log(folder);
+			if(folder.Items[0] != undefined){
+				let content = folder.Items[0];
+				result['increseCount']=content;
+			}
+			resolve(result);
+		})
+	})
+}
+
+function increase_folder_count(result){
+	let increseCount = result.increseCount;
+	var params = {
+	    TableName: 'FOLDERS',
+	    Key: {
+	        folderId: increseCount.folderId,
+	        folderOrder: increseCount.folderOrder  
+	    },
+	    UpdateExpression: 'ADD folderSubCount :value', 
+	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+	        ':value': 1
+	    }
+	};
+	return new Promise((resolve,reject)=>{
+		docClient.update(params, function(err, folder) {
+		   	if(err){
+				reject(err.message);
+			}
+				resolve(result);
+		});
+	})
 }
 /**
  * last line of code

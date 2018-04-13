@@ -26,18 +26,6 @@ const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
 
-// const postSchema = {
-// 	"$async":true,
-// 	"type":"object",
-//   	"required": [ "id","listNumbers","name"],
-//   	"properties":{
-//     	"id":{"type":"string"},
-// 		"listNumbers":{"type":"number"},
-//     	"name":{"type":"string"},
-//     	"description":{"type":"string"},
-//     	"thumbnailId":{"type":"string"}
-//   	}
-// };
 const deleteSchema = {
   "$async":true,
   "type":"object",

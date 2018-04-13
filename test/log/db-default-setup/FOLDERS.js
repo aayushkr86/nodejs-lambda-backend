@@ -26,16 +26,38 @@ var params ={
 					{
 						"AttributeName": "folderOrder",
 						"AttributeType": "N"
+					},
+					{
+					    "AttributeName": "folderSub",
+						"AttributeType": "S"   
 					}
 				],
 				"ProvisionedThroughput": {
 					"ReadCapacityUnits": 1,
 					"WriteCapacityUnits": 1
-				}
+				},
+				GlobalSecondaryIndexes: [ // optional (list of GlobalSecondaryIndex)
+			        { 
+			            IndexName: 'folderSub-index', 
+			            KeySchema: [
+			                { // Required HASH type attribute
+			                    AttributeName: 'folderSub',
+			                    KeyType: 'HASH',
+			                }
+			            ],
+			            "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+			            ProvisionedThroughput: { // throughput to provision to the index
+			                ReadCapacityUnits: 1,
+			                WriteCapacityUnits: 1,
+			            },
+			        }
+			    ],
 			};
 dynamodb.createTable(params, function(err, data) {
-    // if (err) ppJson(err); // an error occurred
-    // else ppJson(data); // successful response
+    if (err) ppJson(err); // an error occurred
+    else ppJson(data); // successful response
 });
 
 /** Insert table */
@@ -45,11 +67,10 @@ var params = {
             "folderId": "categories",//uuid
             "folderOrder":12,
             "folderName": "Branding",
-            "foldersub":"subcategory",
+            "folderSub":"subcategory",
             "folderDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et risus consequat augue luctus pretium. Integer venenatis tristique bibendum. Duis ullamcorper aliquet lectus. In sit amet vestibulum neque. In non purus vitae tortor mattis placerat vel ut diam. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce vitae leo quis sapien volutpat cursus. Morbi in ligula malesuada, tempor dui ac, finibus diam. Quisque convallis est quis ipsum blandit sollicitudin.",
             "folderThumbnailId": "cat_thumb_001",
-            "folderSubcount": 4,
-            "totalUnreadCount": 13
+            "folderSubCount": 4
     }
 };
 docClient.put(params, function(err, data) {
