@@ -1,4 +1,4 @@
-///// ...................................... start default setup ............................................////
+			///// ...................................... start default setup ............................................////
 // let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
@@ -26,18 +26,6 @@ const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
 
-// const postSchema = {
-// 	"$async":true,
-// 	"type":"object",
-//   	"required": [ "id","listNumbers","name"],
-//   	"properties":{
-//     	"id":{"type":"string"},
-// 		"listNumbers":{"type":"number"},
-//     	"name":{"type":"string"},
-//     	"description":{"type":"string"},
-//     	"thumbnailId":{"type":"string"}
-//   	}
-// };
 const postSchema = {
 	"$async":true,
 	"additionalProperties": false,
