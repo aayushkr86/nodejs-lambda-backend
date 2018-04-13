@@ -41,22 +41,22 @@ Resources:
   #           Path: /sns/Email
   #           Method: any
 # List of lambda microservice ==================================================================
-lambda_sample:
-  Type: AWS::Serverless::Function
-  Properties:
-    Runtime: nodejs6.10
-    Handler: src/lambda/folder/index.handler
-    timeout: 10
-    Environment:
-      Variables:
-        AWS_REGION: local
-    Events:
-      AllProduct:
-        Type: Api
-        Properties:
-          Path: /folder
-          Method: any
-lambda_streams:
+  # lambda_sample:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/folder/index.handler
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /folder
+  #           Method: any
+  lambda_streams:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: nodejs6.10

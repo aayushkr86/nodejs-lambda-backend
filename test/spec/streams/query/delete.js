@@ -6,8 +6,8 @@ var docClient = new AWS.DynamoDB.DocumentClient(config)
 var params = {
     TableName: "streams",
     Key: {
-        "id": "en_1_0",
-        "date": 1523780390000,
+        "id": "en_1_1",
+        "date": 1523768883000,
     },
     ReturnValues: 'ALL_OLD', // optional (NONE | ALL_OLD)
 }

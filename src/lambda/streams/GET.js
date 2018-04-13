@@ -113,8 +113,9 @@ function get_streams(result) {
 			// }
 	};
 
-	if(typeof LastEvaluatedKey != undefined){
-    params.ExclusiveStartKey = LastEvaluatedKey;
+	var event = {};
+	if(typeof event.LastEvaluatedKey != undefined){
+    params.ExclusiveStartKey = event.LastEvaluatedKey;
 	}
 	
 	var params1 = {

@@ -12,7 +12,7 @@ let GET = require('./GET.js');
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-exports.handler = function  (event,context,callback) {
+exports.handler = function  (event,context,callback) { console.log(event, context)
 	switch(event.httpMethod){
 		case 'GET': GET.execute(event.queryStringParameters,callback);
 					break;
