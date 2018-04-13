@@ -1,0 +1,78 @@
+{
+    "post" :[
+        {
+            "id" : "en_1_0",
+            "date"  : "2018-04-15",
+            "uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "userid" : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
+            "language" : "en",
+            "title" : "asaaad",
+            "intro_text" : "aaaaa",
+            "news_text"  : "aaaaa",
+            "image"      : "file",
+            "pdf"        : "file",
+            "publish"    : true,
+            "show_at_first_place" : false,
+            "createdAt": 1523368492540,
+            "updatedAt": 1523368492540
+
+        },
+        {
+            "id" : "en_1_0",
+            "date"  : "2018-04-15",
+            "uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "userid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "language" : "en",
+            "title" : "asaaad",
+            "intro_text" : "aaaaa",
+            "news_text"  : "aaaaa",
+            "image"      : "file",
+            "pdf"        : "file",
+            "publish"    : true,
+            "show_at_first_place" : false,
+            "createdAt": 1523368561542,
+            "updatedAt": 1523368561542
+        }
+    ], 
+
+    "get" : [
+        {
+            "id" : "en_1_0",
+            "date"  : "2018-04-15"
+        },
+        {
+            "id" : "en_1_0",
+            "date"  : "2018-04-15",
+            "LastEvaluatedKey":{
+                                "id":"en_1_0",
+                                "date": 1523771296000
+                            }
+        }
+    ],
+    
+    "patch" : [
+        {
+        "id" : "en_1_0",
+        "date"  : 1523368561542,
+        "newdate" : 1523736359000,
+            "userid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "language" : "en",
+            "title" : "asaaad",
+            "intro_text" : "aaaaa",
+            "news_text"  : "aaaaa",
+            "image"      : "file",
+            "pdf"        : "file",
+            "publish"    : true,
+            "show_at_first_place" : false,
+            "updatedAt": 1523368561542,
+            "createdAt": 1523368561542
+        }
+    ],
+
+    "delete": [
+        {
+        "id" : "en_1_0",
+        "date": 1523368561542
+        }
+    ]
+}
