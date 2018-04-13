@@ -69,5 +69,5 @@ Resources:
         AllProduct:
           Type: Api
           Properties:
-            Path: /stream
+            Path: /streams
             Method: any
