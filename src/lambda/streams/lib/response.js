@@ -1,7 +1,7 @@
 
 module.exports = function (execution,callback) {
-	console.log(execution);
-	if(execution.err){
+	// console.log(execution);
+	if(execution.err) {
 		callback(null,{
 			statusCode: execution.code || 406,
 		    headers:execution.headers || {
@@ -10,7 +10,7 @@ module.exports = function (execution,callback) {
 		    } ,
 		    body: execution.body|| {"error":"Some Error Occured"}
 		});
-	}else{
+	}else {
 		callback(null,{
 			statusCode: execution.code || 200,
 		    headers: execution.headers ||{

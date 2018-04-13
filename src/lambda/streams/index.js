@@ -1,7 +1,7 @@
 
 
 let GET = require('./GET.js');
-// let POST = require('./POST');
+let POST = require('./POST.js');
 // let UPDATE = require('./UPDATE');
 // let DELETE = require('./DELETE');
 // let DUMP = require('./DUMP');
@@ -12,15 +12,16 @@ let GET = require('./GET.js');
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-exports.handler = function  (event,context,callback) {
-	switch(event.httpMethod){
-		case 'GET': GET.execute(event.queryStringParameters,callback);
+exports.handler = function  (event, context, callback) { //console.log(event.httpMethod, context)
+	//console.log(event);
+	switch(event.httpMethod) {
+		case 'GET': GET.execute(event.queryStringParameters, callback);
 					break;
-		case 'POST': POST.execute(event.body,callback);
+		case 'POST': POST.execute(event.body, callback);
 					break;
-		case 'UPDATE': UPDATE.execute(event.body,callback);
+		case 'UPDATE': UPDATE.execute(event.body, callback);
 					break;
-		case 'DELETE': DELETE.execute(event.body,callback);
+		case 'DELETE': DELETE.execute(event.body, callback);
 					break;
 		default : DUMP.execute({},callback);
 	}

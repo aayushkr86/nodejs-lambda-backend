@@ -22,10 +22,11 @@ if(process.env.AWS_REGION == "local"){
  * modules list
  */
 const uuid 			= require('uuid');
+const async         = require('async')
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
-var getSchema = {
+const getSchema = {
 	$async:true,
 	type: "object",
 	properties: {
@@ -46,27 +47,29 @@ var getSchema = {
 			date:{
 					type:"number"
 			}
-			}
+			},
+			required : ["id", "date"]
 	}
 	},
 	required : ["id", "date"]
 }
 
-validate = ajv.compile(getSchema);
+var validate = ajv.compile(getSchema);
 /**
  * This is the Promise caller which will call each and every function based
  * @param  {[type]}   data     [content to manipulate the data]
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute(data,callback){
+function execute(data, callback){
+	// console.log("exection start");
 	validate_all(validate,data)
 		.then(function(result){
 			return get_streams(result);
 		})
 		.then(function(result){
-			console.log("result");
-			response({code:200,body:result.result},callback);
+			// console.log("result",result);
+			response({code:200,body:result},callback);
 		})
 		.catch(function(err){
 			console.log(err);
@@ -79,7 +82,7 @@ function execute(data,callback){
  * @param  {[type]} data [description]
  * @return {[type]}      [description]
  */
-function validate_all (validate,data) {
+function validate_all (validate,data) { console.log(data)
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
 		    resolve(res);
@@ -90,8 +93,8 @@ function validate_all (validate,data) {
 	})
 }
 
-function get_streams(result) {
-	var date = "2018-04-15"
+function get_streams(result) { //console.log("result" , result)
+	var date = result.date;
 	var from = date+" 00:00:00"
 	var to = date+" 23:59:59"
 
@@ -113,8 +116,9 @@ function get_streams(result) {
 			// }
 	};
 
-	if(typeof LastEvaluatedKey != undefined){
-    params.ExclusiveStartKey = LastEvaluatedKey;
+	
+	if(typeof result.LastEvaluatedKey != undefined) {
+    params.ExclusiveStartKey = result.LastEvaluatedKey;
 	}
 	
 	var params1 = {

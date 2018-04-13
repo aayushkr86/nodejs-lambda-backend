@@ -28,25 +28,26 @@ var params = {
     //     id: 'en_1_0', date: 1523771296000 
     // }
 };
-
-if(typeof LastEvaluatedKey != undefined){
-    params.ExclusiveStartKey = LastEvaluatedKey;
+var event = {};
+if(typeof event.LastEvaluatedKey != undefined){
+    params.ExclusiveStartKey = event.LastEvaluatedKey;
 }
 
 var params1 = {
     TableName: 'streams',
 
-    KeyConditionExpression: 'id = :value and #dt BETWEEN :from AND :to', 
-    // FilterExpression: 'show_at_first_place = :val',
-    ExpressionAttributeNames: { 
-        '#dt': 'date'
-    },
+    KeyConditionExpression: 'id = :value', 
+    // and #dt BETWEEN :from AND :to', 
+    // // FilterExpression: 'show_at_first_place = :val',
+    // ExpressionAttributeNames: { 
+    //     '#dt': 'date'
+    // },
     
     ExpressionAttributeValues: { 
       ':value': 'en_1_1',
     //   ":val" : true,
-      ":from": new Date(from).getTime(),
-      ":to":   new Date(to).getTime(),
+    //   ":from": new Date(from).getTime(),
+    //   ":to":   new Date(to).getTime(),
     },
     ScanIndexForward: false, 
     // Limit: 1,
@@ -90,7 +91,7 @@ function QUERY() {
                 })
                 console.log(publish.Items.length)
 
-                if(publish.Items.length == 6){
+                if(publish.Items.length == 6) {
                     publish.Items.splice(5,1);
                     publish.LastEvaluatedKey.date = publish.Items[4].date
                     publish.LastEvaluatedKey.id   = publish.Items[4].id
