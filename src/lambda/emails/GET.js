@@ -26,32 +26,31 @@ const async = require('async')
 const Ajv 			= require('ajv')
 const setupAsync 	= require('ajv-async')
 const ajv 			= setupAsync(new Ajv())
-const getSchema = {
-  $async: true,
-  type: 'object',
+var getSchema = {
+  $async:true,
+  type: "object",
   properties: {
-    id: {
-      type: 'string',
-      enum: ['en_1_0']
-    },
-    date: {
-      type: 'string',
-      format: 'date'
-    },
-    LastEvaluatedKey: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string'
-        },
-        date: {
-          type: 'number'
-        }
+      status : {
+          type: "string",
+          enum : ['active']
       },
-      required: ['id', 'date']
+      updatedAt : {
+        type: "number",
+      },
+    LastEvaluatedKey:{
+        type:"object",
+        properties:{
+          updatedAt : {
+                type: "number",
+            },
+            status : {
+                type: "string",
+                enum : ['active']
+            },
+        },
+        required : ["updatedAt", "status"]
     }
   },
-  required: ['id']
 }
 
 var validate = ajv.compile(getSchema)
@@ -72,7 +71,7 @@ function execute (data, callback) {
   }
   validate_all(validate, data)
     .then(function (result) {
-      return get_streams(result)
+      return get_emails(result)
     })
     .then(function (result) {
       response({code: 200, body: result.result}, callback)
@@ -99,69 +98,42 @@ function validate_all (validate, data) {
   })
 }
 
-function get_streams (result) { 
+function get_emails (result) { 
   var params = {
-    TableName: 'streams',
-    KeyConditionExpression: 'id = :value',
-    ExpressionAttributeValues: {
-      ':value': 'en_1_0'
+    TableName: "emails",
+    KeyConditionExpression: '#HASH = :value', 
+    ExpressionAttributeNames : {
+        '#HASH'  : 'status',
     },
-    ScanIndexForward: false,
-    Limit: 5
-  }
+    ExpressionAttributeValues: { 
+      ':value': 'active',
+    },
+    // ScanIndexForward: false, 
+    Limit: 5,
+};
   if (typeof result.LastEvaluatedKey !== undefined) {
     params.ExclusiveStartKey = result.LastEvaluatedKey
   }
-  var params1 = {
-    TableName: 'streams',
-    KeyConditionExpression: 'id = :value',
-    ExpressionAttributeValues: {
-      ':value': 'en_1_1'
-    },
-    ScanIndexForward: false,
-    Limit: 1
-  }
-  
-  return new Promise(function (resolve, reject) {
-    async.waterfall([
-      function (done) {
-        docClient.query(params, function (err, data) {
-          if (err) {
-            console.error('Unable to query. Error:', JSON.stringify(err, null, 2))
-            done(true, err)
-          } else {
-            done(null, data)
-          }
-        })
-      },
-      function (publish, done) {
-        docClient.query(params1, function (err, data) {
-          if (err) {
-            console.error('Unable to query. Error:', JSON.stringify(err, null, 2))
-            done(true, err)
-          } else {
-            done(null, publish, data)
-          }
-        })
-      },
-      function (publish, show_first) {
-        if(result.LastEvaluatedKey == undefined) {
-          show_first.Items.forEach(function (elem) {
-            publish.Items.unshift(elem)
-          })
-          console.log(publish.Items.length)
-          if (publish.Items.length == 6) {
-            publish.Items.splice(5, 1)
-            publish.LastEvaluatedKey.date = publish.Items[4].date
-            publish.LastEvaluatedKey.id = publish.Items[4].id
-          }
+  return new Promise(function(resolve, reject) { 
+    docClient.query(params, function(err, data) {
+        if (err) {
+            console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+            reject(err.message)
+        } else {
+            // console.log("Query succeeded",data);
+            data.Items.sort(function(a, b){
+                var keyA = a.key.toLowerCase(); 
+                var keyB = b.key.toLowerCase();
+                if (keyA < keyB) //sort string ascending
+                    return -1 
+                if (keyA > keyB)
+                    return 1
+                return 0 //default return value (no sorting)                    
+            })
+            result['result'] = {'message': data}
+            resolve(result) 
         }
-        result['result'] = {'message': publish}
-        resolve(result)
-      }
-    ], function (err, data) {
-      reject(data)
-    })
+    })    
   })
 }
 /**

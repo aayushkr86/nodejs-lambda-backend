@@ -14,6 +14,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/code_5/salestool-nodejs-backend#readme",
   "dependencies": {
+    "ajv": "^6.4.0",
     "aws-sdk": "^2.224.1",
     "minio": "^5.0.0",
     "neo4j": "^2.0.0-RC2",

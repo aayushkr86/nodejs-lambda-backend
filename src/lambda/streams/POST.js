@@ -227,7 +227,7 @@ function post_stream (result) {
         reject(err.message)
       } else {
         console.log('Item added:', data)
-        result['result'] = {'message': 'Inserted Successfully'}
+        result['result'] = {'message': 'New Stream Inserted Successfully'}
         resolve(result)
       }
     })
