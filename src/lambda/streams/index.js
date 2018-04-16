@@ -12,8 +12,7 @@ let DELETE = require('./DELETE.js');
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-exports.handler = function  (event, context, callback) { //console.log(event.httpMethod, context)
-	// console.log(event);
+exports.handler = function  (event, context, callback) { 
 	switch(event.httpMethod) {
 		case 'GET': GET.execute(event.queryStringParameters, callback);
 					break;
