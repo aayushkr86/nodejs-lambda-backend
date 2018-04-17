@@ -1,7 +1,7 @@
 /// // ...................................... start default setup ............................................////
 // let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
-const response 		= require('./lib/response.js')
+const response 	= require('./lib/response.js')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -21,10 +21,9 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			= require('uuid')
-const Ajv 			= require('ajv')
+const Ajv 			  = require('ajv')
 const setupAsync 	= require('ajv-async')
-const ajv 			= setupAsync(new Ajv())
+const ajv 		    = setupAsync(new Ajv())
 
 var deleteSchema = {
   $async:true,

@@ -109,8 +109,8 @@ function get_emails (result) {
       ':value': 'active',
     },
     // ScanIndexForward: false, 
-    Limit: 5,
-};
+    // Limit: 5,
+  };
   if (typeof result.LastEvaluatedKey !== undefined) {
     params.ExclusiveStartKey = result.LastEvaluatedKey
   }
