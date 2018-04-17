@@ -154,7 +154,7 @@ function post_stream(result) {  console.log(result.show_at_first_place)
 
 	
 	
-	if(result.show_at_first_place == true) { 
+	if(result.show_at_first_place == true) {
 	// console.log('=====>1')
     async.waterfall([
         function(done) {

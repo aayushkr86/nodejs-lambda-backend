@@ -7,27 +7,57 @@
         }
     },
     "Resources": {
-        "MaleHorse": {
+        "Folders": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
 				"TableName": "FOLDERS",
 				"KeySchema": [
 					{
-						"AttributeName": "id",
+						"AttributeName": "folderId",
 						"KeyType": "HASH"
 					},
 					{
-					"AttributeName": "list_number",
+					"AttributeName": "folderOrder",
 					"KeyType": "RANGE"
 					}
 				],
 				"AttributeDefinitions": [
 					{
-						"AttributeName": "id",
+						"AttributeName": "folderId",
 						"AttributeType": "S"
 					},
 					{
-						"AttributeName": "list_number",
+						"AttributeName": "folderOrder",
+						"AttributeType": "N"
+					}
+				],
+				"ProvisionedThroughput": {
+					"ReadCapacityUnits": 1,
+					"WriteCapacityUnits": 1
+				}
+			}
+        },
+        "Files":{
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+				"TableName": "FILES",
+				"KeySchema": [
+					{
+						"AttributeName": "fileId",
+						"KeyType": "HASH"
+					},
+					{
+					"AttributeName": "fileOrder",
+					"KeyType": "RANGE"
+					}
+				],
+				"AttributeDefinitions": [
+					{
+						"AttributeName": "fileId",
+						"AttributeType": "S"
+					},
+					{
+						"AttributeName": "fileOrder",
 						"AttributeType": "N"
 					}
 				],

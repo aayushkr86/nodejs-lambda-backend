@@ -2,3 +2,4 @@ notes.md
 deploy/src/*
 node_modules/*
 offline/*
+template.yaml

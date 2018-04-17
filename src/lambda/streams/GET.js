@@ -82,7 +82,7 @@ function execute(data, callback){
  * @param  {[type]} data [description]
  * @return {[type]}      [description]
  */
-function validate_all (validate,data) { console.log(data)
+function validate_all (validate,data) {
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
 		    resolve(res);
@@ -93,7 +93,7 @@ function validate_all (validate,data) { console.log(data)
 	})
 }
 
-function get_streams(result) { //console.log("result" , result)
+function get_streams(result) {
 	var date = result.date;
 	var from = date+" 00:00:00"
 	var to = date+" 23:59:59"
@@ -104,7 +104,7 @@ function get_streams(result) { //console.log("result" , result)
 			ExpressionAttributeNames: { 
 					'#dt': 'date'
 			},
-			ExpressionAttributeValues: { 
+			ExpressionAttributeValues: {
 				':value': 'en_1_0',
 				":from": new Date(from).getTime(),
 				":to":   new Date(to).getTime(),
@@ -118,7 +118,7 @@ function get_streams(result) { //console.log("result" , result)
 
 	
 	if(typeof result.LastEvaluatedKey != undefined) {
-    params.ExclusiveStartKey = result.LastEvaluatedKey;
+    	params.ExclusiveStartKey = result.LastEvaluatedKey;
 	}
 	
 	var params1 = {
@@ -133,7 +133,7 @@ function get_streams(result) { //console.log("result" , result)
 				":to":   new Date(to).getTime(),
 			},
 			ScanIndexForward: false, 
-			// Limit: 1,
+			Limit: 5,
 	};
 		
 	return new Promise(function(resolve, reject) { 
@@ -159,7 +159,7 @@ function get_streams(result) { //console.log("result" , result)
 						})
 				},
 				function(publish, show_first) { 
-						show_first.Items.forEach(function(elem){ 
+						show_first.Items.forEach(function(elem){
 								publish.Items.unshift(elem)
 						})
 						console.log(publish.Items.length)
@@ -168,10 +168,9 @@ function get_streams(result) { //console.log("result" , result)
 								publish.LastEvaluatedKey.date = publish.Items[4].date
 								publish.LastEvaluatedKey.id   = publish.Items[4].id
 						}
-				resolve(publish)
-				}
-				],function(err,data) { 
-				reject(data)
+					resolve(publish)
+				}],function(err,data) { 
+					reject(data)
 				})
 	});
 }
