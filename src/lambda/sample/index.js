@@ -23,7 +23,7 @@ var uuid = require('uuid');
 //call another lambda
 var execute_lambda = require('./lib/lambda')('sample2');
 
-exports.handler = function  (event, context, callback) {    console.log(event, context, callback)
+exports.handler = function  (event, context, callback) {   
 	//promise function calls that will be passed as list of function 
 	/**
 	 * execute another lambda function
