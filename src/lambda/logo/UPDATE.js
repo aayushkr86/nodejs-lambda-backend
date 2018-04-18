@@ -1,5 +1,5 @@
 /// // ...................................... start default setup ............................................////
-// let mode,sns,dynamodb,docClient,S3;
+let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
 
@@ -123,14 +123,15 @@ function update_logo (result) {
                     params.Item[obj] = result[obj] ? result[obj] : create.Attributes[obj]
                 }
                 params.Item.updatedAt = new Date().getTime();
-                // console.log(params)
+                console.log(params)
                 docClient.put(params, function(err, data) {
                     if (err) {
                         console.error("Error:", JSON.stringify(err, null, 2));
                         done(true, err.message)
                     } else {
                         console.log("Successfully updated:", data);
-                        resolve({"Successfully updated" : data})
+                        result['result'] = {'message': 'Inserted Successfully'}
+                        resolve(result)
                     }
                 }) 
             }

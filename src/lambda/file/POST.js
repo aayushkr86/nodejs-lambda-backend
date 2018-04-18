@@ -43,7 +43,7 @@ const postSchema = {
 };
 
 /*
-	maual entry of 
+	manual entry of 
 	"fileS3Bucket":{"type":"string"},
 	"fileS3Key":{"type":"string"},
 	"createAt":{"type":"string"},
