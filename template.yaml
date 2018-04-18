@@ -86,11 +86,26 @@ Resources:
   #         Properties:
   #           Path: /emails
   #           Method: any
-  lambda_streams:
+  # lambda_streams:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/logo/index.handler
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /file
+  #           Method: any
+  lambda_file:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: nodejs6.10
-      Handler: src/lambda/logo/index.handler
+      Handler: src/lambda/file/index.handler
       timeout: 10
       Environment:
         Variables:
@@ -101,3 +116,4 @@ Resources:
           Properties:
             Path: /file
             Method: any
+

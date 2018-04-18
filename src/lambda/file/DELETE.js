@@ -30,10 +30,10 @@ const deleteSchema = {
   "$async":true,
   "type":"object",
   "additionalProperties": false,
-  "required": [ "folderId","folderOrder" ],
+  "required": [ "fileId","fileOrder" ],
   "properties":{
-    "folderId":{"type":"string"},
-    "folderOrder":{"type":"number"}
+    "fileId":{"type":"string"},
+    "fileOrder":{"type":"number"}
   }
 };
 
@@ -51,7 +51,7 @@ function execute(data,callback){
 	}
 	validate_all(validate,data)
 		.then(function(result){
-			return delete_categories(result);
+			return delete_file(result);
 		})
 		.then(function(result){
 			console.log("result");
@@ -79,12 +79,12 @@ function validate_all (validate,data) {
 	})
 }
 
-function delete_categories(result){
+function delete_file(result){
 	var params = {
-	     TableName: 'FOLDERS',
+	     TableName: 'FIlE',
 	    Key: {
-	    	"folderId":result.folderId,
-	    	"folderOrder":result.folderOrder
+	    	"fileId":result.fileId,
+	    	"fileOrder":result.fileOrder
 	    }
 	};
 	console.log(params);

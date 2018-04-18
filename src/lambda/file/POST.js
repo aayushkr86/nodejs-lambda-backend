@@ -1,103 +1,78 @@
 ///// ...................................... start default setup ............................................////
 let mode,sns,dynamodb,docClient,S3;
+const AWS 		= require('aws-sdk');
+const response 	= require('./lib/response.js');
 
-const AWS = require('aws-sdk');
-const response = require('./lib/response.js');
-
-if(process.env.AWS_REGION == "local") {
+if(process.env.AWS_REGION == "local"){
 	mode 		= "offline";
-	//sns 		= require('../../../offline/sns');
+	sns 		= require('../../../offline/sns');
 	docClient 	= require('../../../offline/dynamodb').docClient;
 	S3 			= require('../../../offline/S3');
 	// dynamodb = require('../../../offline/dynamodb').dynamodb;
-}else {
+}else{
 	mode 		= "online";
-	//sns 		= new AWS.SNS();
+	sns 		= new AWS.SNS();
 	docClient 	= new AWS.DynamoDB.DocumentClient({});
-	S3 			= new AWS.S3({region: 'eu-central-1'});
-	AWS.config.region = 'eu-central-1';
-	dynamodb    = new AWS.DynamoDB();
+	S3 			= new AWS.S3();
+	// dynamodb = new AWS.DynamoDB();
 }
 ///// ...................................... end default setup ............................................////
 
-//modules defined here
-const uuid 			= require('uuid');
+//call another lambda
+// const execute_lambda = require('./lib/lambda')('sample2');
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
 
 const postSchema = {
-	"$async":true,
-	"additionalProperties": false,
-	"required": [ "fileId","fileOrder","fileName","fileType"],
-	"type":"object",
-	"properties":{
-	    "fileId":{"type":"string"},
-	    "fileOrder":{"type":"number"},
-	    "fileName":{"type":"string"},
-	    "fileDescription":{"type":"string"},
-	    "fileThumbnailId":{"type":"string"},
-	    "fileSize":{"type":"number"},
-	    "fileType":{"type":"string"},
-	 }
+  "$async":true,
+  "type":"object",
+  "required":["fileId"],
+  "additionalProperties": false,
+  "properties":{
+    "fileId":{"type":"string"},
+    "LastEvaluatedKey":{
+      "type":"object",
+      "additionalProperties": false,
+      "properties":{
+        "fileId":{"type":"string"},
+        "fileOrder":{"type":"number"}
+      }
+    }
+  }
 };
 
-/*
-	maual entry of 
-	"fileS3Bucket":{"type":"string"},
-	"fileS3Key":{"type":"string"},
-	"createAt":{"type":"string"},
-	"createBy":{"type":"string"},
-	"updateAt":{type:"string"},
-	"updatedBy":{type:"string"}
- */
-
-//call another lambda
-// var execute_lambda = require('./lib/lambda')('sample2');
 const validate = ajv.compile(postSchema);
 
 /**
- * add the file to the system
- * @param  {[type]}   data     [content]
- * @param  {Function} callback [description]
+ * fetch and show the file
+ * @param  {[type]}   data     [content to manipulate the data]
+ * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
 function execute(data,callback){
 	if(typeof data == "string"){
-		data = JSON.parse(data);
+		try{
+			data = JSON.parse(data);
+		}catch(excep){
+			delete data;
+		}
 	}
+	if(data != undefined && data.LastEvaluatedKey != undefined){
+		try{
+			data.LastEvaluatedKey = JSON.parse(data.LastEvaluatedKey);
+		}catch(e){
+			console.log("cannot be able to process the LastEvaluatedKey");
+			delete data.LastEvaluatedKey;
+		}
+	}
+	
 	validate_all(validate,data)
 		.then(function(result){
-			result['fileS3Bucket']="salestool-container";
-			result['fileS3Key']=uuid.v4();
-			result['createAt']=Date.now()+"";
-			result['createBy']="anonymus";
-
-			return post_file(result);
+			return get_files(result);
 		})
 		.then(function(result){
-			console.log(result);
-			return find_count_increase_folder(result);
-		})
-		.then(function(result){
-			console.log(arguments);
-			if(result.increseCount== undefined){
-				return result;
-			}else{
-				return increase_folder_count(result);
-			}
-		})
-		.then(function(result){
-			return new Promise((resolve,reject)=>{
-				signed_url(result,function(response){
-					console.log(response);
-					result.result['data'] = response;
-					resolve(result);
-				})
-			});
-		})
-		.then(function(result){
-			console.log(result);
+			console.log("result");
 			response({code:200,body:result.result},callback);
 		})
 		.catch(function(err){
@@ -123,112 +98,36 @@ function validate_all (validate,data) {
 	})
 }
 
-/**
- * give access of S3 to upload data on the 
- * @param  {[type]} key      [description]
- * @param  {[type]} response [description]
- * @return {[type]}          [description]
- */
-function signed_url(data,response){
-	var params = {
-		Bucket:data.fileS3Bucket,
-		Key:data.fileS3Key+"."+data.fileType,
-		Expires: 360
-	};
-	if( mode == "offline"){
-		/** convert to the params in minio format */
-		var newparams =[];
-		for(key in params){
-			newparams.push(params[key]);
-		}
-		params = newparams;
-		S3.presignedPutObject.apply(S3,params,function(err,url){
-			if(err){
-				console.log(err);
-				response({err:{"err":"Some Thing went wrong"}});
-			}else{
-				response({url});
-			}
-		});
-	}else{
-		S3.getSignedUrl('putObject',params,function(err,url){
-			if(err){
-				console.log(err);
-				response({err:{"err":"Some Thing went wrong"}});
-			}else{
-				response({url});
-			}
-		});
-
-	}
-}
-
-function post_file(result){
-	console.log(result);
+function get_files(result){
 	var params = {
 	    TableName: 'FILES',
-	    Item: result
+	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
+	    ExpressionAttributeNames: {
+	        '#HASH': 'fileId',
+	        "#RANGE": 'fileOrder'
+	    },
+	    ExpressionAttributeValues: {
+	      ':HASH_VALUE': result.fileId,
+	      ':RANGE_VALUE': 0
+	    },
+	    ExclusiveStartKey:result.LastEvaluatedKey,
+	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
+	    Limit: 5, // optional (limit the number of items to evaluate)
+	    ConsistentRead: false
 	};
 	
 	return new Promise((resolve,reject)=>{
-		docClient.put(params,function(err,categories){
+		docClient.query(params,function(err,folder){
 			if(err){
-				console.log(err);
-				reject(err.message);
+				reject(err);
 			}
-			result['result']={"message":"Inserted Successfully"};
+			
+			result['result']={};
+			result.result['items']=folder.Items;
+
 			resolve(result);
 		})
 	});
-}
-
-function find_count_increase_folder(result){
-	//find the folderid in folderSub 
-	var params = {
-		TableName: 'FOLDERS',
-	    IndexName: 'folderSub-index',
-	    KeyConditionExpression: 'folderSub = :value', 
-	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
-	      ':value': result.fileId
-	    },
-	    Limit: 1, // optional (limit the number of items to evaluate)
-	};
-	return new Promise((resolve,reject)=>{
-		docClient.query(params,function(err,folder){
-			if(err){
-				reject(err.message);
-			}
-			console.log(folder);
-			if(folder.Items[0] != undefined){
-				let content = folder.Items[0];
-				result['increseCount']=content;
-			}
-			resolve(result);
-		})
-	})
-}
-
-function increase_folder_count(result){
-	let increseCount = result.increseCount;
-	var params = {
-	    TableName: 'FOLDERS',
-	    Key: {
-	        folderId: increseCount.folderId,
-	        folderOrder: increseCount.folderOrder  
-	    },
-	    UpdateExpression: 'ADD folderSubCount :value', 
-	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
-	        ':value': 1
-	    }
-	};
-	return new Promise((resolve,reject)=>{
-		docClient.update(params, function(err, folder) {
-		   	if(err){
-				reject(err.message);
-			}
-				resolve(result);
-		});
-	})
 }
 
 module.exports={execute};

@@ -131,7 +131,7 @@ function get_emails (result) {
                 return 0 //default return value (no sorting)                    
             })
             result['result'] = {'message': data}
-            resolve(result) 
+            resolve(result)
         }
     })    
   })
