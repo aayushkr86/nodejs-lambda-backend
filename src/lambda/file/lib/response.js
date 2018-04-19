@@ -21,6 +21,5 @@ module.exports = function (execution,callback) {
 		    body: JSON.stringify(execution.body) || {}
 		};
 	}
-	console.log(response);
 	callback(null,response);
 }
