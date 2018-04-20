@@ -100,7 +100,7 @@ function validate_all (validate,data) {
  */
 function get_files(result){
 	var params={
-	    TableName: 'FILES',
+	    TableName: database.Table[0].TableName,
 	    Key: {
 	        'fileId': result.fileId,
 	        'fileOrder': result.fileOrder

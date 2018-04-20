@@ -81,7 +81,7 @@ function validate_all (validate,data) {
 
 function delete_categories(result){
 	var params = {
-	     TableName: 'FOLDERS',
+	    TableName: database.Table[0].TableName,
 	    Key: {
 	    	"folderId":result.folderId,
 	    	"folderOrder":result.folderOrder

@@ -1,7 +1,8 @@
 ///// ...................................... start default setup ............................................////
-// let mode,sns,dynamodb,docClient,S3;
+let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
+const database 		= require('./lib/database.js');
 
 if(process.env.AWS_REGION == "local"){
 	mode 			= "offline";
@@ -93,7 +94,7 @@ function validate_all (validate,data) {
 
 function get_categories(result){
 	var params = {
-	    TableName: 'FOLDERS',
+	    TableName: database.Table[0].TableName,
 	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
 	    ExpressionAttributeNames: {
 	        '#HASH': 'folderId',

@@ -100,7 +100,7 @@ function validate_all (validate,data) {
 
 function get_files(result){
 	var params = {
-	    TableName: 'FILES',
+	    TableName: database.Table[0].TableName,
 	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
 	    ExpressionAttributeNames: {
 	        '#HASH': 'fileId',

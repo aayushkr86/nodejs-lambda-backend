@@ -93,7 +93,7 @@ function delete_email (result) { // console.log(result)
             reject(err.message)
         }else if(Object.keys(data).length == 0) {
             reject("no item found")
-        } 
+        }
         else {
           result['result'] = {'message': 'deleted succeeded', data}
           resolve(result)  

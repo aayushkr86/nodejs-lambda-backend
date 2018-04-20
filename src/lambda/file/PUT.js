@@ -162,7 +162,7 @@ function signed_url(data,response){
 function post_file(result){
 	console.log(result);
 	var params = {
-	    TableName: 'FILES',
+	    TableName: database.Table[0].TableName,
 	    Item: result
 	};
 	
@@ -181,7 +181,7 @@ function post_file(result){
 function find_count_increase_folder(result){
 	//find the folderid in folderSub 
 	var params = {
-		TableName: 'FOLDERS',
+		TableName: database.Table[1].TableName,
 	    IndexName: 'folderSub-index',
 	    KeyConditionExpression: 'folderSub = :value', 
 	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
@@ -207,7 +207,7 @@ function find_count_increase_folder(result){
 function increase_folder_count(result){
 	let increseCount = result.increseCount;
 	var params = {
-	    TableName: 'FOLDERS',
+	    TableName: database.Table[1].TableName,
 	    Key: {
 	        folderId: increseCount.folderId,
 	        folderOrder: increseCount.folderOrder  

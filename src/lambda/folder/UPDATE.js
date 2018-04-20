@@ -1,5 +1,5 @@
 ///// ...................................... start default setup ............................................////
-// let mode,sns,dynamodb,docClient,S3;
+let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
 
@@ -115,7 +115,7 @@ function JSON_to_querystring(result){
 function update_categories(result){
 	// change the attribute_name accordingly
 	    var params = {
-		    TableName: 'FOLDERS',
+		    TableName: database.Table[0].TableName,
 		    Key: {
 		    	folderId: result.folderId,
 		    	folderOrder: result.folderOrder      
