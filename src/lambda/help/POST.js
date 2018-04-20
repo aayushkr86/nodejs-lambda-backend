@@ -23,6 +23,7 @@ if (process.env.AWS_REGION == 'local') {
  */
 const uuid 			  = require('uuid')
 const async       = require('async')
+const nodemailer  = require('nodemailer')
 const Ajv 			  = require('ajv')
 const setupAsync 	= require('ajv-async')
 const ajv 			  = setupAsync(new Ajv())
@@ -55,14 +56,20 @@ var validate = ajv.compile(postSchema)
  */
 function execute (data, callback) { 
   validate_all(validate, data)
-    .then(function (result) {
+    .then(function (result) { 
       return post_help(result)
     })
-    .then(function (result) {
+    .then(function (result){ 
+      return admin_email_notifications(result)
+    })
+    .then(function (result){ 
+      return user_email_notifications(result)
+    })
+    .then(function (result){ 
       // console.log("result",result);
       response({code: 200, body: result.result}, callback)
     })
-    .catch(function (err) {
+    .catch(function (err){
       // console.log(err);
       response({code: 400, err: {err}}, callback)
     })
@@ -96,8 +103,7 @@ function post_help (result) {
         "updatedAt"   : new Date().getTime()
     },
     ReturnValues: 'ALL_OLD',
-}
-
+  }
   return new Promise(function(resolve, reject) {
     docClient.put(params, function(err, data) { 
     if (err) {
@@ -105,11 +111,151 @@ function post_help (result) {
         reject(err.message)
     } else {
         console.log("Item added:", data);
-        result['result'] = {'message': 'Inserted Successfully'}
+        result['result'] = {'message': 'Tickets raised Successfully'}
         resolve(result)
     }
     })  
   });
+}
+
+function send_email(email_array, str) { 
+  nodemailer.createTestAccount((err, account) => {
+    let transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        // host: 'smtp.gmail.com',
+        // port: 587,
+        // secure: false, // true for 465, false for other ports
+        auth: {
+            user: 'aayushkr90@gmail.com', 
+            pass: 'Qwerty12345#' 
+            },
+        tls: {
+                rejectUnauthorized : false
+            }
+    });
+    let mailOptions = {
+        from    : 'aayushkr90@gmail.com', 
+        to      : email_array, // list of receivers
+        subject : 'Ticket created', 
+        text    : str
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        }else{
+            console.log("info",info)
+        }
+    });
+  });
+}
+
+function user_email_notifications(result) { 
+  var params = {
+      TableName: "emails",
+      IndexName: 'keyIndex',
+      KeyConditionExpression: '#HASH = :value',  
+      ExpressionAttributeNames : {
+          '#HASH'  : 'key',
+      },
+      ExpressionAttributeValues: { 
+        ':value': 'Help Desk User',
+      },
+      ScanIndexForward: false, 
+      Limit: 1,
+  };
+  return new Promise(function(resolve, reject) {
+    async.waterfall([
+        function(done){
+            docClient.query(params, function(err, data) {
+                if (err) {
+                    console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                    done(true, err.message)
+                } else {
+                    // console.log("Email Query succeeded",data);
+                    done(null, data)
+                }
+            })
+        },function(data, done){
+            var str = data.Items[0].body
+            var email_array = ['aayushkr10@gmail.com'];
+
+            //query from user table to get user email id and user data to be added.
+
+            // console.log(str)
+            var mapObj = {
+                '{{firstname}}':"anand",
+                '{{lastname}}':"kumar rai",
+            };
+            str = str.replace(/{{firstname}}|{{lastname}}/gi, function(matched){ 
+            return mapObj[matched];
+            });
+            // console.log(str)
+            done(null, email_array, str)
+        },
+        function(email_array, str){
+            send_email(email_array, str)
+            resolve(result)
+        }
+    ],function(err, data){
+        console.log(err, data)
+        reject(data)
+    })
+  })
+}
+
+function admin_email_notifications(result) { 
+  var params = {
+      TableName: "emails",
+      IndexName: 'keyIndex',
+      KeyConditionExpression: '#HASH = :value',  
+      ExpressionAttributeNames : {
+          '#HASH'  : 'key',
+      },
+      ExpressionAttributeValues: { 
+        ':value': 'Help Desk Admin',
+      },
+      ScanIndexForward: false, 
+      Limit: 1,
+  };
+  return new Promise(function(resolve, reject) {
+    async.waterfall([
+        function(done){
+            docClient.query(params, function(err, data) {
+                if (err) {
+                    console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                    done(true, err.message)
+                } else {
+                    // console.log("Email Query succeeded",data);
+                    done(null, data)
+                }
+            })
+        },function(data, done){
+            var str = data.Items[0].body
+            var email_array = ['aayushkr10@gmail.com'];
+
+            //query from admin table to get all admins emails ids to be added.
+
+            // console.log(str)
+            var mapObj = {
+                '{{username}}'    : "anand kumar rai",
+                '{{clientmail}}'  : "aayushkr10@gmail.com",
+                '{{description}}' :  result.description
+            };
+            str = str.replace(/{{username}}|{{clientmail}}|{{description}}/gi, function(matched){ 
+            return mapObj[matched];
+            });
+            // console.log(str)
+            done(null, email_array, str)
+        },
+        function(email_array, str){
+            send_email(email_array, str)
+            resolve(result)
+        }
+    ],function(err, data){
+        console.log(err, data)
+        reject(data)
+    })
+  })
 }
 /**
  * last line of code

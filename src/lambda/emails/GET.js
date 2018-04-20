@@ -111,8 +111,9 @@ function get_emails (result) {
     // ScanIndexForward: false, 
     // Limit: 5,
   };
-  if (typeof result.LastEvaluatedKey !== undefined) {
-    params.ExclusiveStartKey = result.LastEvaluatedKey
+  if (result.LastEvaluatedKey != undefined) {
+    params.ExclusiveStartKey = result.LastEvaluatedKey;
+    params.Limit = 5;
   }
   return new Promise(function(resolve, reject) { 
     docClient.query(params, function(err, data) {
@@ -121,15 +122,15 @@ function get_emails (result) {
             reject(err.message)
         } else {
             // console.log("Query succeeded",data);
-            data.Items.sort(function(a, b){
-                var keyA = a.key.toLowerCase(); 
-                var keyB = b.key.toLowerCase();
-                if (keyA < keyB) //sort string ascending
-                    return -1 
-                if (keyA > keyB)
-                    return 1
-                return 0 //default return value (no sorting)                    
-            })
+            // data.Items.sort(function(a, b){
+            //     var keyA = a.key.toLowerCase(); 
+            //     var keyB = b.key.toLowerCase();
+            //     if (keyA < keyB) //sort string ascending
+            //         return -1 
+            //     if (keyA > keyB)
+            //         return 1
+            //     return 0 //default return value (no sorting)                    
+            // })
             result['result'] = {'message': data}
             resolve(result)
         }

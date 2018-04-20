@@ -29,11 +29,11 @@ var deleteSchema = {
   $async:true,
   type: "object",
   properties: {
-      updatedAt : {
-        type: "number",
+      key : {
+        type: "string",
       }
   },
-  required : ["updatedAt"]
+  required : ["key"]
 }
 
 const validate = ajv.compile(deleteSchema)
@@ -82,7 +82,7 @@ function delete_email (result) { // console.log(result)
     TableName: "emails",
     Key: {
         "status": "active",
-        "updatedAt": result.updatedAt,
+        "key": result.key,
     },
     ReturnValues: 'ALL_OLD', // optional (NONE | ALL_OLD)
   }
