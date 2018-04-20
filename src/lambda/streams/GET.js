@@ -107,11 +107,11 @@ function get_streams (result) {
       ':value': 'en_1_0'
     },
     ScanIndexForward: false,
-    // Limit: 5
+    Limit: 5
   }
   if (result.LastEvaluatedKey != undefined) {
     params.ExclusiveStartKey = result.LastEvaluatedKey;
-    params.Limit = 5;
+    // params.Limit = 5;
   }
   var params1 = {
     TableName: 'streams',

@@ -109,11 +109,11 @@ function get_emails (result) {
       ':value': 'active',
     },
     // ScanIndexForward: false, 
-    // Limit: 5,
+    Limit: 5,
   };
   if (result.LastEvaluatedKey != undefined) {
     params.ExclusiveStartKey = result.LastEvaluatedKey;
-    params.Limit = 5;
+    // params.Limit = 5;
   }
   return new Promise(function(resolve, reject) { 
     docClient.query(params, function(err, data) {
