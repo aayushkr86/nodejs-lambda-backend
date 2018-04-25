@@ -16,9 +16,19 @@
   "dependencies": {
     "ajv": "^6.4.0",
     "aws-sdk": "^2.224.1",
+    "buffer": "^5.1.0",
+    "file-type": "^7.6.0",
+    "form-data": "^2.3.2",
+    "formidable": "^1.2.1",
+    "fs": "0.0.1-security",
+    "image-type": "^3.0.0",
     "minio": "^5.0.0",
     "neo4j": "^2.0.0-RC2",
     "neo4j-driver": "^1.5.0",
+    "parse-multipart": "^1.0.4",
+    "path": "^0.12.7",
+    "randomstring": "^1.1.5",
+    "read-chunk": "^2.1.0",
     "uuid": "^3.2.1"
   }
 }

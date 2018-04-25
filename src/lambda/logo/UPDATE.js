@@ -7,7 +7,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
@@ -26,6 +26,7 @@ const async         = require('async')
 const Ajv 			= require('ajv')
 const setupAsync 	= require('ajv-async')
 const ajv 			= setupAsync(new Ajv())
+const fileType      = require('file-type')
 
 var updateSchema = {
     $async:true,
@@ -62,6 +63,13 @@ var validate = ajv.compile(updateSchema)
 function execute (data, callback) {
   validate_all(validate, data)
     .then(function (result) {
+        if(result.logo) {
+            return upload_logo(result)
+        }else{
+            return result;
+        }
+    })
+    .then(function (result) {
       return update_logo(result)
     })
     .then(function (result) {
@@ -89,7 +97,34 @@ function validate_all (validate, data) { // console.log(data)
   })
 }
 
-function update_logo (result) {
+function upload_logo(result) { 
+    return new Promise((resolve, reject) => {
+      var buffer = Buffer.from(result.logo.replace(/^data:image\/\w+;base64,/, ""),"base64");
+      var fileMine = fileType(buffer)
+      console.log(fileMine)
+      if(fileMine === null) {
+       return reject('not a image file')
+      }
+      var params = {
+            bucketname : 'logo',
+            filename   : Date.now()+'.'+fileMine.ext,
+            file       : buffer
+      }
+    S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+      if (err) {
+           console.log(err)  
+           reject(err)
+        }
+      else {
+        console.log('File uploaded successfully.Tag:',etag) 
+        result['logo'] = params.bucketname+'/'+params.filename;
+        resolve(result)  
+      } 
+      });
+    })
+  }
+
+function update_logo (result) { 
     var params = {
         TableName: "logo",
         Key: {
@@ -130,7 +165,7 @@ function update_logo (result) {
                         done(true, err.message)
                     } else {
                         console.log("Successfully updated:", data);
-                        result['result'] = {'message': 'Inserted Successfully'}
+                        result['result'] = {'message': 'Successfully updated'}
                         resolve(result)
                     }
                 }) 

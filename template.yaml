@@ -56,22 +56,22 @@ Resources:
   #         Properties:
   #           Path: /folder
   #           Method: any
-  # lambda_streams:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Runtime: nodejs6.10
-  #     Handler: src/lambda/streams/index.handler
-  #     timeout: 10
-  #     Environment:
-  #       Variables:
-  #         AWS_REGION: local
-  #     Events:
-  #       AllProduct:
-  #         Type: Api
-  #         Properties:
-  #           Path: /streams
-  #           Method: any
-  # lambda_streams:
+  lambda_streams:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/streams/index.handler
+      timeout: 10
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /streams
+            Method: any
+  # lambda_emails:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     Runtime: nodejs6.10
@@ -86,22 +86,22 @@ Resources:
   #         Properties:
   #           Path: /emails
   #           Method: any
-  lambda_streams:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs6.10
-      Handler: src/lambda/logo/index.handler
-      timeout: 10
-      Environment:
-        Variables:
-          AWS_REGION: local
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /logo
-            Method: any
-  # lambda_streams:
+  # lambda_logo:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/logo/index.handler
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /logo
+  #           Method: any
+  # lambda_help:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     Runtime: nodejs6.10

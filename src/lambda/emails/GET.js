@@ -121,16 +121,6 @@ function get_emails (result) {
             console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             reject(err.message)
         } else {
-            // console.log("Query succeeded",data);
-            // data.Items.sort(function(a, b){
-            //     var keyA = a.key.toLowerCase(); 
-            //     var keyB = b.key.toLowerCase();
-            //     if (keyA < keyB) //sort string ascending
-            //         return -1 
-            //     if (keyA > keyB)
-            //         return 1
-            //     return 0 //default return value (no sorting)                    
-            // })
             result['result'] = {'message': data}
             resolve(result)
         }
