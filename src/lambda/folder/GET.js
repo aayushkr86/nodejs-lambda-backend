@@ -33,7 +33,7 @@ const getSchema = {
   "required":["folderId"],
   "properties":{
     "folderId":{"type":"string"},
-    "LastEvaluatedKey":{
+    "lastEvaluatedKey":{
       "type":"object",
       "additionalProperties": false,
       "properties":{
@@ -52,12 +52,10 @@ const validate = ajv.compile(getSchema);
  * @return {[type]}            [description]
  */
 function execute(data,callback){
-	if(data.LastEvaluatedKey != undefined){
-		try{
-			data.LastEvaluatedKey = JSON.parse(data.LastEvaluatedKey);
-		}catch(e){
-			console.log("cannot be able to process the LastEvaluatedKey");
-			delete data.LastEvaluatedKey;
+	if(data['lastEvaluatedKey.folderId'] != undefined && data['lastEvaluatedKey.folderOrder'] != undefined){
+		data.lastEvaluatedKey={
+			"folderId": data['lastEvaluatedKey.folderId'],
+			"folderOrder": parseInt(data['lastEvaluatedKey.folderOrder'])
 		}
 	}
 	console.log(data);
@@ -93,6 +91,7 @@ function validate_all (validate,data) {
 }
 
 function get_categories(result){
+	console.log(result);
 	var params = {
 	    TableName: database.Table[0].TableName,
 	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
@@ -104,9 +103,9 @@ function get_categories(result){
 	      ':HASH_VALUE': result.folderId,
 	      ':RANGE_VALUE': 0
 	    },
-	    ExclusiveStartKey:result.LastEvaluatedKey,
+	    ExclusiveStartKey:result.lastEvaluatedKey,
 	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 5, // optional (limit the number of items to evaluate)
+	    Limit: 1, // optional (limit the number of items to evaluate)
 	    ConsistentRead: false
 	};
 	
@@ -118,6 +117,7 @@ function get_categories(result){
 			
 			result['result']={};
 			result.result['items']=folder.Items;
+			result.result['lastEvaluatedKey']=folder.LastEvaluatedKey;
 
 			resolve(result);
 		})

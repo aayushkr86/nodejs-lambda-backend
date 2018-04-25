@@ -1,10 +1,11 @@
+'use strict';
 
 // let GET = require('./GET');
 let POST = require('./POST');
 // let UPDATE = require('./UPDATE');
 // let DELETE = require('./DELETE');
 // let DUMP = require('./DUMP');
-/**
+/*
  * Main field where we will fetch all the content and passer
  * @param  {[type]}   event    [description]
  * @param  {[type]}   context  [description]

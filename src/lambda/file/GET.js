@@ -45,6 +45,7 @@ const validate = ajv.compile(getSchema);
  * @return {[type]}            [description]
  */
 function execute(data,callback){
+	console.log(data);
 	if(data != undefined){
 		if(typeof data.fileOrder == "string"){
 			data.fileOrder = parseInt(data.fileOrder);
@@ -70,6 +71,8 @@ function execute(data,callback){
 				.catch(function(err){
 					response({code:400,err:{err}},callback);
 				})
+		}else{
+			response({code:400,err:{"err":"Please provide fileOrder"}},callback);
 		}
 	}else{
 		response({code:400,err:{"err":"Please provide file to view"}},callback);

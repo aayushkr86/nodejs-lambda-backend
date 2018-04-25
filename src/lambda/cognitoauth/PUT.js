@@ -115,8 +115,8 @@ function signup(data){
 		};
 		if(data.userattributes != undefined){
 			params.UserAttributes=[{
-				Name:data.userattributes[0].emailid,
-				Value: data.userattributes[0].emailvalue
+				Name:data.userattributes[0].attributeName,
+				Value: data.userattributes[0].attributeValue
 			}];
 		}
 		console.log(params);

@@ -21,6 +21,9 @@
     "minio": "^5.0.0",
     "neo4j": "^2.0.0-RC2",
     "neo4j-driver": "^1.5.0",
+    "nodemailer": "^4.6.4",
+    "pdftk": "0.0.0-rc.0",
+    "scissors": "^0.2.3",
     "uuid": "^3.2.1"
   }
 }
