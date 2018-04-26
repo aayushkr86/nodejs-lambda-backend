@@ -1,0 +1,33 @@
+[
+    {
+        "id" : "en_1_0",
+        "uuid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+        "userid" : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
+        "language" : "en",
+        "title" : "asaaad",
+        "date"  : "2018-04-18",
+        "intro_text" : "aaaaa",
+        "news_text"  : "aaaaa",
+        "image"      : "none",
+        "pdf"        : "2018-04-04T07:58:36.145Z-pdf2.pdf",
+        "publish"    : true,
+        "show_at_first_place" : false,
+        "i_shouldnt_be _here" : "dafafqf",
+        "gufuefef" : "uhefuheuhfu"
+    },
+    {
+        "id" : "en_1_0",
+        "uuid" : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
+        "userid" : "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+        "language" : "en",
+        "title" : "1asdecec",
+        "date"  : "2018-04-04",
+        "intro_text" : "aaaaa",
+        "news_text"  : "aaaaa",
+        "image"      : "2018-04-04T07:58:36.145Z-pdf2.pdf",
+        "pdf"        : "none",
+        "publish"    : true,
+        "show_at_first_place" : false,
+        "not you" : "dafafqf"
+    }
+]

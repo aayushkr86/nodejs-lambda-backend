@@ -1,0 +1,71 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters":{
+        "Bucket":{
+          "Type":"String",
+          "Description":"bucket Name"
+        }
+    },
+    "Resources": {
+        "Folders": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+				"TableName": "FOLDERS",
+				"KeySchema": [
+					{
+						"AttributeName": "folderId",
+						"KeyType": "HASH"
+					},
+					{
+					"AttributeName": "folderOrder",
+					"KeyType": "RANGE"
+					}
+				],
+				"AttributeDefinitions": [
+					{
+						"AttributeName": "folderId",
+						"AttributeType": "S"
+					},
+					{
+						"AttributeName": "folderOrder",
+						"AttributeType": "N"
+					}
+				],
+				"ProvisionedThroughput": {
+					"ReadCapacityUnits": 1,
+					"WriteCapacityUnits": 1
+				}
+			}
+        },
+        "Files":{
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+				"TableName": "FILES",
+				"KeySchema": [
+					{
+						"AttributeName": "fileId",
+						"KeyType": "HASH"
+					},
+					{
+					"AttributeName": "fileOrder",
+					"KeyType": "RANGE"
+					}
+				],
+				"AttributeDefinitions": [
+					{
+						"AttributeName": "fileId",
+						"AttributeType": "S"
+					},
+					{
+						"AttributeName": "fileOrder",
+						"AttributeType": "N"
+					}
+				],
+				"ProvisionedThroughput": {
+					"ReadCapacityUnits": 1,
+					"WriteCapacityUnits": 1
+				}
+			}
+        }
+    }
+}
