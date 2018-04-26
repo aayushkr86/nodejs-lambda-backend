@@ -38,19 +38,20 @@ const mailer 		= require('nodemailer');
 const ajv 			= setupAsync(new Ajv);
 
 // configured mail
-let transporter = mailer.createTransport({
-	                service: 'Gmail',
-	                // host: 'smtp.gmail.com',
-	                // port: 587,
-	                // secure: false, // true for 465, false for other ports
-	                auth: {
-	                    user: 'aayushkr90@gmail.com', 
-	                    pass: 'Qwerty12345#' 
-	                },
-	            tls: {
-	                    rejectUnauthorized : false
-	                }
-	            });
+let transporter = 
+	mailer.createTransport({
+            service: 'Gmail',
+            // host: 'smtp.gmail.com',
+            // port: 587,
+            // secure: false, // true for 465, false for other ports
+            auth: {
+                user: 'aayushkr90@gmail.com', 
+                pass: 'Qwerty12345#' 
+            },
+        tls: {
+                rejectUnauthorized : false
+            }
+        });
 
 const postSchema = {
 	"$async":true,
@@ -261,33 +262,88 @@ function get_S3_file(promise_result,file,result){
 	let copy_local=function (bucket,filename,pos,mode,page){
 		console.log(bucket,filename,pos);
 		return new Promise((resolve,reject)=>{
-			tmp[pos] = fs.createWriteStream("/tmp/"+filename);
-			S3.getObject(bucket,filename,function(err,dataStream){
-				if(err){
-					reject(err)
-				}
-				if(dataStream == undefined){
-					reject("File not found");
-				}else{
-					dataStream
-					.on('error',(err)=>{ 
-						/*promise_result[pos]="error";*/
-						reject(err); 
-					})
-					.pipe(tmp[pos])
-					.on('finish',(f)=>{
-						// promise_result[pos]=filename+"copied";
-						tmp[pos].end();
-						let content = {
-							"mode": mode,
-							"url": "/tmp/"+filename,
-							"page": page,
-							"i":pos
-						};
-						resolve(content);
-					});
-				}
-			})
+			
+			// for offline
+			if(mode == "offline"){
+				tmp[pos] = fs.createWriteStream("/tmp/"+filename);
+				S3.getObject(bucket,filename,function(err,dataStream){
+					console.log(err,dataStream);
+					if(err){
+						reject(err)
+					}
+					if(dataStream == undefined){
+						reject("File not found");
+					}else{
+						dataStream
+						.on('error',(err)=>{
+							/*promise_result[pos]="error";*/
+							reject(err); 
+						})
+						.pipe(tmp[pos])
+						.on('finish',(f)=>{
+							// promise_result[pos]=filename+"copied";
+							tmp[pos].end();
+							let content = {
+								"mode": mode,
+								"url": "/tmp/"+filename,
+								"page": page,
+								"i":pos
+							};
+							resolve(content);
+						});
+					}
+				})
+			}else{
+				var params = {
+				  Bucket: bucket, 
+				  Key: filename
+				};
+				S3.getObject(params,(err,data)=>{
+					console.log(err,data);
+					if(err){
+						reject(err);
+					}else{
+						if(typeof data =="string"){
+							data = JSON.parse(data);
+						}
+						if(data.Body != undefined){
+							let Buffer = data.Body;
+							fs.writeFile("/tmp/"+filename,Buffer,(err)=>{
+								if(err){
+									reject(err);
+								}else{
+									let content = {
+										"mode": mode,
+										"url": "/tmp/"+filename,
+										"page": page,
+										"i":pos
+									};
+									resolve(content);
+								}
+							});
+							// let dataStream = fs.createReadStream(Buffer);
+							// dataStream
+							// 	.on('error',(err)=>{
+							// 		/*promise_result[pos]="error";*/
+							// 		reject(err); 
+							// 	})
+							// 	.pipe(tmp[pos])
+							// 	.on('finish',(f)=>{
+							// 		// promise_result[pos]=filename+"copied";
+							// 		tmp[pos].end();
+							// 		let content = {
+							// 			"mode": mode,
+							// 			"url": "/tmp/"+filename,
+							// 			"page": page,
+							// 			"i":pos
+							// 		};
+							// 		resolve(content);
+							// 	});
+						}
+					}
+				});
+			}
+			// for online
 		})
 	}
 	var tmp=[];
@@ -297,7 +353,11 @@ function get_S3_file(promise_result,file,result){
 			promise_result[i] = copy_local(file1.fileS3Bucket,file1.fileS3Key+".pdf",i,file1.mode,file1.page).then(function(data){
 				console.log(data);
 				totalresult[data.i] = data;
-			});
+			}).catch((e)=>{
+				reject(e);
+			})
+
+			
 		})
 	})
 
