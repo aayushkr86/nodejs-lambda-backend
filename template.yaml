@@ -71,49 +71,49 @@ Resources:
           Properties:
             Path: /streams
             Method: any
-  # lambda_emails:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Runtime: nodejs6.10
-  #     Handler: src/lambda/emails/index.handler
-  #     timeout: 10
-  #     Environment:
-  #       Variables:
-  #         AWS_REGION: local
-  #     Events:
-  #       AllProduct:
-  #         Type: Api
-  #         Properties:
-  #           Path: /emails
-  #           Method: any
-  # lambda_logo:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Runtime: nodejs6.10
-  #     Handler: src/lambda/logo/index.handler
-  #     timeout: 10
-  #     Environment:
-  #       Variables:
-  #         AWS_REGION: local
-  #     Events:
-  #       AllProduct:
-  #         Type: Api
-  #         Properties:
-  #           Path: /logo
-  #           Method: any
-  # lambda_help:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Runtime: nodejs6.10
-  #     Handler: src/lambda/help/index.handler
-  #     timeout: 10
-  #     Environment:
-  #       Variables:
-  #         AWS_REGION: local
-  #     Events:
-  #       AllProduct:
-  #         Type: Api
-  #         Properties:
-  #           Path: /help
-  #           Method: any
+  lambda_emails:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/emails/index.handler
+      timeout: 10
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /emails
+            Method: any
+  lambda_logo:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/logo/index.handler
+      timeout: 10
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /logo
+            Method: any
+  lambda_help:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/help/index.handler
+      timeout: 10
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /help
+            Method: any
 

@@ -68,13 +68,22 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data.LastEvaluatedKey != undefined) {
-    try{
-      data.LastEvaluatedKey= JSON.parse(data.LastEvaluatedKey);
-    }
-    catch(err){
-    console.log(err)
-    }
+  if(data['LastEvaluatedKey.userid'] && data['LastEvaluatedKey.createdAt'] &&
+     data['LastEvaluatedKey.uuid']   && data['LastEvaluatedKey.status']) {
+    LastEvaluatedKey = {
+      'userid'    : data['LastEvaluatedKey.userid'],
+      'createdAt' : parseInt(data['LastEvaluatedKey.createdAt']),
+      'uuid'      : data['LastEvaluatedKey.uuid'],
+      'status'    : data['LastEvaluatedKey.status']
+    };
+    data.LastEvaluatedKey = LastEvaluatedKey
+  }
+  else if(!data['LastEvaluatedKey.userid'] && !data['LastEvaluatedKey.createdAt'] &&
+          !data['LastEvaluatedKey.uuid']   && !data['LastEvaluatedKey.status']) {
+  }
+  else if(!data['LastEvaluatedKey.userid'] || !data['LastEvaluatedKey.createdAt'] ||
+          !data['LastEvaluatedKey.uuid']   || !data['LastEvaluatedKey.status']) { 
+    return response({code: 400, err: {"error":"both LastEvaluatedKey.userid,LastEvaluatedKey.createdAt,LastEvaluatedKey.uuid,LastEvaluatedKey.status are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {

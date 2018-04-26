@@ -34,21 +34,18 @@ var getSchema = {
           type: "string",
           enum : ['active']
       },
-      updatedAt : {
-        type: "number",
-      },
     LastEvaluatedKey:{
         type:"object",
         properties:{
-          updatedAt : {
-                type: "number",
+          key : {
+                type: "string",
             },
             status : {
                 type: "string",
                 enum : ['active']
             },
         },
-        required : ["updatedAt", "status"]
+        required : ["key", "status"]
     }
   },
 }
@@ -61,13 +58,17 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data.LastEvaluatedKey != undefined) {
-    try{
-      data.LastEvaluatedKey= JSON.parse(data.LastEvaluatedKey);
-    }
-    catch(err){
-    console.log(err)
-    }
+  if(data['LastEvaluatedKey.key'] && data['LastEvaluatedKey.status']) {
+    LastEvaluatedKey = {
+      'key'    : data['LastEvaluatedKey.key'],
+      'status' : data['LastEvaluatedKey.status']
+    };
+    data.LastEvaluatedKey = LastEvaluatedKey
+  }
+  else if(!data['LastEvaluatedKey.key'] && !data['LastEvaluatedKey.status']) {
+  }
+  else if(!data['LastEvaluatedKey.key'] || !data['LastEvaluatedKey.status']) {
+    return response({code: 400, err: {"error":"both LastEvaluatedKey.key and LastEvaluatedKey.status are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {
@@ -113,14 +114,17 @@ function get_emails (result) {
   };
   if (result.LastEvaluatedKey != undefined) {
     params.ExclusiveStartKey = result.LastEvaluatedKey;
-    // params.Limit = 5;
   }
+  // console.log(params)
   return new Promise(function(resolve, reject) { 
-    docClient.query(params, function(err, data) {
+    docClient.query(params, function(err, data) { 
         if (err) {
             console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             reject(err.message)
-        } else {
+        }else if(data.Items.length == 0){
+            reject("no item found")
+        } 
+        else {
             result['result'] = {'message': data}
             resolve(result)
         }
