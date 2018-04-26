@@ -128,7 +128,7 @@ function get_logos (result) {
         } 
         else {
             // console.log("Query succeeded",data);
-            result['result'] = {'message': data}
+            result['result'] = {'items': data.Items}
             resolve(result) 
         }
     })    

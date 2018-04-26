@@ -161,7 +161,7 @@ function get_streams (result) {
             publish.LastEvaluatedKey.id = publish.Items[4].id
           }
         }
-        result['result'] = {'message': publish}
+        result['result'] = {'items': publish.Items}
         resolve(result)
       }
     ], function (err, data) {

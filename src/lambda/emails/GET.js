@@ -125,7 +125,7 @@ function get_emails (result) {
             reject("no item found")
         } 
         else {
-            result['result'] = {'message': data}
+            result['result'] = {'items': data.Items}
             resolve(result)
         }
     })    

@@ -21,11 +21,11 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			= require('uuid')
-const async = require('async')
-const Ajv 			= require('ajv')
-const setupAsync 	= require('ajv-async')
-const ajv 			= setupAsync(new Ajv())
+const uuid 			 = require('uuid')
+const async      = require('async')
+const Ajv 			 = require('ajv')
+const setupAsync = require('ajv-async')
+const ajv 			 = setupAsync(new Ajv())
 
 var getSchema = {
   $async:true,
@@ -130,7 +130,6 @@ function get_helps (result) {
   };
   if (result.LastEvaluatedKey != undefined) { 
     params.ExclusiveStartKey = result.LastEvaluatedKey;
-    // params.Limit = 5;
   }
   return new Promise(function(resolve, reject) { 
     docClient.query(params, function(err, data) {
@@ -143,7 +142,7 @@ function get_helps (result) {
         } 
         else {
             // console.log("Query succeeded",data);
-            result['result'] = {'message': data}
+            result['result'] = {'items': data.Items}
             resolve(result) 
         }
     })    
