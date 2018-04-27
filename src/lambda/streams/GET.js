@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -106,7 +107,7 @@ function validate_all (validate, data) {
 
 function get_streams (result) { 
   var params = {
-    TableName: 'streams',
+    TableName: database.Table[0].TableName,
     KeyConditionExpression: 'id = :value',
     ExpressionAttributeValues: {
       ':value': 'en_1_0'
@@ -118,7 +119,7 @@ function get_streams (result) {
     params.ExclusiveStartKey = result.LastEvaluatedKey
   }
   var params1 = {
-    TableName: 'streams',
+    TableName: database.Table[0].TableName,
     KeyConditionExpression: 'id = :value',
     ExpressionAttributeValues: {
       ':value': 'en_1_1'

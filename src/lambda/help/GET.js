@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -116,7 +117,7 @@ function validate_all (validate, data) {
 
 function get_helps (result) { 
   var params = {
-    TableName: "help",
+    TableName: database.Table[0].TableName,
     IndexName: 'statusIndex',
     KeyConditionExpression: '#HASH = :value',  
     ExpressionAttributeNames : {

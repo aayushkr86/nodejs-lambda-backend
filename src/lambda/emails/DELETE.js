@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 	= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -79,7 +80,7 @@ function validate_all (validate, data) { // console.log(data)
 
 function delete_email (result) { // console.log(result)
   var params = {
-    TableName: "emails",
+    TableName: database.Table[0].TableName,
     Key: {
         "status": "active",
         "key": result.key,
