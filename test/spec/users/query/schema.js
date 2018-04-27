@@ -6,11 +6,10 @@ var params = {
     TableName : "users",
     KeySchema: [       
         { AttributeName: "username", KeyType: "HASH" },
-        { AttributeName: "createdAt", KeyType: "RANGE" }
     ],
     AttributeDefinitions: [       
         { AttributeName: "username", AttributeType: "S" },
-        { AttributeName: "createdAt", AttributeType: "N" },
+        { AttributeName: "updatedAt", AttributeType: "N" },
         { AttributeName: "uuid", AttributeType: "S" },
     ],
     ProvisionedThroughput: {       
@@ -22,7 +21,7 @@ var params = {
             IndexName: 'uuidIndex', 
             KeySchema: [
                 { AttributeName: 'uuid', KeyType: 'HASH', },
-                { AttributeName: 'createdAt', KeyType: 'RANGE', }
+                { AttributeName: 'updatedAt', KeyType: 'RANGE', }
             ],
             Projection: { 
                 ProjectionType: 'ALL',

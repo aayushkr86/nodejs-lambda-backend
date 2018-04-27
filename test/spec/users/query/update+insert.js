@@ -1,6 +1,9 @@
 var AWS = require('aws-sdk')
 var config = require('./config')
 var docClient = new AWS.DynamoDB.DocumentClient(config)
+request = {
+    "username" : "aayush"
+};
 var toUpdatedata = require('../../../log/user_validations.json').post[0]
 // console.log(toUpdatedata)
 
@@ -10,7 +13,7 @@ var update_values_object = {};
 
 for(var key in toUpdatedata) {
     if(key != 'username' && key != 'createdAt') {
-        var temp = key.substring(0, 2)
+        var temp = key.substring(0, 3)
         update_expression_array.push('#'+temp+'=:'+key+'_val');
         update_names_object['#'+temp] = key
         update_values_object[':'+key+'_val'] = toUpdatedata[key]
@@ -29,8 +32,8 @@ var update_expression_string = update_expression_array.join(', ')
 var params = {
     TableName: "users",
     Key: {
-        "username": toUpdatedata.userid,
-        "createdAt": toUpdatedata.createdAt,
+        "username": request.username,
+        // "createdAt": toUpdatedata.createdAt,
     },
     UpdateExpression: 'SET '+update_expression_string,
     ExpressionAttributeNames : update_names_object,
@@ -38,23 +41,23 @@ var params = {
     // ConditionExpression: 'attribute_exists(userid) AND attribute_exists(createdAt)',
     ReturnValues: 'ALL_NEW', // optional (NONE | ALL_OLD | UPDATED_OLD | ALL_NEW | UPDATED_NEW)
 }
-console.log(params)
+// console.log(params)
 
 function UPDATE() {
     return new Promise(function(resolve, reject) {
-        // docClient.update(params, function(err, data) {
-        //     if (err) {
-        //         console.error("Unable to update. Error:", JSON.stringify(err, null, 2));
-        //         reject(err.message)
-        //     }
-        //     else if(Object.keys(data).length == 0) { 
-        //         reject("no item found")
-        //     }
-        //     else {
-        //         console.log("updation succeeded",data);
-        //         resolve(data)
-        //     }
-        // })
+        docClient.update(params, function(err, data) {
+            if (err) {
+                console.error("Unable to update. Error:", JSON.stringify(err, null, 2));
+                reject(err.message)
+            }
+            else if(Object.keys(data).length == 0) { 
+                reject("no item found")
+            }
+            else {
+                console.log("updation succeeded",data);
+                resolve(data)
+            }
+        })
     });
 }
 
