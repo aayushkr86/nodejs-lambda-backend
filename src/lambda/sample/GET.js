@@ -22,6 +22,28 @@ if(process.env.AWS_REGION == "local"){
 const uuid 		= require('uuid');
 //call another lambda
 // const execute_lambda = require('./lib/lambda')('sample2');
+const Ajv 			= require('ajv');
+const setupAsync 	= require('ajv-async');
+const ajv 			= setupAsync(new Ajv);
+
+const getSchema = {
+  "$async":true,
+  "type":"object",
+  "required":["folderId"],
+  "properties":{
+    "folderId":{"type":"string"},
+    "LastEvaluatedKey":{
+      "type":"object",
+      "additionalProperties": false,
+      "properties":{
+        "folderId":{"type":"string"},
+        "folderOrder":{"type":"number"}
+      }
+    }
+  }
+};
+
+const validate = ajv.compile(getSchema);
 
 module.exports={execute};
 
@@ -32,7 +54,7 @@ module.exports={execute};
  * @return {[type]}            [description]
  */
 function execute(data,callback){
-	validate(data)
+	validate_all(validate,data)
 		.then(function(result){
 			return somerandon(result);
 		})
@@ -41,68 +63,31 @@ function execute(data,callback){
 		})
 		.then(function(series_execution){
 			return new Promise((resolve,reject){
-				reject(:asd)
+				reject()
 			})
 			
 		})
+		.then(function(result){
+				response({code:200,body:result},callback);
+		})
 		.catch(function(err){
-			console.log(err);
+			response({code:400,err:{err}},callback);
 		})
 }
 
-//-----------For reference
-	//promise function calls that will be passed as list of function 
-	/**
-	 * execute nother lambda function
-	 */
-		// execute_lambda.run(event,function(err,data){
-		// 	if(err){
-		// 		console.log(err);
-		// 		response({"err":"someerror occeured"},callback);
-		// 	}
-		// 	response({"body":"asdasdasd"},callback);
-		// })
-	 
-	/**
-	 * sns 
-	 */
-		 // sns.publish({
-		 // 	TopicArn: "arn:aws:sns:us-west-2:123456789012:Email",
-		 // 	Message: "eventText", 
-   //      	Subject: "Test SNS From Lambda",
-		 // },function(err,data){
-		 // 	console.log(err,data);
-		 // });
-	
-	/**
-	 * S3
-	 * Note - before run docker to open minio(development purposes)
-	 */
-		// S3.PutObject("hello world",(err,data)=>{
-		// 
-		// })
-	
-	/**
-	 * dynamodb docClient
-	 * Note - Start dynamodb server
-	 */
-		 // docClient.query({},(err,data)=>{
-		 // 	console.log(err,data);
-		 // })
-	
-	/**
-	 * send response to the server
-	 */
-	 // response({"code":200,"body":"asdlkansdnas","headers":{}},callback)
-	 // a().then(function(data){
-	 // 	console.log(data);
-	 // }).catch(function(err){
-	 // 	console.log(err);
-	 // })
-//}
-// function a(){
-// 	return new Promise((resolve,reject)=>{
-// 		// reject("some error occured")
-// 		resolve("done");
-// 	});
-// }
+/**
+ * validate the data to the categories
+ * @param  {[type]} data [description]
+ * @return {[type]}      [description]
+ */
+function validate_all (validate,data) {
+	return new Promise((resolve,reject)=>{
+		validate(data).then(function (res) {
+			console.log(res);
+		    resolve(res);
+		}).catch(function(err){
+		  console.log(JSON.stringify( err,null,6) );
+		  reject(err.errors[0].dataPath+" "+err.errors[0].message);
+		})
+	})
+}

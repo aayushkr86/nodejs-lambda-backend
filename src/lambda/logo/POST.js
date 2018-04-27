@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -116,7 +117,7 @@ function upload_logo(result) {
 
 function post_logo (result) { 
   var params = {
-    TableName: "logo",
+    TableName: database.Table[0].TableName,
     Item: {
         "status"    : "active",
         "updatedAt" : new Date().getTime(),

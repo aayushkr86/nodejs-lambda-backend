@@ -1,0 +1,56 @@
+{
+    "post" : [
+        {
+            "username" : "aayush",
+            "uuid": "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "createdAt" : 1523368492540,
+            "email" : "aayushkr10@gmail.com",
+            "firstname" : "aayush",
+            "lastname"  : "kumar",
+            "gender" : "male",
+            "profilepic_url" : "http://www.s3.amazon.com/dwedweded/dededed",
+            "companyname" : "synexs",
+            "departmentname" : "accounts",
+            "cognitoAcessToken" : "vervcgeryfgvcuwrcvwryvcwbvcuwrv"
+            
+        },
+        {
+            "username" : "aayush",
+            "uuid": "c7748f58-3bd9-11e8-b467-0ed5f89f718b",
+            "createdAt" : 1523368492540,
+            "email" : "aayushkr10@gmail.com",
+            "firstname" : "aayush",
+            "lastname"  : "kumar",
+            "gender" : "male",
+            "profilepic_url" : "http://www.s3.amazon.com/dwedweded/dededed",
+            "companyname" : "synexs",
+            "departmentname" : "accounts",
+            "cognitoAcessToken" : "vervcgeryfgvcuwrcvwryvcwbvcuwrv"
+           
+        }
+    ],
+    "get" : [
+        {
+           
+        },
+        {
+                    
+        }
+    ],
+    "update" : [
+        {
+            
+        },
+        {
+           
+        }
+    ],
+    "delete" : [
+        {
+          
+        },
+        {
+           
+        }
+    ]
+}

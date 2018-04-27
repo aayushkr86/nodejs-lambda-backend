@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -103,7 +104,7 @@ function validate_all (validate, data) {
 
 function get_logos (result) { 
   var params = {
-    TableName: "logo",
+    TableName: database.Table[0].TableName,
     KeyConditionExpression: '#HASH = :value', 
     ExpressionAttributeNames : {
         '#HASH'  : 'status',
@@ -128,7 +129,7 @@ function get_logos (result) {
         } 
         else {
             // console.log("Query succeeded",data);
-            result['result'] = {'message': data}
+            result['result'] = {'items': data.Items}
             resolve(result) 
         }
     })    

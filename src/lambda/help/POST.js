@@ -2,6 +2,8 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
+const email_database = require('../emails/lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -93,7 +95,7 @@ function validate_all (validate, data) {
 
 function post_help (result) { 
   var params = {
-    TableName: "help",
+    TableName: database.Table[0].TableName,
     Item: {
         "userid"      : result.userid,
         "createdAt"   : new Date().getTime(),
@@ -151,7 +153,7 @@ function send_email(email_array, str) {
 
 function user_email_notifications(result) { 
   var params = {
-      TableName: "emails",
+      TableName: email_database.Table[0].TableName,
       IndexName: 'keyIndex',
       KeyConditionExpression: '#HASH = :value',  
       ExpressionAttributeNames : {
@@ -205,7 +207,7 @@ function user_email_notifications(result) {
 
 function admin_email_notifications(result) { 
   var params = {
-      TableName: "emails",
+      TableName: email_database.Table[0].TableName,
       IndexName: 'keyIndex',
       KeyConditionExpression: '#HASH = :value',  
       ExpressionAttributeNames : {

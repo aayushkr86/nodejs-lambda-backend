@@ -1,7 +1,8 @@
 ///// ...................................... start default setup ............................................////
-var mode,sns,dynamodb,docClient,S3;
-var AWS = require('aws-sdk');
-var response = require('./lib/response.js');
+const mode,sns,dynamodb,docClient,S3;
+const AWS = require('aws-sdk');
+const response = require('./lib/response.js');
+const database = require('./lib/database.js');
 
 if(process.env.AWS_REGION == "local") {
 	mode 		= "offline";
@@ -81,7 +82,7 @@ function validate_all (validate,data) {
 
 function delete_file(result){
 	var params = {
-	     TableName: 'FIlE',
+	    TableName: database.Table[0].TableName,
 	    Key: {
 	    	"fileId":result.fileId,
 	    	"fileOrder":result.fileOrder
