@@ -123,7 +123,7 @@ function upload_logo(result) {
       } 
       });
     })
-  }
+}
 
 function update_logo (result) { 
     var params = {

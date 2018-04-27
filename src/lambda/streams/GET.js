@@ -135,7 +135,11 @@ function get_streams (result) {
           if (err) {
             console.error('Unable to query. Error:', JSON.stringify(err, null, 2))
             done(true, err)
-          } else {
+          }
+          else if(data.Items.length == 0) {
+            done(true, "no item found")
+          } 
+          else {
             done(null, data)
           }
         })
