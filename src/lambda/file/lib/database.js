@@ -1,0 +1,10 @@
+module.exports={
+	"Table":[
+		{
+			"TableName":"FILES",
+		},
+		{
+			"TableName":"FOLDERS",
+		}
+	]
+};

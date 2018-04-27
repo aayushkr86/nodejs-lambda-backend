@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 		= require('aws-sdk');
 const response 	= require('./lib/response.js');
+const database = require('./lib/database');
 
 if(process.env.AWS_REGION == "local"){
 	mode 		= "offline";
@@ -31,7 +32,7 @@ const postSchema = {
   "additionalProperties": false,
   "properties":{
     "fileId":{"type":"string"},
-    "LastEvaluatedKey":{
+    "lastEvaluatedKey":{
       "type":"object",
       "additionalProperties": false,
       "properties":{
@@ -70,14 +71,6 @@ function execute(data,callback){
 			delete data;
 		}
 	}
-	if(data != undefined && data.LastEvaluatedKey != undefined){
-		try{
-			data.LastEvaluatedKey = JSON.parse(data.LastEvaluatedKey);
-		}catch(e){
-			console.log("cannot be able to process the LastEvaluatedKey");
-			delete data.LastEvaluatedKey;
-		}
-	}
 	
 	validate_all(validate,data)
 		.then(function(result){
@@ -112,7 +105,7 @@ function validate_all (validate,data) {
 
 function get_files(result){
 	var params = {
-	    TableName: 'FILES',
+	    TableName: database.Table[0].TableName,
 	    KeyConditionExpression: '#HASH = :HASH_VALUE and #RANGE > :RANGE_VALUE',
 	    ExpressionAttributeNames: {
 	        '#HASH': 'fileId',
@@ -122,9 +115,9 @@ function get_files(result){
 	      ':HASH_VALUE': result.fileId,
 	      ':RANGE_VALUE': 0
 	    },
-	    ExclusiveStartKey:result.LastEvaluatedKey,
+	    ExclusiveStartKey:result.lastEvaluatedKey,
 	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 5, // optional (limit the number of items to evaluate)
+	    Limit: 1, // optional (limit the number of items to evaluate)
 	    ConsistentRead: false
 	};
 	
@@ -136,6 +129,7 @@ function get_files(result){
 			
 			result['result']={};
 			result.result['items']=folder.Items;
+			result.result['lastEvaluatedKey']=folder.LastEvaluatedKey;
 
 			resolve(result);
 		})
