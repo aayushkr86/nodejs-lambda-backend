@@ -37,6 +37,7 @@ const updateSchema = {
     "folderName":{"type":"string"},
     "folderDescription":{"type":"string"},
     "folderThumbnailId":{"type":"string"},
+	"folderBaseColor":{"type":"string"},
     "newfolderOrder":{"type":"number"}
   }
 };

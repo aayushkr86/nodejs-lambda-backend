@@ -36,6 +36,7 @@ const postSchema = {
 	    "folderOrder":{"type":"number"},
 	    "folderName":{"type":"string"},
 	    "folderDescription":{"type":"string"},
+	    "folderBaseColor":{"type":"string"},
 	    "folderThumbnailId":{"type":"string"}
 	 }
 };
