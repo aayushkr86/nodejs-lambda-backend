@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -117,7 +118,7 @@ function validate_all (validate, data) { // console.log(data)
 
 function update_streams (result) {
   var params = {
-    TableName: 'streams',
+    TableName: database.Table[0].TableName,
     Key: {
       'id': result.id,
       'date': result.date
@@ -134,7 +135,7 @@ function update_streams (result) {
       } else {
         console.log('deleted succeeded', data)
         var params = {
-          TableName: 'streams',
+          TableName: database.Table[0].TableName,
           Item: {
             'updatedAt': new Date().getTime()
           }

@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
+const database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
@@ -27,7 +28,6 @@ const Ajv 			   = require('ajv')
 const setupAsync 	 = require('ajv-async')
 const ajv 			   = setupAsync(new Ajv())
 const fileType     = require('file-type')
-const randomstring = require("randomstring");
 
 var postSchema = {
   $async: true,
@@ -151,7 +151,8 @@ function upload_files(result) { //console.log(result)
     if(fileMine_image === null && fileMine_pdf === null) {
       return reject('No image or pdf file')
     }
-    var directory = randomstring.generate(10);
+
+    var directory = uuid.v1();
     async.parallel({
       one : function(done) {
         if(fileMine_image) {
@@ -216,7 +217,7 @@ function update_Show_at_first_place() {
       async.waterfall([
         function (done) {
           var params1 = {
-            TableName: 'streams',
+            TableName: database.Table[0].TableName,
             KeyConditionExpression: 'id = :value',
             ExpressionAttributeValues: {
               ':value': 'en_1_1'
@@ -236,7 +237,7 @@ function update_Show_at_first_place() {
         },
         function (query, done) {
           var params2 = {
-            TableName: 'streams',
+            TableName: database.Table[0].TableName,
             Key: {
               'id': 'en_1_1',
               'date': query.Items[0].date
@@ -257,7 +258,7 @@ function update_Show_at_first_place() {
         function (create, done) {
           const pub = create.Attributes.publish ? 1 : 0
           var params3 = {
-            TableName: 'streams',
+            TableName: database.Table[0].TableName,
             Item: {
               'id': create.Attributes.language + '_' + pub + '_' + '0',
               'date': create.Attributes.date,
@@ -302,7 +303,7 @@ function post_stream(result) {
 	// console.log(z)
 
 	var params = {
-		TableName: "streams",
+		TableName: database.Table[0].TableName,
 		Item: {
 			"id"         : result.language+"_"+publish+"_"+show_at_first_place,
 			"date"       : Date.parse(new Date(z)),
