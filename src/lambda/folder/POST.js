@@ -1,5 +1,5 @@
 			///// ...................................... start default setup ............................................////
-// let mode,sns,dynamodb,docClient,S3;
+let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
 
@@ -99,7 +99,7 @@ function validate_all (validate,data) {
 
 function post_categories(result){
 	var params = {
-	    TableName: 'FOLDERS',
+	    TableName: database.Table[0].TableName,
 	    Item: result,
 	    ConditionExpression: 'attribute_not_exists(folderOrder)'
 	};
@@ -119,7 +119,7 @@ function post_categories(result){
 function find_count_increase_folder(result){
 	//find the folderid in folderSub 
 	var params = {
-		TableName: 'FOLDERS',
+		TableName: database.Table[0].TableName,
 	    IndexName: 'folderSub-index',
 	    KeyConditionExpression: 'folderSub = :value', 
 	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
@@ -145,7 +145,7 @@ function find_count_increase_folder(result){
 function increase_folder_count(result){
 	let increseCount = result.increseCount;
 	var params = {
-	    TableName: 'FOLDERS',
+	    TableName: database.Table[0].TableName,
 	    Key: {
 	        folderId: increseCount.folderId,
 	        folderOrder: increseCount.folderOrder  

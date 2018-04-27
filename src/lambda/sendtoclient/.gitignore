@@ -1,0 +1,3 @@
+node_modules/*
+executable/*
+package-lock.json

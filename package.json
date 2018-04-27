@@ -15,6 +15,8 @@
   "homepage": "https://bitbucket.org/code_5/salestool-nodejs-backend#readme",
   "dependencies": {
     "ajv": "^6.4.0",
+    "ajv-async": "^1.0.1",
+    "amazon-cognito-identity-js": "^2.0.3",
     "aws-sdk": "^2.224.1",
     "buffer": "^5.1.0",
     "file-type": "^7.6.0",
@@ -29,6 +31,9 @@
     "path": "^0.12.7",
     "randomstring": "^1.1.5",
     "read-chunk": "^2.1.0",
+    "nodemailer": "^4.6.4",
+    "pdftk": "0.0.0-rc.0",
+    "scissors": "^0.2.3",
     "uuid": "^3.2.1"
   }
 }
