@@ -27,7 +27,6 @@ const Ajv 			   = require('ajv')
 const setupAsync 	 = require('ajv-async')
 const ajv 			   = setupAsync(new Ajv())
 const fileType     = require('file-type')
-const randomstring = require("randomstring");
 
 var postSchema = {
   $async: true,
@@ -151,7 +150,8 @@ function upload_files(result) { //console.log(result)
     if(fileMine_image === null && fileMine_pdf === null) {
       return reject('No image or pdf file')
     }
-    var directory = randomstring.generate(10);
+
+    var directory = uuid.v1();
     async.parallel({
       one : function(done) {
         if(fileMine_image) {
