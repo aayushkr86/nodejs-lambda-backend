@@ -6,16 +6,33 @@ var params = {
     TableName : "emails",
     KeySchema: [       
         { AttributeName: "status", KeyType: "HASH" },
-        { AttributeName: "updatedAt", KeyType: "RANGE" } 
+        { AttributeName: "key", KeyType: "RANGE" } 
     ],
     AttributeDefinitions: [       
         { AttributeName: "status", AttributeType: "S" },
-        { AttributeName: "updatedAt", AttributeType: "N" },
+        { AttributeName: "key", AttributeType: "S" },
+        { AttributeName: "userid", AttributeType: "S" },
     ],
     ProvisionedThroughput: {       
         ReadCapacityUnits: 1, 
         WriteCapacityUnits: 1
-    }
+    },
+    GlobalSecondaryIndexes: [ 
+        { 
+            IndexName: 'keyIndex', 
+            KeySchema: [
+                { AttributeName: 'key', KeyType: 'HASH', },
+                { AttributeName: 'userid', KeyType: 'RANGE', }
+            ],
+            Projection: { 
+                ProjectionType: 'ALL',
+            },
+            ProvisionedThroughput: {
+                ReadCapacityUnits: 1,
+                WriteCapacityUnits: 1,
+            },
+        },
+    ],
 };
 
 function CREATE() {
@@ -31,7 +48,6 @@ function CREATE() {
         })
     })
 }
-
 
 describe('emails schema', function() {
     it('emailchema creation', function(done) { 

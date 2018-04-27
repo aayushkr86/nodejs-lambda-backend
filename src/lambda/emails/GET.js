@@ -34,21 +34,18 @@ var getSchema = {
           type: "string",
           enum : ['active']
       },
-      updatedAt : {
-        type: "number",
-      },
     LastEvaluatedKey:{
         type:"object",
         properties:{
-          updatedAt : {
-                type: "number",
+          key : {
+                type: "string",
             },
             status : {
                 type: "string",
                 enum : ['active']
             },
         },
-        required : ["updatedAt", "status"]
+        required : ["key", "status"]
     }
   },
 }
@@ -61,13 +58,17 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data.LastEvaluatedKey != undefined) {
-    try{
-      data.LastEvaluatedKey= JSON.parse(data.LastEvaluatedKey);
-    }
-    catch(err){
-    console.log(err)
-    }
+  if(data['LastEvaluatedKey.key'] && data['LastEvaluatedKey.status']) {
+    LastEvaluatedKey = {
+      'key'    : data['LastEvaluatedKey.key'],
+      'status' : data['LastEvaluatedKey.status']
+    };
+    data.LastEvaluatedKey = LastEvaluatedKey
+  }
+  else if(!data['LastEvaluatedKey.key'] && !data['LastEvaluatedKey.status']) {
+  }
+  else if(!data['LastEvaluatedKey.key'] || !data['LastEvaluatedKey.status']) {
+    return response({code: 400, err: {"error":"both LastEvaluatedKey.key and LastEvaluatedKey.status are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {
@@ -109,27 +110,21 @@ function get_emails (result) {
       ':value': 'active',
     },
     // ScanIndexForward: false, 
-    // Limit: 5,
+    Limit: 5,
   };
-  if (typeof result.LastEvaluatedKey !== undefined) {
-    params.ExclusiveStartKey = result.LastEvaluatedKey
+  if (result.LastEvaluatedKey != undefined) {
+    params.ExclusiveStartKey = result.LastEvaluatedKey;
   }
+  // console.log(params)
   return new Promise(function(resolve, reject) { 
-    docClient.query(params, function(err, data) {
+    docClient.query(params, function(err, data) { 
         if (err) {
             console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             reject(err.message)
-        } else {
-            // console.log("Query succeeded",data);
-            data.Items.sort(function(a, b){
-                var keyA = a.key.toLowerCase(); 
-                var keyB = b.key.toLowerCase();
-                if (keyA < keyB) //sort string ascending
-                    return -1 
-                if (keyA > keyB)
-                    return 1
-                return 0 //default return value (no sorting)                    
-            })
+        }else if(data.Items.length == 0){
+            reject("no item found")
+        } 
+        else {
             result['result'] = {'message': data}
             resolve(result)
         }

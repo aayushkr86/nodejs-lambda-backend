@@ -30,9 +30,6 @@ var updateSchema = {
   $async:true,
   type: "object",
   properties: {
-        updatedAt : {
-            type: "number",
-        },
         key : {
             type: "string",
         },
@@ -47,7 +44,7 @@ var updateSchema = {
             pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
         },
   },
-  required : ["updatedAt"]
+  required : ["key"]
 }
 
 var validate = ajv.compile(updateSchema)
@@ -92,7 +89,7 @@ function update_email (result) {
     TableName: "emails",
     Key: {
         "status": "active",
-        "updatedAt": result.updatedAt,
+        "key" : result.key
     },
     ReturnValues: 'ALL_OLD', // optional (NONE | ALL_OLD)
   }

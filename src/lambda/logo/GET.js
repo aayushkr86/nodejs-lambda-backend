@@ -60,13 +60,17 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data.LastEvaluatedKey != undefined) {
-    try{
-      data.LastEvaluatedKey= JSON.parse(data.LastEvaluatedKey);
-    }
-    catch(err){
-    console.log(err)
-    }
+  if(data['LastEvaluatedKey.status'] && data['LastEvaluatedKey.updatedAt']) {
+    LastEvaluatedKey = {
+      'status'   : data['LastEvaluatedKey.status'],
+      'updatedAt' : parseInt(data['LastEvaluatedKey.updatedAt'])
+    };
+    data.LastEvaluatedKey = LastEvaluatedKey
+  }
+  else if(!data['LastEvaluatedKey.status'] && !data['LastEvaluatedKey.updatedAt']) {
+  }
+  else if(!data['LastEvaluatedKey.status'] || !data['LastEvaluatedKey.updatedAt']) {
+    return response({code: 400, err: {"error":"both LastEvaluatedKey.status and LastEvaluatedKey.updatedAt are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {
@@ -110,15 +114,19 @@ function get_logos (result) {
     ScanIndexForward: false, 
     Limit: 5,
   };
-  if (typeof result.LastEvaluatedKey !== undefined) {
-    params.ExclusiveStartKey = result.LastEvaluatedKey
+  if (result.LastEvaluatedKey != undefined) {
+    params.ExclusiveStartKey = result.LastEvaluatedKey;
   }
   return new Promise(function(resolve, reject) { 
     docClient.query(params, function(err, data) {
         if (err) {
             console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             reject(err.message)
-        } else {
+        }
+        else if(data.Items.length == 0) {
+            reject("no item found")
+        } 
+        else {
             // console.log("Query succeeded",data);
             result['result'] = {'message': data}
             resolve(result) 

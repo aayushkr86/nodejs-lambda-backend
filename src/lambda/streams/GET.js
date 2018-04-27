@@ -38,17 +38,18 @@ const getSchema = {
       type: 'string',
       format: 'date'
     },
-    LastEvaluatedKey: {
-      type: 'object',
-      properties: {
+    LastEvaluatedKey:{
+      type:"object",
+      properties:{
         id: {
-          type: 'string'
+          type: 'string',
+          enum: ['en_1_0']
         },
         date: {
-          type: 'number'
-        }
+          type: 'number',
+        },
       },
-      required: ['id', 'date']
+      required : ["id","date"]
     }
   },
   required: ['id']
@@ -62,13 +63,17 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data.LastEvaluatedKey != undefined) {
-    try{
-      data.LastEvaluatedKey= JSON.parse(data.LastEvaluatedKey);
-    }
-    catch(err){
-    console.log(err)
-    }
+  if(data['LastEvaluatedKey.id'] && data['LastEvaluatedKey.date']) {
+    LastEvaluatedKey = {
+      'id'   : data['LastEvaluatedKey.id'],
+      'date' : parseInt(data['LastEvaluatedKey.date'])
+    };
+    data.LastEvaluatedKey = LastEvaluatedKey
+  }
+  else if(!data['LastEvaluatedKey.id'] && !data['LastEvaluatedKey.date']) {
+  }
+  else if(!data['LastEvaluatedKey.id'] || !data['LastEvaluatedKey.date']) {
+    return response({code: 400, err: {"error":"both LastEvaluatedKey.id and LastEvaluatedKey.date are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {
@@ -92,7 +97,7 @@ function validate_all (validate, data) {
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)
-    }).catch(function (err) {
+    }).catch(function (err) { 
 		  console.log(JSON.stringify(err, null, 6))
 		  reject(err.errors[0].dataPath + ' ' + err.errors[0].message)
     })
@@ -109,7 +114,7 @@ function get_streams (result) {
     ScanIndexForward: false,
     Limit: 5
   }
-  if (typeof result.LastEvaluatedKey !== undefined) {
+  if (result.LastEvaluatedKey != undefined) { 
     params.ExclusiveStartKey = result.LastEvaluatedKey
   }
   var params1 = {
@@ -121,7 +126,7 @@ function get_streams (result) {
     ScanIndexForward: false,
     Limit: 1
   }
-  
+  // console.log(params)
   return new Promise(function (resolve, reject) {
     async.waterfall([
       function (done) {
@@ -145,7 +150,7 @@ function get_streams (result) {
         })
       },
       function (publish, show_first) {
-        if(result.LastEvaluatedKey == undefined) {
+        if(!result['LastEvaluatedKey.id'] && !result['LastEvaluatedKey.date']) {
           show_first.Items.forEach(function (elem) {
             publish.Items.unshift(elem)
           })

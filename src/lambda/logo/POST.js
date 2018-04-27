@@ -7,7 +7,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
@@ -26,6 +26,7 @@ const async       = require('async')
 const Ajv 			  = require('ajv')
 const setupAsync 	= require('ajv-async')
 const ajv 			  = setupAsync(new Ajv())
+const fileType    = require('file-type')
 
 var postSchema = {
   $async:true,
@@ -42,7 +43,7 @@ var postSchema = {
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
       },
   },
-  required : ["company","logo"]
+  required : ["company"]
 }
 
 var validate = ajv.compile(postSchema)
@@ -52,8 +53,11 @@ var validate = ajv.compile(postSchema)
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute (data, callback) { 
+function execute (data, callback) { //console.log(data)
   validate_all(validate, data)
+    .then(function (result) {
+      return upload_logo(result)
+    })
     .then(function (result) {
       return post_logo(result)
     })
@@ -72,14 +76,41 @@ function execute (data, callback) {
  * @param  {[type]} data [description]
  * @return {[type]}      [description]
  */
-function validate_all (validate, data) {
+function validate_all (validate, data) { //console.log(event)
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
+    validate(JSON.parse(data)).then(function (res) { //console.log(res)
 		    resolve(res)
-    }).catch(function (err) { // console.log(err)
+    }).catch(function (err) { 
 		  console.log(JSON.stringify(err, null, 6))
 		  reject(err.errors[0].dataPath + ' ' + err.errors[0].message)
     })
+  })
+}
+
+function upload_logo(result) { 
+  return new Promise((resolve, reject) => {
+    var buffer = Buffer.from(result.logo.replace(/^data:image\/\w+;base64,/, ""),"base64");
+    var fileMine = fileType(buffer)
+    console.log(fileMine)
+    if(fileMine === null) {
+     return reject('not a image file')
+    }
+    var params = {
+          bucketname : 'logo',
+          filename   : Date.now()+'.'+fileMine.ext,
+          file       : buffer
+    }
+  S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+    if (err) {
+         console.log(err)  
+         reject(err)
+      }
+    else {
+      console.log('File uploaded successfully.Tag:',etag) 
+      result['logo'] = params.bucketname+'/'+params.filename;
+      resolve(result)  
+    } 
+    });
   })
 }
 

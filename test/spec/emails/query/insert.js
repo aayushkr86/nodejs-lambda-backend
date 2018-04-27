@@ -8,9 +8,9 @@ var params = {
     TableName: "emails",
     Item: {
         "status"    : "active",
-        "key"       : "password",
-        "subject"   : "hiiiii",
-        "body"      : "welcome alll llll lll ll l",
+        "key"       : "Password",
+        "subject"   : "Support Password Change Email",
+        "body"      : "Hi ${firstname} ${lastname}",
         "userid"    : "b3cd50a2-3c83-11e8-b467-0ed5f89f718b",
         "createdAt" : new Date().getTime(),
         "updatedAt" : new Date().getTime()

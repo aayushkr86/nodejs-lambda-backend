@@ -41,7 +41,7 @@ var postSchema = {
       },
       subject : {
           type: "string",
-          maxLength : 20,
+          maxLength : 200,
           minLength : 4
       },
       body : {
