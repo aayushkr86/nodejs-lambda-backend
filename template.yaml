@@ -41,21 +41,21 @@ Resources:
   #           Path: /sns/Email
   #           Method: any
 # List of lambda microservice ==================================================================
-  lambda_sample:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs6.10
-      Handler: src/lambda/folder/index.handler
-      timeout: 10
-      Environment:
-        Variables:
-          AWS_REGION: local
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /folder
-            Method: any
+  # lambda_sample:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/folder/index.handler
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /folder
+  #           Method: any
   # lambda_streams:
   #   Type: AWS::Serverless::Function
   #   Properties:
@@ -101,21 +101,21 @@ Resources:
   #         Properties:
   #           Path: /file
   #           Method: any
-  lambda_file:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs6.10
-      Handler: src/lambda/file/index.handler
-      timeout: 10
-      Environment:
-        Variables:
-          AWS_REGION: local
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /file
-            Method: any
+  # lambda_file:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/file/index.handler
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /file
+  #           Method: any
   # cognito_auth:
   #   Type: AWS::Serverless::Function
   #   Properties:
@@ -131,19 +131,34 @@ Resources:
   #         Properties:
   #           Path: /cognitoauth
   #           Method: any
-  lambda_sendtoclient:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs6.10
-      Handler: src/lambda/sendtoclient/index.handler
-      timeout: 20
-      Environment:
-        Variables:
-          AWS_REGION: local
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /sendtoclient
-            Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/sendtoclient/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /sendtoclient
+  #           Method: any
+    lambda_sendtoclient:
+      Type: AWS::Serverless::Function
+      Properties:
+        Runtime: nodejs6.10
+        Handler: src/lambda/comments/index.handler
+        timeout: 20
+        Environment:
+          Variables:
+            AWS_REGION: local
+        Events:
+          AllProduct:
+            Type: Api
+            Properties:
+              Path: /comments
+              Method: any
 
