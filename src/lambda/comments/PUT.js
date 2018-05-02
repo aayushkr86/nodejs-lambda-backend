@@ -35,12 +35,20 @@ const updateSchema = {
         "fileId" : { "type": "string"},
         "fileOrder": {"type":"number"},
         "commentOrder" : { "type": "number" },
-        "location" : {
+        "refLocation" : {
             "type": "object",
             "addionalProperties":true
         },
-        "comment" : { "type": "string" },
-        "reply" : {"type":"string" }
+        "commentText" : { "type": "string" },
+        "reply" : {"type":"string" },
+        "replypos":{"type":"number"},
+        "tags" : {
+            "type":"object",
+            "properties":{
+                "userid":{"type":"string"},
+                "links":{"type":"array"}
+            }
+        }
     },
     "required" : ["fileId","fileOrder", "commentOrder"]
 };
@@ -64,9 +72,19 @@ function execute(data,callback){
 	validate_all(validate,data)
 		.then(function(result){
 			if(data.replypos != undefined ){
-				return update_reply(result);
-			}else{
+				if(data.reply != undefined){
+					return update_reply(result);
+				}else{
+					return new Promise((resolve,reject)=>{
+						reject("Parameters in reply is wrong");
+					})
+				}
+			}else if(data.commentText != undefined){
 				return update_comments(result);
+			}else{
+				return new Promise((resolve,reject)=>{
+					reject("Nothing to change");
+				})
 			}
 		})
 		// .then(function(another_result){
@@ -109,24 +127,41 @@ function validate_all(validate,data){
  */
 function update_reply(data){
 	return new Promise((resolve,reject)=>{
+		//change particular reply message with another
 		var params = {
-		    TableName: database.Table[0].TableName,
-		    Key: { 
-		    	"commentId": data.fileId+data.fileOrder,
-		    	"commentOrder": data.commentOrder
+		    TableName: 'comments',
+		    Key: {
+		        "commentId": data.fileId+data.fileOrder,
+		        "commentOrder": data.commentOrder
 		    },
-		    UpdateExpression: 'REMOVE reply['+data.replypos+']',
-		    // ConditionExpression: 'attribute_exists(reply['+data.replypos+'])'
+		    UpdateExpression: 'SET reply['+data.replypos+'] =:value',
+		    ConditionExpression: 'resolved=:resolved',
+		    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+		        ':value': [{
+		        	"data":data.reply,
+		        	"tags":data.tags,
+		        	"userid":"anonymus",
+		        	"createdAt":new Date().toISOString()
+		        }],
+		        ':resolved': false
+		    },
+		    ReturnValues: 'ALL_NEW', // optional (NONE | ALL_OLD | UPDATED_OLD | ALL_NEW | UPDATED_NEW)
+		    // ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
+		    // ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
 		};
-		console.log(params);
 		docClient.update(params, function(err, data) {
 		    if(err){
 		    	reject(err.message);
 		    }else{
-		    	var response={
-		    		"data":"Successfully removed"
+		    	if(data.Attributes == null){
+		    		reject("Something went wring");
+		    	}else{
+		    		var response={
+		    			"data":"Successfully updated",
+		    			"items":data.Attributes
+		    		}
+		    		resolve(response);
 		    	}
-		    	resolve(response);
 		    }
 		});
 	});
@@ -138,34 +173,57 @@ function update_reply(data){
  * @return {[type]}      [description]
  */
 function update_comments(data){
+	if(data.reply){
+		delete data.reply;
+	}
+	//now go throw the process update all the things
+	var update_expression = "SET";
+	first = false;
+	for(key in data){
+		if(first){
+			update_expression +=",";
+		}
+		if(key != "fileId" && key != "fileOrder" && key != "commentOrder"){
+			update_expression += " "+key+"= :"+key;
+			data[":"+key]=data[key];
+			delete data[key];
+			first = true;
+		}
+	}
+	data[':resolved']=false;
+	
 	return new Promise((resolve,reject)=>{
-
 		var params = {
-		    TableName: 'table_name',
-		    Key: { // The primary key of the item (a map of attribute name to AttributeValue)
-
-		        attribute_name: attribute_value, //(string | number | boolean | null | Binary)
-		        // more attributes...
+		    TableName: database.Table[0].TableName,
+		    Key: { 
+		    	"commentId": data.fileId + data.fileOrder,
+		    	"commentOrder": data.commentOrder
 		    },
-		    UpdateExpression: 'SET attribute_name :value', // String representation of the update to an attribute
-		        // SET set-action , ... 
-		        // REMOVE remove-action , ...  (for document support)
-		        // ADD add-action , ... 
-		        // DELETE delete-action , ...  (previous DELETE equivalent)
-		    ConditionExpression: 'attribute_exists(attribute_name)', // optional String describing the constraint to be placed on an attribute
-		    ExpressionAttributeNames: { // a map of substitutions for attribute names with special characters
-		        //'#name': 'attribute name'
-		    },
-		    ExpressionAttributeValues: { // a map of substitutions for all attribute values
-		        ':value': 'VALUE'
-		    },
-		    ReturnValues: 'NONE', // optional (NONE | ALL_OLD | UPDATED_OLD | ALL_NEW | UPDATED_NEW)
-		    ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
-		    ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
+		    UpdateExpression: update_expression,
+		    ConditionExpression: 'attribute_exists(commentOrder) AND resolved=:resolved',
+		    ExpressionAttributeValues: data,
+		    ReturnValues: 'ALL_NEW', // optional (NONE | ALL_OLD | UPDATED_OLD | ALL_NEW | UPDATED_NEW)
+		    // ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
+		    // ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
 		};
+		delete data.fileId;
+		delete data.fileOrder;
+		delete data.commentOrder;
+		console.log(params);
 		docClient.update(params, function(err, data) {
-		    if (err) ppJson(err); // an error occurred
-		    else ppJson(data); // successful response
+		    if(err){
+		    	reject(err.message);
+		    }
+		    if(data.Attributes == null){
+		    	reject("Something went wring");
+		    }else{
+		    	var response={
+		    		"data":"Successfully updated",
+		    		"items":data.Attributes
+		    	}
+		    	resolve(response);
+		    }
+		    
 		});
 	});
 }

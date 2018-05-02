@@ -36,20 +36,22 @@ const postSchema = {
         "fileOrder": {"type":"number"},
         "commentOrder" : {"type": "number"},
         "reply" : {"type": "string"},
-        "comment" : {"type":"string"},
-        "location": {
+        "commentText" : {"type":"string"},
+        "refLocation": {
             "type":"object",
             "addionalProperties":true
         },
         "tags" : {
+        	"additionalProperties": false,
             "type":"object",
+            "required":["userid"],
             "properties":{
-                "userid":{"type":"array"},
+                "userid":{"type":"string"},
                 "links":{"type":"array"}
             }
         }
     },
-    "required" : ["fileId","fileOrder", "commentOrder"]
+    "required" : ["fileId","fileOrder", "commentOrder","tags"]
 };
 
 const validate = ajv.compile(postSchema);
@@ -70,6 +72,9 @@ function execute(data,callback){
 	}
 	validate_all(validate,data)
 		.then(function(result){
+			result.createdAt = new Date().toISOString();
+			result.userid = "anonymus";
+
 			if(data.reply != undefined ){
 				return add_reply(result);
 			}else{
@@ -133,8 +138,8 @@ function add_comments(data){
 			    Item: item,
 			    ConditionExpression: 'attribute_not_exists(commentOrder)',
 			    ReturnValues: 'NONE', // optional (NONE | ALL_OLD)
-			    ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
-			    ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
+			    // ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
+			    // ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
 			};
 			docClient.put(params, function(err, data) {
 			    if (err){
@@ -172,11 +177,13 @@ function add_reply(data){
 		        ':value': [{
 		        	"data":data.reply,
 		        	"tags":data.tags,
+		        	"userid":"anonymus",
+		        	"createdAt": new Date().toISOString()
 		        }]
 		    },
-		    ReturnValues: 'NONE', 
-		    ReturnConsumedCapacity: 'NONE',
-		    ReturnItemCollectionMetrics: 'NONE',
+		    ReturnValues: 'NONE'
+		    // ReturnConsumedCapacity: 'NONE',
+		    // ReturnItemCollectionMetrics: 'NONE',
 		};
 		console.log(params);
 		docClient.update(params, function(err, data) {

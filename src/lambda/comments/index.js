@@ -1,10 +1,11 @@
-
+// try{
 let GET 	= require('./GET');
 let POST 	= require('./POST');
 
 let PUT 	= require('./PUT');
 let DELETE 	= require('./DELETE');
-// let DUMP = require('./DUMP');
+// }catch(e){console.log(e);}
+let DUMP = require('./DUMP');
 /**
  * Main field where we will fetch all the content and passer
  * @param  {[type]}   event    [description]

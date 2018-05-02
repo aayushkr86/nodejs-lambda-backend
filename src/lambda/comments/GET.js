@@ -40,6 +40,10 @@ const getSchema = {
         },
         "resolved":{
         	"type":"boolean"
+        },
+        "ExclusiveStartKey":{
+        	"type":"object",
+        	"additionalProperties":true
         }
     },
     "required" : ["fileId","fileOrder"]
@@ -61,6 +65,14 @@ function execute(data,callback){
 	}
 	if(data.resolved == undefined){
 		data.resolved = false;
+	}
+	if( data['exclusiveStartKey.commentId'] != undefined && data['exclusiveStartKey.commentOrder'] != undefined){
+		data.ExclusiveStartKey={
+			"commentId": data['exclusiveStartKey.commentId'],
+			"commentOrder":data['exclusiveStartKey.commentOrder']
+		};
+		delete data['exclusiveStartKey.commentId'];
+		delete data['exclusiveStartKey.commentOrder'];
 	}
 	validate_all(validate,data)
 		.then(function(result){
@@ -121,13 +133,18 @@ function list_comments(data){
 			    Limit: 10,
 			    ConsistentRead: false,
 			    ReturnConsumedCapacity: 'NONE',
+			    ExclusiveStartKey: data.ExclusiveStartKey
 			};
 			console.log(params);
 			docClient.query(params, function(err, content) {
 			    if (err){
 			    	reject(err.message);
 			    }else{
-			    	resolve(content);
+			    	var response={};
+			    	console.log(content);
+			    	response['items'] = content.Items;
+			    	response['exclusiveStartKey:']=content.ExclusiveStartKey;
+			    	resolve(response);
 			    }
 			});
 		}
