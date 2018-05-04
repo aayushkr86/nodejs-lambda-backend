@@ -1,7 +1,7 @@
 module.exports={
 	"Table":[
 		{
-			"TableName":"emails",
+			"TableName":"users",
 		}
 	]
 };

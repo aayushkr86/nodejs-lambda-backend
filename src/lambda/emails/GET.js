@@ -14,7 +14,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -126,7 +126,7 @@ function get_emails (result) {
             reject("no item found")
         } 
         else {
-            result['result'] = {'items': data.Items}
+            result['result'] = {'items': data.Items, LastEvaluatedKey : data.LastEvaluatedKey}
             resolve(result)
         }
     })    

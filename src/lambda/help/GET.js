@@ -4,7 +4,7 @@ const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
 const database 	= require('./lib/database')
 
-if (process.env.AWS_REGION == 'local') {
+if (process.env.AWS_REGION == 'local') { 
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
@@ -68,7 +68,7 @@ var validate = ajv.compile(getSchema)
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute (data, callback) { 
+function execute (data, callback) {
   if(data['LastEvaluatedKey.userid'] && data['LastEvaluatedKey.createdAt'] &&
      data['LastEvaluatedKey.uuid']   && data['LastEvaluatedKey.status']) {
     LastEvaluatedKey = {
@@ -143,7 +143,7 @@ function get_helps (result) {
         } 
         else {
             // console.log("Query succeeded",data);
-            result['result'] = {'items': data.Items}
+            result['result'] = {'items': data.Items, LastEvaluatedKey : data.LastEvaluatedKey}
             resolve(result) 
         }
     })    

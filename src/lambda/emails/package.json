@@ -1,5 +1,5 @@
 {
-  "name": "categories",
+  "name": "emails",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,6 +12,10 @@
     "ajv": "^6.4.0",
     "ajv-async": "^1.0.1",
     "async": "^2.6.0",
+<<<<<<< HEAD
+=======
+    "lambda-wrapper": "^0.2.2",
+>>>>>>> development
     "uuid": "^3.2.1"
   }
 }

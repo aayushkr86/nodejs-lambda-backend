@@ -23,12 +23,12 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			  = require('uuid')
-const async       = require('async')
-const nodemailer  = require('nodemailer')
-const Ajv 			  = require('ajv')
-const setupAsync 	= require('ajv-async')
-const ajv 			  = setupAsync(new Ajv())
+const uuid 		 = require('uuid')
+const async      = require('async')
+const nodemailer = require('nodemailer')
+const Ajv 	     = require('ajv')
+const setupAsync = require('ajv-async')
+const ajv 		 = setupAsync(new Ajv())
 
 var postSchema = {
   $async:true,

@@ -5,9 +5,9 @@ const response 		= require('./lib/response.js')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
-  // sns 			= require('../../../offline/sns');
-  docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  // sns 		= require('../../../offline/sns');
+  docClient 	= require('../../../offline/dynamodb').docClient
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
@@ -21,30 +21,43 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			= require('uuid')
-const async         = require('async')
-const Ajv 			= require('ajv')
-const setupAsync 	= require('ajv-async')
-const ajv 			= setupAsync(new Ajv())
+const uuid 		 = require('uuid')
+const async      = require('async')
+const Ajv 		 = require('ajv')
+const setupAsync = require('ajv-async')
+const ajv 	     = setupAsync(new Ajv())
+const fileType   = require('file-type')
 var updateSchema = {
   $async:true,
   type: "object",
   properties: {
-        key : {
+        firstname : {
             type: "string",
         },
-        subject : {
+        lastname : {
             type: "string",
         },
-        body : {
+        gender : {
+            type: "string",
+            enum:['male', 'female']
+        },
+        lastname : {
             type: "string",
         },
-        userid : {
+        company_name : {
             type: "string",
-            pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
         },
-  },
-  required : ["key"]
+        department_name : {
+            type: "string",
+        },
+        cognitoAcessToken : {
+            type: "string",
+        },
+        profilepic_url : {
+            type: "string",
+        }
+    },
+    required : []
 }
 
 var validate = ajv.compile(updateSchema)
@@ -57,7 +70,17 @@ var validate = ajv.compile(updateSchema)
 function execute (data, callback) {
   validate_all(validate, data)
     .then(function (result) {
-      return update_users(result)
+        if(result.profilepic_url) {
+            return file_upload(result)
+        }else{
+            return result;
+        }
+    })
+    .then(function (result) {
+        return expressions(result)
+    })
+    .then(function (result) {
+        return update_user(result)
     })
     .then(function (result) {
       response({code: 200, body: result.result}, callback)
@@ -84,19 +107,87 @@ function validate_all (validate, data) { // console.log(data)
   })
 }
 
+
+function file_upload(result) { //console.log(result.profilepic_url)
+    return new Promise((resolve, reject)=>{
+        var buffer = Buffer.from(result.profilepic_url.replace(/^data:image\/\w+;base64,/, ""),"base64");
+        var fileMine = fileType(buffer)
+        console.log(fileMine)
+        if(fileMine.mime != ('image/jpeg'||'image/png')) {
+         return reject('not a image file')
+        }
+        uploadtoS3(buffer, fileMine)
+        .then((url)=>{
+            result['profilepic_url'] = url;
+            resolve(result)
+        })
+        .catch((err)=>{
+            reject(err)
+        })
+    })
+}
+
+
+function uploadtoS3(buffer, fileMine) { //console.log(buffer)
+    return new Promise((resolve, reject)=>{
+        var params = {
+            "bucketname"   : 'users',
+            "filename"     : Date.now()+'.'+fileMine.ext,
+            "file"         : buffer,
+        }
+        //console.log(params)
+        S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) { 
+            if (err) {
+                console.log(err)  
+                reject(err)
+            }
+            else {
+                console.log('File uploaded successfully.Tag:',etag) 
+                url = params.bucketname+'/'+params.filename;
+                resolve(url)  
+            } 
+        });
+    })
+}
+
+function expressions(result) {
+    return new Promise((resolve, reject)=>{
+        var update_expression_array = [];
+        var update_names_object = {};
+        var update_values_object = {};
+        for(var key in result) {
+            if(key != 'username') {
+                var temp = key.substring(0, 3)
+                update_expression_array.push('#'+temp+'=:'+key+'_val');
+                update_names_object['#'+temp] = key
+                update_values_object[':'+key+'_val'] = result[key]
+            }
+        }
+        update_expression_array.push('updatedAt = :updatedAt')
+        update_values_object[':updatedAt'] = new Date().getTime() 
+        var update_expression_string = update_expression_array.join(', ')
+        result = {
+            "update_expression_string" : update_expression_string,
+            "update_names_object" : update_names_object,
+            "update_values_object" : update_values_object,
+        }
+        resolve(result)
+    })
+}
+
+
 function update_user (result) {
     var params = {
         TableName: "users",
         Key: {
-            "userid": result.userid,
-            "createdAt": result.createdAt,
+            "username": 'aayush',
         },
         UpdateExpression: 'SET '+result.update_expression_string,
         ExpressionAttributeNames : result.update_names_object,
         ExpressionAttributeValues: result.update_values_object,
-        ConditionExpression: 'attribute_exists(userid) AND attribute_exists(createdAt)',
         ReturnValues: 'ALL_NEW', // optional (NONE | ALL_OLD | UPDATED_OLD | ALL_NEW | UPDATED_NEW)
     }
+    // console.log(params)
     return new Promise(function(resolve, reject) {
         docClient.update(params, function(err, data) {
             if (err) {
@@ -104,11 +195,10 @@ function update_user (result) {
                 reject(err.message)
             }
             else if(Object.keys(data).length == 0) { 
-                reject("no item found")
+                reject("not able to create new user")
             }
             else {
-                console.log("updation succeeded",data);
-                result['result'] = {'message': "Successfully updated",data}
+                result['result'] = {'message': "Successfully updated",'data':data.Attributes}
                 resolve(result)
             }
         })

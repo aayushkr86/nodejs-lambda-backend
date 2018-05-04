@@ -94,7 +94,7 @@ function validate_all (validate,data) {
  * @param  {[type]} data data=> username,password,clientId,userpool,contextdata
  * @return {[type]}      resolve
  */
-function login(data){
+function login(data) {
 	return new Promise((resolve,reject)=>{
 		var params={
 			AuthFlow: "ADMIN_NO_SRP_AUTH",
@@ -105,7 +105,7 @@ function login(data){
 		    	'PASSWORD':data.password
 			}
 		};
-		if(data.contextdata != undefined){
+		if(data.contextdata != undefined) {
 			params.ContextData = data.ContextData;
 		}
 		cognitoidentityserviceprovider.adminInitiateAuth(params, function(err, data) {

@@ -1,8 +1,8 @@
 let GET = require('./GET.js');
-let POST = require('./POST.js');
-let UPDATE = require('./UPDATE.js');
-let DELETE = require('./DELETE.js');
-let DUMP = require('./DUMP.js');
+// let POST = require('./POST.js');
+// let UPDATE = require('./UPDATE.js');
+// let DELETE = require('./DELETE.js');
+// let DUMP = require('./DUMP.js');
 /**
  * Main field where we will fetch all the content and passer
  * @param  {[type]}   event    [description]
