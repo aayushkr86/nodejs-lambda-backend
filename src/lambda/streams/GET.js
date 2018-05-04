@@ -64,17 +64,18 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data['LastEvaluatedKey.id'] && data['LastEvaluatedKey.date']) {
+  if(data['LastEvaluatedKey.id'] && data['LastEvaluatedKey.date'] && data['LastEvaluatedKey.updatedAt']) {
     LastEvaluatedKey = {
       'id'   : data['LastEvaluatedKey.id'],
-      'date' : parseInt(data['LastEvaluatedKey.date'])
+      'date' : parseInt(data['LastEvaluatedKey.date']),
+      'updatedAt' : parseInt(data['LastEvaluatedKey.updatedAt'])
     };
     data.LastEvaluatedKey = LastEvaluatedKey
   }
-  else if(!data['LastEvaluatedKey.id'] && !data['LastEvaluatedKey.date']) {
+  else if(!data['LastEvaluatedKey.id'] && !data['LastEvaluatedKey.date'] && !data['LastEvaluatedKey.updatedAt']) {
   }
-  else if(!data['LastEvaluatedKey.id'] || !data['LastEvaluatedKey.date']) {
-    return response({code: 400, err: {"error":"both LastEvaluatedKey.id and LastEvaluatedKey.date are required"}}, callback)
+  else if(!data['LastEvaluatedKey.id'] || !data['LastEvaluatedKey.date'] || !data['LastEvaluatedKey.updatedAt']) {
+    return response({code: 400, err: {"error":"LastEvaluatedKey.id,LastEvaluatedKey.date,LastEvaluatedKey.updatedAt are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {
@@ -108,6 +109,7 @@ function validate_all (validate, data) {
 function get_streams (result) { 
   var params = {
     TableName: database.Table[0].TableName,
+    IndexName: 'idIndex',
     KeyConditionExpression: 'id = :value',
     ExpressionAttributeValues: {
       ':value': 'en_1_0'
@@ -162,7 +164,10 @@ function get_streams (result) {
             publish.LastEvaluatedKey.id = publish.Items[4].id
           }
         }
-        result['result'] = {'items': publish.Items}
+        if(publish.Items.length == 0){
+          return reject("no item found")
+        }
+        result['result'] = {'items': publish.Items, LastEvaluatedKey : publish.LastEvaluatedKey }
         resolve(result)
       }
     ], function (err, data) {

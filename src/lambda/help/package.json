@@ -1,5 +1,5 @@
 {
-  "name": "categories",
+  "name": "help",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,7 +14,6 @@
     "async": "^2.6.0",
     "lambda-wrapper": "^0.2.2",
     "nodemailer": "^4.6.4",
-    "schema-validator": "^3.3.1",
     "uuid": "^3.2.1"
   }
 }
