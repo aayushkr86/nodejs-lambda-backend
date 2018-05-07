@@ -2,6 +2,7 @@
 // let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
+const database 		= require('./lib/database');
 
 if(process.env.AWS_REGION == "local"){
 	mode 			= "offline";
@@ -79,6 +80,11 @@ function validate_all (validate,data) {
 	})
 }
 
+/**
+ * [delete_categories description]
+ * @param  {[type]} result [description]
+ * @return {[type]}        [description]
+ */
 function delete_categories(result){
 	var params = {
 	    TableName: database.Table[0].TableName,
@@ -99,6 +105,7 @@ function delete_categories(result){
 		})
 	});
 }
+
 /**
  * last line of code
  * @json {main_object}

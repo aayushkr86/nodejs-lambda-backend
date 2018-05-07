@@ -51,7 +51,7 @@ const postSchema = {
             }
         }
     },
-    "required" : ["fileId","fileOrder", "commentOrder","tags"]
+    "required" : ["fileId","fileOrder","tags"]
 };
 
 const validate = ajv.compile(postSchema);
@@ -78,7 +78,7 @@ function execute(data,callback){
 			if(data.reply != undefined ){
 				return add_reply(result);
 			}else{
-				return add_comments(result);	
+				return add_comment(result);
 			}
 		})
 		// .then(function(another_result){
@@ -114,12 +114,59 @@ function validate_all(validate,data){
 	})
 }
 
+function add_comment(data){
+	return new Promise((resolve,reject)=>{
+		auto_inrement_comment(data)
+			.then(function(data){
+				console.log(data);
+				return add_with_increment_comments(data);
+			})
+			.then(function(response){
+				resolve(response);
+			})
+			.catch(function(e){
+				reject(e);
+			});
+	})
+}
+
+function auto_inrement_comment(data){
+	return new Promise((resolve,reject)=>{
+		/*
+		find the previous one and get the last element
+		if not defined then 1 else +1
+		 */
+		var params = {
+		    TableName: database.Table[0].TableName,
+		    KeyConditionExpression: 'commentId = :value ', // a string representing a constraint on the attribute
+		    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+		      ':value': data.fileId+data.fileOrder
+		    },
+		    ScanIndexForward: false, // optional (true | false) defines direction of Query in the index
+		    Limit: 1, // optional (limit the number of items to evaluate)
+		};
+		console.log(params);
+		docClient.query(params,function(err,data1){
+			if(err){
+				reject(err.message);
+			}else{
+				console.log(data1.Items[0]);
+				if(data1.Items[0] != undefined && data1.Items[0].commentOrder){
+					data.commentOrder = data1.Items[0].commentOrder+1;
+				}else{
+					data.commentOrder =1;
+				}
+				resolve(data);
+			}
+		})
+	})
+}
 /**
  * show list of comments in the particular file
  * @param  {[type]} data [whole result]
  * @return {[type]}      [Promise with resolve result and reject with error message]
  */
-function add_comments(data){
+function add_with_increment_comments(data){
 	return new Promise((resolve,reject)=>{
 		if(data.fileId == ""){
 			reject("Please enter valid fileId");
@@ -141,6 +188,7 @@ function add_comments(data){
 			    // ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
 			    // ReturnItemCollectionMetrics: 'NONE', // optional (NONE | SIZE)
 			};
+			console.log(params);
 			docClient.put(params, function(err, data) {
 			    if (err){
 			    	reject(err.message);

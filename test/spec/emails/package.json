@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^6.4.0",
-    "ajv-async": "^1.0.1"
+    "ajv-async": "^1.0.1",
+    "aws-lambda-multipart-parser": "^0.1.2"
   }
 }

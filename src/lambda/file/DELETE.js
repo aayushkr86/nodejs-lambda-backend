@@ -87,6 +87,7 @@ function delete_file(result){
 	    	"fileId":result.fileId,
 	    	"fileOrder":result.fileOrder
 	    }
+	    //delete all the comments for that files
 	};
 	console.log(params);
 	return new Promise((resolve,reject)=>{

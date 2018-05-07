@@ -13,7 +13,7 @@ let DUMP = require('./DUMP');
  */
 exports.handler = function  (event,context,callback) {
 	switch(event.httpMethod){
-		case 'GET': GET.execute(event.queryparameter,callback);
+		case 'GET': GET.execute(event.queryStringParameters,callback);
 					break;
 		case 'POST': POST.execute(event.body,callback);
 					break;
