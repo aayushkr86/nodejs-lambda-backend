@@ -13,7 +13,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -27,6 +27,8 @@ const Ajv 		 = require('ajv')
 const setupAsync = require('ajv-async')
 const ajv 	     = setupAsync(new Ajv())
 const fileType   = require('file-type')
+var jwt          = require('jsonwebtoken')
+
 var updateSchema = {
   $async:true,
   type: "object",
@@ -67,9 +69,31 @@ var validate = ajv.compile(updateSchema)
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute (data, callback) {
-  validate_all(validate, data)
-    .then(function (result) {
+
+function authorization(event) { //console.log(token)
+    var token = event.headers.Authorization
+    return new Promise ((resolve, reject)=>{
+        var decode = jwt.decode(token)
+        if(!decode){
+            return reject('no authorization token provided')
+        }else if(decode['cognito:username'] == undefined){
+            return reject('cognito username not found in the token')
+        }
+        if(typeof event.body == 'string') {
+           event.body = JSON.parse(event.body) 
+        }
+        event.body['username'] = decode['cognito:username'];
+        // console.log(event.body)
+        resolve(event)
+    })  
+}
+
+function execute (event, callback) {
+        authorization(event)
+        .then((event)=>{
+            return validate_all(validate, event.body)
+        }) 
+        .then(function (result) {
         if(result.profilepic_url) {
             return file_upload(result)
         }else{
@@ -96,9 +120,9 @@ function execute (data, callback) {
  * @param  {[type]} data [description]
  * @return {[type]}      [description]
  */
-function validate_all (validate, data) { // console.log(data)
+function validate_all(validate, data) {  //console.log(data)
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
+    validate(data).then(function (res) {
 		    resolve(res)
     }).catch(function (err) {
 		  console.log(JSON.stringify(err, null, 6))
@@ -113,7 +137,7 @@ function file_upload(result) { //console.log(result.profilepic_url)
         var buffer = Buffer.from(result.profilepic_url.replace(/^data:image\/\w+;base64,/, ""),"base64");
         var fileMine = fileType(buffer)
         console.log(fileMine)
-        if(fileMine.mime != ('image/jpeg'||'image/png')) {
+        if(fileMine.mime == null) {
          return reject('not a image file')
         }
         uploadtoS3(buffer, fileMine)
@@ -164,23 +188,26 @@ function expressions(result) {
             }
         }
         update_expression_array.push('updatedAt = :updatedAt')
-        update_values_object[':updatedAt'] = new Date().getTime() 
+        update_expression_array.push('id = :id')
+        update_values_object[':updatedAt'] = new Date().getTime()
+        update_values_object[':id']      = uuid.v1(); 
         var update_expression_string = update_expression_array.join(', ')
         result = {
             "update_expression_string" : update_expression_string,
             "update_names_object" : update_names_object,
             "update_values_object" : update_values_object,
+            "username" : result.username
         }
         resolve(result)
     })
 }
 
 
-function update_user (result) {
+function update_user (result) { //console.log(result)
     var params = {
         TableName: "users",
         Key: {
-            "username": 'aayush',
+            "username": result.username
         },
         UpdateExpression: 'SET '+result.update_expression_string,
         ExpressionAttributeNames : result.update_names_object,

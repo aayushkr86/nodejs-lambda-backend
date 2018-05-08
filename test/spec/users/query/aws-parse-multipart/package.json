@@ -1,0 +1,16 @@
+{
+  "name": "aws-parse-multipart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "aayush@code.org",
+  "license": "ISC",
+  "dependencies": {
+    "aws-lambda-multipart-parser": "^0.1.2",
+    "aws-sdk": "^2.233.1",
+    "file-type": "^7.7.1"
+  }
+}

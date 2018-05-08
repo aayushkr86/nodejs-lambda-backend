@@ -1,22 +1,7 @@
-let UPDATE = require('../query/update+insert1.js');
-let authorizer = require('../authorizer')
+let UPDATE = require('../query/getBatchUsers');
 
-exports.handler = function (event, context, cb) { //console.log(event)
+exports.handler = function (event, context, cb) { 
    
-    // authorizer()
     UPDATE.execute(event, cb)
     
 }
-
-// # INTEGRATION: LAMBDA
-//             # integration: lambda
-//             # request:
-//             #   template:
-//             #   application/json: '{ "foo" : "$input.params(''bar'')" }'
-
-//             # ApiGatewayRestApi:
-//             # Type: AWS::ApiGateway::RestApi
-//             # Properties:
-//             #   Name: $<self:custom.apiGateway>
-//             #   BinaryMediaTypes:
-//             #   - "application~1octet-stream"

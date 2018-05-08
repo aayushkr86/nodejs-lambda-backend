@@ -21,6 +21,7 @@
     "aws-sdk": "^2.224.1",
     "file-type": "^7.6.0",
     "fs": "0.0.1-security",
+    "jsonwebtoken": "^8.2.1",
     "minio": "^5.0.0",
     "neo4j": "^2.0.0-RC2",
     "neo4j-driver": "^1.5.0",
