@@ -84,27 +84,29 @@ function getBatchUsers(result) {
         keys.push(key)
     });
     return new Promise((resolve, reject)=>{
-        var Table = database.Table[0].TableName;
+        // var Table = database.Table[0].TableName;
         var params = {
             RequestItems: { 
                 'users': {
                     Keys: keys,
                     AttributesToGet: [ 
-                        'firstname',
-                        'lastname',
-                        'profilepic_url',
+                        'firstName',
+                        'lastName',
+                        'profilePicUrl',
                         'username',
                         'email'    
                     ],
-                    ConsistentRead: false, 
+                    // ConsistentRead: false, 
                 },
             },
-            ReturnConsumedCapacity: 'NONE', 
+            // ReturnConsumedCapacity: 'NONE', 
         };
         docClient.batchGet(params, function(err, data) { 
             if (err) {
                 console.log(err);
                 reject(err)
+            }else if(data.Responses.users.length == 0) {
+                reject("no user found")
             }
             else {
                 resolve(data.Responses) 

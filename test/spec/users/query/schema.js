@@ -10,7 +10,7 @@ var params = {
     AttributeDefinitions: [       
         { AttributeName: "username", AttributeType: "S" },
         { AttributeName: "updatedAt", AttributeType: "N" },
-        { AttributeName: "uuid", AttributeType: "S" },
+        { AttributeName: "id", AttributeType: "S" },
     ],
     ProvisionedThroughput: {       
         ReadCapacityUnits: 1, 
@@ -18,9 +18,9 @@ var params = {
     },
     GlobalSecondaryIndexes: [ 
         { 
-            IndexName: 'uuidIndex', 
+            IndexName: 'idIndex', 
             KeySchema: [
-                { AttributeName: 'uuid', KeyType: 'HASH', },
+                { AttributeName: 'id', KeyType: 'HASH', },
                 { AttributeName: 'updatedAt', KeyType: 'RANGE', }
             ],
             Projection: { 

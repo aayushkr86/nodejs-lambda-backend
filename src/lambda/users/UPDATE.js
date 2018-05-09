@@ -4,17 +4,17 @@ const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
 
 if (process.env.AWS_REGION == 'local') {
-  mode 			= 'offline'
-  // sns 		= require('../../../offline/sns');
-  docClient 	= require('../../../offline/dynamodb').docClient
-  S3 			= require('../../../offline/S3');
-  // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
+  mode 		= 'offline'
+  // sns 	= require('../../../offline/sns');
+  docClient = require('../../../offline/dynamodb').docClient
+  S3 		= require('../../../offline/S3');
+  dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
-  mode 			= 'online'
-  // sns 			= new AWS.SNS();
-  docClient 		= new AWS.DynamoDB.DocumentClient({})
-  S3 			= new AWS.S3();
-  // dynamodb 	= new AWS.DynamoDB();
+  mode 		= 'online'
+  // sns 	= new AWS.SNS();
+  docClient = new AWS.DynamoDB.DocumentClient({})
+  S3 		= new AWS.S3();
+  dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
 
@@ -33,29 +33,23 @@ var updateSchema = {
   $async:true,
   type: "object",
   properties: {
-        firstname : {
+        firstName : {
             type: "string",
         },
-        lastname : {
+        lastName : {
             type: "string",
         },
         gender : {
             type: "string",
             enum:['male', 'female']
         },
-        lastname : {
+        companyName : {
             type: "string",
         },
-        company_name : {
+        departmentName : {
             type: "string",
         },
-        department_name : {
-            type: "string",
-        },
-        cognitoAcessToken : {
-            type: "string",
-        },
-        profilepic_url : {
+        profilePicUrl : {
             type: "string",
         }
     },
@@ -94,7 +88,7 @@ function execute (event, callback) {
             return validate_all(validate, event.body)
         }) 
         .then(function (result) {
-        if(result.profilepic_url) {
+        if(result.profilePicUrl) {
             return file_upload(result)
         }else{
             return result;
@@ -132,9 +126,9 @@ function validate_all(validate, data) {  //console.log(data)
 }
 
 
-function file_upload(result) { //console.log(result.profilepic_url)
+function file_upload(result) { //console.log(result.profilePicUrl)
     return new Promise((resolve, reject)=>{
-        var buffer = Buffer.from(result.profilepic_url.replace(/^data:image\/\w+;base64,/, ""),"base64");
+        var buffer = Buffer.from(result.profilePicUrl.replace(/^data:image\/\w+;base64,/, ""),"base64");
         var fileMine = fileType(buffer)
         console.log(fileMine)
         if(fileMine.mime == null) {
@@ -142,7 +136,7 @@ function file_upload(result) { //console.log(result.profilepic_url)
         }
         uploadtoS3(buffer, fileMine)
         .then((url)=>{
-            result['profilepic_url'] = url;
+            result['profilePicUrl'] = url;
             resolve(result)
         })
         .catch((err)=>{
@@ -154,23 +148,42 @@ function file_upload(result) { //console.log(result.profilepic_url)
 
 function uploadtoS3(buffer, fileMine) { //console.log(buffer)
     return new Promise((resolve, reject)=>{
-        var params = {
-            "bucketname"   : 'users',
-            "filename"     : Date.now()+'.'+fileMine.ext,
-            "file"         : buffer,
-        }
-        //console.log(params)
-        S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) { 
-            if (err) {
-                console.log(err)  
-                reject(err)
+        if(mode == 'offline') {
+            var params = {
+                "bucketname"   : 'users',
+                "filename"     : Date.now()+'.'+fileMine.ext,
+                "file"         : buffer,
             }
-            else {
-                console.log('File uploaded successfully.Tag:',etag) 
-                url = params.bucketname+'/'+params.filename;
-                resolve(url)  
-            } 
-        });
+            //console.log(params)
+            S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) { 
+                if (err) {
+                    console.log(err)  
+                    reject(err)
+                }
+                else {
+                    console.log('File uploaded successfully.Tag:',etag) 
+                    url = params.bucketname+'/'+params.filename;
+                    resolve(url)  
+                } 
+            });
+        }else{
+            var params = {
+                Bucket: "talkd",
+                Key: Date.now()+'.'+fileMine.ext,
+                Body: buffer,  
+            };
+            S3.putObject(params, function(err, data) {
+                if (err) {
+                    console.log(err)  
+                    reject(err)
+                }
+                else {
+                    console.log('File uploaded successfully.Tag:',data) 
+                    url = params.Bucket+'/'+params.Key;
+                    resolve(url)  
+                }        
+            });
+        }  
     })
 }
 
