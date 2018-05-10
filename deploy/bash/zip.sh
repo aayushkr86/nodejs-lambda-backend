@@ -2,6 +2,7 @@
 set -e
 projname=""
 cd ..
+mkdir -p src
 cd ..
 cd src/lambda/"$1"
 pwd
