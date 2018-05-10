@@ -40,19 +40,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_cognitoauth/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_cognitoauth/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -73,19 +74,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_comments/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_comments/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -106,19 +108,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_emails/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_emails/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -139,19 +142,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_extra/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_extra/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -172,19 +176,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_file/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_file/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -205,19 +210,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_folder/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_folder/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -238,19 +244,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_help/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_help/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -271,19 +278,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_logo/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_logo/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -304,19 +312,20 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_sendtoclient/invocations",
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+               "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_sendtoclient/invocations",
                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
-               },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       },
@@ -342,19 +351,59 @@
                }
             },
             "x-amazon-apigateway-integration": {
-               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
-               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_streams/invocations",
-               "responses": {
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+                "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_streams/invocations",
+                "responses": {
                   "default": {
-                     "statusCode": 200
+                    "statusCode": "200"
                   }
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
+            }
+         }
+      },
+      "/youtube": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of youtube",
+            "operationId": "youtube",
+            "description": "youtube api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "security": [
+               {
+                  "Authorization": []
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
                },
-               "passthroughBehavior": "when_no_match",
-               "requestTemplates": {
-                  "application/json": null
-               },
-               "httpMethod\"": "POST",
-               "type\"": "aws"
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+                "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_youtube/invocations",
+                "responses": {
+                  "default": {
+                    "statusCode": "200"
+                  }
+                },
+                "requestTemplates": {
+                  "application/json": "#set($allParams = $input.params().querystring)\n{\n\t\"httpMethod\" : \"$context.httpMethod\",\n\t\"body\": $input.json('$'),\n    \"queryStringParameters\" : {\n      #foreach($paramName in $allParams.keySet())\n      \"$paramName\" : \"$util.escapeJavaScript($allParams.get($paramName))\"\n      #if($foreach.hasNext),#end\n      #end\n    },\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n        \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\"\n        #if($foreach.hasNext),#end\n        #end\n    }\n}"
+                },
+                "passthroughBehavior": "when_no_templates",
+                "httpMethod": "POST",
+                "contentHandling": "CONVERT_TO_TEXT",
+                "type": "aws"
             }
          }
       }
@@ -367,7 +416,7 @@
          "x-amazon-apigateway-authtype": "cognito_user_pools",
          "x-amazon-apigateway-authorizer": {
             "providerARNs": [
-               "arn:aws:cognito-idp:eu-central-1:188097494660:userpool/eu-central-1_uGAaDivFl\""
+               "arn:aws:cognito-idp:eu-central-1:188097494660:userpool/eu-central-1_XB71WzA1P"
             ],
             "type": "cognito_user_pools"
          }
