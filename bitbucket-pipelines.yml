@@ -1,4 +1,4 @@
-image: codelovers/nodejs-aws-cli
+image: sookcha/docker-awscli-with-zip
 
 pipelines:
   tags:
