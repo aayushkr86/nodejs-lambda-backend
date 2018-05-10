@@ -51,7 +51,7 @@ module.exports={execute};
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute(data,callback){
+function execute(data,callback) {
 	console.log(data);
 	if(typeof data == "string"){
 		try{

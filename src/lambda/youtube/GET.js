@@ -41,20 +41,20 @@ function execute (event, callback) {
     })
 }
 
-function fecthVideos () { 
+function fecthVideos () {   
     const url = process.env.PLAYLIST_URL;
-    const API_KEY = process.env.GOOGLE_API_KEY;
     const playlistId = url.split('=')
     const options = {
         maxResults: 25
     };
-
     return new Promise((resolve, reject)=>{
-        // ypi(API_KEY, playlistId[1], options) 
-        ypi(API_KEY, 'PL35F93FA3C740F3BB', options) 
+        if(url == undefined || process.env.GOOGLE_API_KEY == undefined) {
+            return reject('PLAYLIST_URL or GOOGLE_API_KEY env variables not set')
+        }
+        ypi(process.env.GOOGLE_API_KEY, playlistId[1], options)
         .then((items)=> {
             // console.log(items);
-            resolve(items)
+            resolve({'items' : items})
         }).catch((error)=> {
             console.log(error);
             reject("something went wrong")

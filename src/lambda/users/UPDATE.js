@@ -162,14 +162,14 @@ function uploadtoS3(buffer, fileMine) { //console.log(buffer)
                 }
                 else {
                     console.log('File uploaded successfully.Tag:',etag) 
-                    url = params.bucketname+'/'+params.filename;
+                    var url = params.bucketname+'/'+params.filename;
                     resolve(url)  
                 } 
             });
         }else{
             var params = {
                 Bucket: "talkd",
-                Key: Date.now()+'.'+fileMine.ext,
+                Key: 'userpics'+'/'+Date.now()+'.'+fileMine.ext,
                 Body: buffer,  
             };
             S3.putObject(params, function(err, data) {
@@ -179,7 +179,7 @@ function uploadtoS3(buffer, fileMine) { //console.log(buffer)
                 }
                 else {
                     console.log('File uploaded successfully.Tag:',data) 
-                    url = params.Bucket+'/'+params.Key;
+                    var url = params.Bucket+'/'+params.Key;
                     resolve(url)  
                 }        
             });

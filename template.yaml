@@ -142,7 +142,7 @@ Resources:
         Variables:
           AWS_REGION: local
           PLAYLIST_URL: https://www.youtube.com/playlist?list=PL35F93FA3C740F3BB
-          GOOGLE_API_KEY: AIzaSyCZbA0lomdNbhkWsMcptbEdxuaXO1jiN-Q
+          GOOGLE_API_KEY: AIzaSyCkS6vUvK1MkCxu4iP-hs6tePdKkCXuCzs
       Events:
         AllProduct:
           Type: Api
