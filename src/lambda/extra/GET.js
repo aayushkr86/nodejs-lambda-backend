@@ -35,7 +35,7 @@ const getSchema = {
     "content":{
     	"type":"string",
     	"enum":[
-    		"Teaser"
+    		"TeaserVideo"
     	]
     }
   }
@@ -55,7 +55,7 @@ function execute(data,callback){
 	
 	validate_all(validate,data)
 		.then(function(result){
-			if(result.content == "Teaser"){
+			if(result.content == "TeaserVideo"){
 				return getTeaser(result);
 			}
 		})

@@ -63,7 +63,7 @@ function execute(data,callback){
 		})
 }
 
-function general(result){
+function general(data){
 	return new Promise((resolve,reject)=>{
 		var params={
 			AuthFlow: "REFRESH_TOKEN",

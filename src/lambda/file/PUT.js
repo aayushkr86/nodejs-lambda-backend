@@ -99,6 +99,8 @@ function execute(data,callback){
 					default:
 				}
 				if(allow == true){
+					result['fileS3Key']="public/TeaserVideo/"+result['fileS3Key'];
+					result['fileLoc']="https://s3.eu-central-1.amazonaws.com/"+result['fileS3Bucket']+"/"+result['fileS3Key']+"."+result['fileType'];
 					return post_file(result);
 				}else{
 					return new Promise((resolve,reject)=>{

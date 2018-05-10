@@ -1,7 +1,7 @@
 module.exports={
 	"Table":[
 		{
-			"TableName":"help",
+			"TableName":"talkd_Help",
 		}
 	]
 };

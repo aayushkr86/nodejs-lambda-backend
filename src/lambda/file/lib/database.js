@@ -1,10 +1,10 @@
 module.exports={
 	"Table":[
 		{
-			"TableName":"FILES",
+			"TableName":"talkd_Files",
 		},
 		{
-			"TableName":"FOLDERS",
+			"TableName":"talkd_Folders",
 		}
 	]
 };

@@ -1,7 +1,7 @@
 module.exports={
 	"Table":[
 		{
-			"TableName":"comments",
+			"TableName":"talkd_Comments",
 		}
 	]
 };

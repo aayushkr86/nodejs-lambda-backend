@@ -23,8 +23,8 @@ exports.handler = function  (event,context,callback) {
 					break;
 		// case 'UPDATE': UPDATE.execute(event.body,callback);
 		// 			break;
-		case 'DELETE': DELETE.execute(event.body,callback);
-					break;
+		// case 'DELETE': DELETE.execute(event.body,callback);
+					// break;
 		default : DUMP.execute({},callback);
 	}
 }

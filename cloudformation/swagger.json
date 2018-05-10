@@ -1,0 +1,381 @@
+{
+   "swagger": "2.0",
+   "info": {
+      "description": "s9owegovd8.execute-api.eu-central-1.amazonaws.com/dev",
+      "version": "1.0.0",
+      "title": "Salestool",
+      "contact": {
+         "email": "vinay@code5.org"
+      },
+      "license": {
+         "name": "Apache 2.0",
+         "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+   },
+   "tags": [
+      {
+         "name": "admins",
+         "description": "Secured Admin-only calls"
+      },
+      {
+         "name": "developers",
+         "description": "Operations available to regular developers"
+      }
+   ],
+   "paths": {
+      "/cognitoauth": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "cognitoauth integration as a api",
+            "operationId": "cognitoauth",
+            "description": "cognitoauth api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_cognitoauth/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/comments": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of comments on the file",
+            "operationId": "comments",
+            "description": "comments api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_comments/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/emails": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of emails",
+            "operationId": "emails",
+            "description": "emails api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_emails/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/extra": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of teaser videos",
+            "operationId": "getlistofextra",
+            "description": "Extra api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_extra/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/file": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of file",
+            "operationId": "file",
+            "description": "file api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_file/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/folder": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of folder",
+            "operationId": "folder",
+            "description": "folder api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_folder/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/help": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of help",
+            "operationId": "help",
+            "description": "help api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_help/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/logo": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of logo",
+            "operationId": "logo",
+            "description": "logo api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_logo/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/sendtoclient": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of sendtoclient",
+            "operationId": "sendtoclient",
+            "description": "sendtoclient api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_sendtoclient/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      },
+      "/streams": {
+         "x-amazon-apigateway-any-method": {
+            "summary": "list of streams",
+            "operationId": "streams",
+            "description": "streams api for Euro Part\n",
+            "produces": [
+               "application/json"
+            ],
+            "security": [
+               {
+                  "Authorization": []
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "search results matching criteria"
+               },
+               "400": {
+                  "description": "what went wrong"
+               }
+            },
+            "x-amazon-apigateway-integration": {
+               "credentials": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+               "uri": "arn: aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:188097494660:function:talkd_streams/invocations",
+               "responses": {
+                  "default": {
+                     "statusCode": 200
+                  }
+               },
+               "passthroughBehavior": "when_no_match",
+               "requestTemplates": {
+                  "application/json": null
+               },
+               "httpMethod\"": "POST",
+               "type\"": "aws"
+            }
+         }
+      }
+   },
+   "securityDefinitions": {
+      "Authorization": {
+         "type": "apiKey",
+         "name": "Authorization",
+         "in": "header",
+         "x-amazon-apigateway-authtype": "cognito_user_pools",
+         "x-amazon-apigateway-authorizer": {
+            "providerARNs": [
+               "arn:aws:cognito-idp:eu-central-1:188097494660:userpool/eu-central-1_uGAaDivFl\""
+            ],
+            "type": "cognito_user_pools"
+         }
+      }
+   },
+   "schemes": [
+      "https"
+   ],
+   "host": "s9owegovd8.execute-api.eu-central-1.amazonaws.com",
+   "basePath": "/dev"
+}

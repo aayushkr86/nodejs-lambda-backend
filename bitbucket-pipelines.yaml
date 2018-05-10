@@ -1,6 +1,22 @@
 image: codelovers/nodejs-aws-cli
 
 pipelines:
+  tags:
+    deploy*:
+        - step:
+            script:
+                - cd deploy/bash
+                - bash push.sh
+    deploy-api-overwrite:
+        - step:
+            script:
+                - cd deploy/bash
+                - bash apigateway.sh overwrite
+    deploy-api:
+        - step:
+            script:
+                - cd deploy/bash
+                - bash apigateway.sh merge
   live:
       - step:
           script:
