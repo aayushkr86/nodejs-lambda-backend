@@ -2,6 +2,8 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 		= require('aws-sdk');
 const response 	= require('./lib/response.js');
+const database 	= require('./lib/database')
+
 
 if(process.env.AWS_REGION == "local"){
 	mode 		= "offline";
@@ -31,27 +33,41 @@ module.exports={execute};
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-function execute(data,callback){
-	validate(data)
-		.then(function(result){
-			return general(result);
+function execute(data,callback) {
+	login_details()
+		.then(function(result) {
+				response({code:200, body:result}, callback);
 		})
-		.then(function(result){
-				response({code:200,body:result},callback);
-		})
-		.catch(function(err){
-			response({code:400,err:{err}},callback);
+		.catch(function(err) {
+			response({code:400, err:{err}}, callback);
 		})
 }
 
-function general(result){
+function login_details() {
 	return new Promise((resolve,reject)=>{
-		resolve({"body":"Cognito Login API"});
+		var params = {
+			TableName: database.Table[0].TableName,
+			KeyConditionExpression: '#HASH = :value', 
+			ExpressionAttributeNames : {
+				'#HASH'  : 'status',
+			},
+			ExpressionAttributeValues: { 
+			  ':value': 'active',
+			},
+			// Limit: 20,
+		};
+		docClient.query(params, function(err, data) { 
+			if (err) {
+				console.log(err);
+				reject(err)
+			}
+			else if(data.Items.length == 0) {
+				reject('no user loggedin details found')
+			}
+			else { 
+				resolve({'message' : data.Items}) 
+			} 
+		});
 	})
 }
 
-function validate(data){
-	return new Promise((resolve,reject)=>{
-		resolve(1);
-	})
-}

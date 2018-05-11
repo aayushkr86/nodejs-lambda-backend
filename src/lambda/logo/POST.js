@@ -96,22 +96,42 @@ function upload_logo(result) {
     if(fileMine === null) {
      return reject('not a image file')
     }
-    var params = {
-          bucketname : 'logo',
-          filename   : Date.now()+'.'+fileMine.ext,
+    if(mode == 'offline') {
+      var params = {
+          bucketname : 'talkd',
+          filename   : 'logo'+'/'+Date.now()+'.'+fileMine.ext,
           file       : buffer
-    }
-  S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
-    if (err) {
-         console.log(err)  
-         reject(err)
       }
-    else {
-      console.log('File uploaded successfully.Tag:',etag) 
-      result['logo'] = params.bucketname+'/'+params.filename;
-      resolve(result)  
-    } 
-    });
+      S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+        if (err) {
+            console.log(err)  
+            reject(err)
+        }
+        else {
+          console.log('File uploaded successfully.Tag:',etag) 
+          result['logo'] = params.bucketname+'/'+params.filename;
+          resolve(result)  
+        } 
+      });
+    }else{
+      var params = {
+        Bucket: "talkd",
+        Key: 'logo'+'/'+Date.now()+'.'+fileMine.ext,
+        Body: buffer,  
+      };
+      S3.putObject(params, function(err, data) {
+          if (err) {
+              console.log(err)  
+              reject(err)
+          }
+          else {
+              console.log('File uploaded successfully.Tag:',data) 
+              result['logo']= params.Bucket+'/'+params.Key;
+              resolve(result)  
+          }        
+      });
+    }
+    
   })
 }
 

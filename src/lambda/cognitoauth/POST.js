@@ -4,6 +4,7 @@ const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
 AWS.config.region 	= "eu-central-1";
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
+const database 	= require('./lib/database')
 
 if(process.env.AWS_REGION == "local"){
 	mode 		= "offline";
@@ -25,6 +26,7 @@ if(process.env.AWS_REGION == "local"){
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
+var jwt             = require('jsonwebtoken');
 
 const PostSchema = {
   "$async":true,
@@ -52,7 +54,7 @@ module.exports={execute};
  * @return {[type]}            [description]
  */
 function execute(data,callback) {
-	console.log(data);
+	// console.log(data);
 	if(typeof data == "string"){
 		try{
 			data = JSON.parse(data);
@@ -80,10 +82,10 @@ function execute(data,callback) {
 function validate_all (validate,data) {
 	return new Promise((resolve,reject)=>{
 		validate(data).then(function (res) {
-			console.log(res);
+			// console.log(res);
 		    resolve(res);
 		}).catch(function(err){
-		  console.log(JSON.stringify( err,null,6) );
+		//   console.log(JSON.stringify( err,null,6) );
 		  reject(err.errors[0].dataPath+" "+err.errors[0].message);
 		})
 	})
@@ -109,9 +111,33 @@ function login(data) {
 			params.ContextData = data.ContextData;
 		}
 		cognitoidentityserviceprovider.adminInitiateAuth(params, function(err, data) {
-		  if (err) reject(err.message) // an error occurred
-		  else resolve(data);           // successful response
+			if (err) {
+				reject(err.message) // an error occurred
+			}
+			else {
+			  	// console.log(data)
+				const token = data.IdToken			  	
+				const decode = jwt.decode(token)
+				const username = decode['cognito:username']
+				var params = {
+					TableName: database.Table[0].TableName,
+					Item: {
+						"status" : "active",
+						"loginAt" : new Date().getTime(),
+						"id" : uuid.v1(),
+						"username" : username 
+					},
+					ReturnValues: 'ALL_OLD',
+				}
+				docClient.put(params, function(err, data) {
+					if (err) {
+						console.error("Error:", JSON.stringify(err, null, 2));
+					} else {
+						console.log(username +'Successfully logged in');
+					}
+				}) 
+			  	resolve(data);           
+		 	}
 		});
-
 	})
 }

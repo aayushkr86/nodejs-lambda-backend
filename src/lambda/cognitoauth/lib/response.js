@@ -1,7 +1,7 @@
 
 module.exports = function (execution,callback) {
 	var response = {};
-	console.log(execution);
+	// console.log(execution);
 	if(execution.err){
 		response = {
 			statusCode: execution.code || 406,
@@ -21,6 +21,6 @@ module.exports = function (execution,callback) {
 		    body: JSON.stringify(execution.body) || {}
 		};
 	}
-	console.log(response);
+	// console.log(response);
 	callback(null,response);
 }

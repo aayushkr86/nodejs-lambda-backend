@@ -148,4 +148,20 @@ Resources:
           Type: Api
           Properties:
             Path: /youtube
-            Method: GET                    
+            Method: GET 
+            
+  cognito_auth:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/cognitoauth/index.handler
+      timeout: 10
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /cognitoauth
+            Method: any          

@@ -13,10 +13,7 @@
     "ajv-async": "^1.0.1",
     "async": "^2.6.0",
     "file-type": "^7.6.0",
-<<<<<<< HEAD
-=======
     "lambda-wrapper": "^0.2.2",
->>>>>>> development
     "uuid": "^3.2.1"
   }
 }

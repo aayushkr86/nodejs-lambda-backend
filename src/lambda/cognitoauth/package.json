@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jsonwebtoken": "^8.2.1",
     "lambda-wrapper": "^0.2.2",
     "uuid": "^3.2.1"
   }

@@ -9,9 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ajv": "^6.4.0",
+    "ajv": "^6.5.0",
     "ajv-async": "^1.0.1",
     "async": "^2.6.0",
+    "lambda-wrapper": "^0.3.0",
     "nodemailer": "^4.6.4",
     "uuid": "^3.2.1"
   }

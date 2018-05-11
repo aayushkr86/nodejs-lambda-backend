@@ -115,6 +115,9 @@ function execute (event, callback) {
  * @return {[type]}      [description]
  */
 function validate_all(validate, data) {  //console.log(data)
+    if(typeof data == 'string'){
+        data = JSON.parse(data)
+    }
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)
@@ -150,8 +153,8 @@ function uploadtoS3(buffer, fileMine) { //console.log(buffer)
     return new Promise((resolve, reject)=>{
         if(mode == 'offline') {
             var params = {
-                "bucketname"   : 'users',
-                "filename"     : Date.now()+'.'+fileMine.ext,
+                "bucketname"   : 'talkd',
+                "filename"     : 'userpics'+'/'+Date.now()+'.'+fileMine.ext,
                 "file"         : buffer,
             }
             //console.log(params)

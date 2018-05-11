@@ -1,7 +1,10 @@
 module.exports={
 	"Table":[
 		{
-			"TableName":"help",
+			"TableName":"help"
+		},
+		{
+			"TableName":"emails"
 		}
 	]
 };
