@@ -8,13 +8,13 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -65,10 +65,10 @@ var validate = ajv.compile(getSchema)
  */
 function execute (data, callback) { 
   if(data['LastEvaluatedKey.id'] && data['LastEvaluatedKey.date'] && data['LastEvaluatedKey.updatedAt']) {
-    LastEvaluatedKey = {
-      'id'   : data['LastEvaluatedKey.id'],
-      'date' : parseInt(data['LastEvaluatedKey.date']),
-      'updatedAt' : parseInt(data['LastEvaluatedKey.updatedAt'])
+    var LastEvaluatedKey = {
+        'id'   : data['LastEvaluatedKey.id'],
+        'date' : parseInt(data['LastEvaluatedKey.date']),
+        'updatedAt' : parseInt(data['LastEvaluatedKey.updatedAt'])
     };
     data.LastEvaluatedKey = LastEvaluatedKey
   }
@@ -96,6 +96,9 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { 
+  if(typeof data == 'string'){
+    data = JSON.parse(data)
+  } 
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)
@@ -120,6 +123,7 @@ function get_streams (result) {
   if (result.LastEvaluatedKey != undefined) { 
     params.ExclusiveStartKey = result.LastEvaluatedKey
   }
+  // show at first place param
   var params1 = {
     TableName: database.Table[0].TableName,
     KeyConditionExpression: 'id = :value',
@@ -138,9 +142,6 @@ function get_streams (result) {
             console.error('Unable to query. Error:', JSON.stringify(err, null, 2))
             done(true, err)
           }
-          else if(data.Items.length == 0) {
-            done(true, "no item found")
-          } 
           else {
             done(null, data)
           }
@@ -157,20 +158,22 @@ function get_streams (result) {
         })
       },
       function (publish, show_first) {
-        if(!result['LastEvaluatedKey.id'] && !result['LastEvaluatedKey.date']) {
+        if((publish.Items.length == 0) && (show_first.Items.length == 0)){
+          return reject("no item found")
+        }
+        if(!result['LastEvaluatedKey']) {
           show_first.Items.forEach(function (elem) {
             publish.Items.unshift(elem)
           })
           console.log(publish.Items.length)
           if (publish.Items.length == 6) {
             publish.Items.splice(5, 1)
-            publish.LastEvaluatedKey.date = publish.Items[4].date
             publish.LastEvaluatedKey.id = publish.Items[4].id
+            publish.LastEvaluatedKey.date = publish.Items[4].date
+            publish.LastEvaluatedKey.updatedAt = publish.Items[4].updatedAt
           }
         }
-        if(publish.Items.length == 0){
-          return reject("no item found")
-        }
+        
         result['result'] = {'items': publish.Items, LastEvaluatedKey : publish.LastEvaluatedKey }
         resolve(result)
       }

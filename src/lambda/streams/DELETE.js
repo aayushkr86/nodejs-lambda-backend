@@ -8,13 +8,13 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////

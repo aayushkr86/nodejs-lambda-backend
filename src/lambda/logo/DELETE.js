@@ -68,6 +68,9 @@ function execute (data, callback) { // console.log(data)
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { // console.log(data)
+  if(typeof data == 'string'){
+    data = JSON.parse(data)
+  }
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)

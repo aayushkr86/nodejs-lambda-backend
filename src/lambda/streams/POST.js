@@ -14,7 +14,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -142,63 +142,97 @@ function validate_all (validate, data) {
 
 function upload_files(result) { //console.log(result)
   return new Promise((resolve, reject) => {
-    var buffer_image = Buffer.from(result.image.replace(/^data:image\/\w+;base64,/, ""),"base64");
-    var buffer_pdf = Buffer.from(result.pdf.replace(/^data:image\/\w+;base64,/, ""),"base64");
-    var fileMine_image = fileType(buffer_image)
-    var fileMine_pdf = fileType(buffer_pdf)
-    console.log(fileMine_image)
-    console.log(fileMine_pdf)
-    if(fileMine_image === null && fileMine_pdf === null) {
+    if(result.image){
+      var buffer_image = Buffer.from(result.image.replace(/^data:image\/\w+;base64,/, ""),"base64");
+      var fileMine_image = fileType(buffer_image)
+      console.log(fileMine_image)
+    }
+    if(fileMine_image === undefined && result.pdf === undefined) {
       return reject('No image or pdf file')
     }
-
     var directory = uuid.v1();
     async.parallel({
       one : function(done) {
         if(fileMine_image) {
-              var params = {
-                  bucketname : 'streams',
-                  filename   : Date.now()+'.'+fileMine_image.ext,
-                  file       : buffer_image
-              }
-              S3.putObject(params.bucketname, directory+'/'+params.filename, params.file, 'image/jpeg', function(err, etag) {
-                if (err) {
-                  console.log(err)  
-                  done(true, err)
-                }
-                else {
-                  console.log('Image file uploaded successfully.Tag:',etag) 
-                  result.image = params.bucketname+'/'+directory+'/'+params.filename;
-                  result['directory'] = directory
-                  done(null, result)  
-                } 
-              });
+            if(mode == 'offline'){
+                  var params = {
+                      bucketname : 'talkd',
+                      filename   : 'streams'+'/'+directory+'/'+Date.now()+'.'+fileMine_image.ext,
+                      file       : buffer_image
+                  }
+                  S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+                    if (err) {
+                      console.log(err)  
+                      done(true, err)
+                    }
+                    else {
+                      console.log('Image file uploaded successfully.Tag:',etag) 
+                      result.image = params.bucketname+'/'+params.filename;
+                      result['directory'] = directory
+                      done(null, result)  
+                    } 
+                  });
+            }else{
+                  var params = {
+                    Bucket: "talkd",
+                    Key: 'streams'+'/'+directory+'/'+Date.now()+'.'+fileMine_image.ext,
+                    Body: buffer_image,  
+                  };
+                  S3.putObject(params, function(err, data) {
+                      if (err) {
+                          console.log(err)  
+                          done(true, err)
+                      }
+                      else {
+                          console.log('File uploaded successfully.Tag:',data) 
+                          result.image = params.Bucket+'/'+params.Key;
+                          result['directory'] = directory
+                          done(null, result)   
+                      }        
+                  });
+            }     
         }else{
-              result.image = null;
+              result['image'] = null;
               done(null, result)
         }      
       },
       two : function(done) {
-            if(fileMine_pdf) {
-                var params = {
-                      bucketname : 'streams',
-                      filename   : Date.now()+'.'+fileMine_pdf.ext,
-                      file       : buffer_pdf
-                }
-                S3.putObject(params.bucketname, directory+'/'+params.filename, params.file, 'application/pdf', function(err, etag) {
-                  if (err) {
-                    console.log(err)  
-                    done(true, err)
-                  }
-                  else {
-                    console.log('Pdf file uploaded successfully.Tag:',etag) 
-                    result.pdf = params.bucketname+'/'+directory+'/'+params.filename;
+            if(result.pdf) {
+                if(mode == 'offline'){ 
+                  var params = {
+                      bucketname : 'talkd',
+                      filename   : 'streams'+'/'+directory+'/'+Date.now()+'.'+'pdf',
+                      expiry:  24*60*60
+                  } 
+                  S3.presignedPutObject(params.bucketname, params.filename, params.expiry, function(err, presignedUrl){
+                      if(err){
+                        console.log(err)  
+                        done(true, err)
+                      }
+                    result.presignedUrl = presignedUrl;
+                    result.pdf = params.bucketname+'/'+params.filename;
                     result['directory'] = directory
                     done(null, result)
-                  } 
-                });
+                  })
+                }else{ 
+                    var params = {
+                        Bucket: 'talkd',
+                        Key: 'streams'+'/'+directory+'/'+Date.now()+'.'+'pdf',
+                        Expires:  24*60*60
+                    }
+                    S3.getSignedUrl('putObject', params, function(err, presignedUrl){
+                      if(err){
+                        console.log(err)  
+                        done(true, err)
+                      }
+                    result.presignedUrl = presignedUrl;
+                    result.pdf = params.Bucket+'/'+params.Key;
+                    result['directory'] = directory
+                    done(null, result)
+                    })
+                }
             }else{
-                result.pdf = null;
+                result['pdf'] = null;
                 done(null, result)
             } 
           }
@@ -272,6 +306,7 @@ function update_Show_at_first_place() {
               'pdf': create.Attributes.pdf,
               'publish': create.Attributes.publish,
               'show_at_first_place': false,
+              'directory': create.Attributes.directory,
               'createdAt': create.Attributes.createdAt,
               'updatedAt': new Date().getTime()
             }
@@ -280,7 +315,7 @@ function update_Show_at_first_place() {
             if (err) {
               done(true, err)
             } else {
-              console.log('Successfully updated')
+              console.log('Successfully updated previous show at first place')
               resolve('Successfully updated previous show at first place')
             }
           })
@@ -307,7 +342,7 @@ function post_stream(result) {
 		Item: {
 			"id"         : result.language+"_"+publish+"_"+show_at_first_place,
 			"date"       : Date.parse(new Date(z)),
-			"uuid"       : uuid.v1(),
+			"uuid"       : result.directory, //uuid and directory containing image & pdf are same 
 			"userid"     : result.userid,
 			"language"   : result.language,
 			"title"      : result.title,
@@ -331,7 +366,10 @@ function post_stream(result) {
         reject(err.message)
       } else {
         console.log('Item added:', data)
-        result['result'] = {'message': 'New Stream Inserted Successfully'}
+        result['result'] = {
+          'message': 'New Stream Inserted Successfully',
+          'pdfPresignedUrl': result.presignedUrl
+        }
         resolve(result)
       }
     })

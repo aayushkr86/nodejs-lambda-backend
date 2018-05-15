@@ -14,7 +14,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -88,8 +88,11 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { // console.log(data)
+    if(typeof data == 'string'){
+        data = JSON.parse(data)
+    }
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
+    validate(data).then(function (res) {
 		    resolve(res)
     }).catch(function (err) {
 		  console.log(JSON.stringify(err, null, 6))

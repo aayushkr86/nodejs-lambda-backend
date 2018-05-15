@@ -8,13 +8,13 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -22,11 +22,14 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			= require('uuid')
-const async     = require('async')
-const Ajv 			= require('ajv')
-const setupAsync 	= require('ajv-async')
-const ajv 			= setupAsync(new Ajv())
+const uuid 			 = require('uuid')
+const async      = require('async')
+const Ajv 			 = require('ajv')
+const setupAsync = require('ajv-async')
+const ajv 			 = setupAsync(new Ajv())
+const fileType   = require('file-type')
+const path       = require('path')
+
 var patchSchema = {
   $async: true,
   type: 'object',
@@ -88,6 +91,13 @@ var validate = ajv.compile(patchSchema)
  */
 function execute (data, callback) {
   validate_all(validate, data)
+    .then((result)=>{ 
+      if(result.image || result.pdf ){ 
+        return upload_files(result)
+      }else{
+        return result
+      }
+    })
     .then(function (result) {
       return update_streams(result)
     })
@@ -105,9 +115,12 @@ function execute (data, callback) {
  * @param  {[type]} data [description]
  * @return {[type]}      [description]
  */
-function validate_all (validate, data) { // console.log(data)
+function validate_all (validate, data) {
+  if(typeof data == 'string'){
+    data = JSON.parse(data)
+  }
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
+    validate(data).then(function (res) {
 		    resolve(res)
     }).catch(function (err) {
 		  console.log(JSON.stringify(err, null, 6))
@@ -116,7 +129,213 @@ function validate_all (validate, data) { // console.log(data)
   })
 }
 
-function update_streams (result) {
+function deleteFilesFromMinioServer(array, directory) {
+  return new Promise((resolve, reject)=>{
+    var stream = S3.listObjects('talkd',`streams/${directory}`, true)
+    stream.on('data', function(obj) { 
+      var filename = path.basename(obj.name); //console.log(filename)
+      var ext = path.extname(filename); //console.log(ext)
+      if(array.includes(ext)) {
+        // console.log("filename: ",filename)
+        S3.removeObject('talkd', `streams/${directory}/${filename}`, function(err) {
+          if (err) {
+            console.log('Unable to remove  object', err);
+            reject(`unable to remove ${filename} object`);
+          }
+          console.log(`Removed the ${filename} object`);
+        })
+      }
+    })
+    resolve();
+    stream.on('error', function(err) { 
+      console.log(err);
+      reject(err);
+    })
+  })
+}
+
+function deleteFilesFromS3(array, directory) {
+  return new Promise((resolve, reject)=>{
+    var params = { 
+      Bucket: 'talkd',
+      Delimiter: '/',
+      Prefix: `streams/${directory}/`
+     }
+     S3.listObjects(params, function (err, data) {
+      if (err) {
+        console.log('Unable to remove  object', err);
+        reject('unable to list objects');
+      }
+      // console.log(data);
+      data.Contents.forEach((elem)=>{
+        var filename = path.basename(elem.Key); //console.log(filename)
+        var ext = path.extname(filename); //console.log(ext)
+        if(array.includes(ext)) { // console.log("filename: ",filename)
+          var params = {
+            Bucket : 'talkd',
+            Key    : elem.Key
+          }
+          S3.deleteObject(params, function(err, data) {
+            if (err) {
+              console.log(err);
+              reject(`unable to remove ${filename} object`);
+            }
+            console.log(`Removed the ${filename} object`)
+            console.log(data);          
+          });
+        }      
+      })
+      resolve();
+     });
+  })
+}
+
+function upload_files(result) { //console.log(result)
+  return new Promise((resolve, reject) => {
+    if(result.image){
+      var buffer_image = Buffer.from(result.image.replace(/^data:image\/\w+;base64,/, ""),"base64");
+      var fileMine_image = fileType(buffer_image)
+      console.log(fileMine_image)
+    }
+    if(fileMine_image === undefined && result.pdf === undefined) {
+      return reject('No image or pdf file')
+    }
+    if(!result.uuid) { // to delete the previous image/pdf
+      return reject('please provide uuid of the table')
+    }
+    var directory = result.uuid;
+    async.parallel({
+      one : function(done) { 
+        if(fileMine_image) { 
+            if(mode == 'offline') { 
+              var array = ['.jpg', '.jpeg', '.png', '.gif']
+              deleteFilesFromMinioServer(array, directory)// delete previous image file if any
+              console.log('previous image file deleted sucessfully')
+              .then(()=>{
+                console.log('previous image file deleted sucessfully')
+                // upload new image file
+                var params = {
+                  bucketname : 'talkd',
+                  filename   : 'streams'+'/'+directory+'/'+Date.now()+'.'+fileMine_image.ext,
+                  file       : buffer_image
+                }
+                S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+                  if (err) {
+                    console.log(err)  
+                    done(true, err)
+                  }
+                  else {
+                    console.log('Image file uploaded successfully.Tag:',etag) 
+                    result.image = params.bucketname+'/'+params.filename;
+                    result['directory'] = directory
+                    done(null, result)  
+                  } 
+                });
+              })
+              .catch((err)=>{
+                done(true, err)
+              })
+            }else{
+                // delete previous image file if any
+                var array = ['.jpg', '.jpeg', '.png', '.gif']
+                deleteFilesFromS3(array, directory)// delete previous image file if any
+                .then(()=>{
+                  var params = {
+                    Bucket: "talkd",
+                    Key: 'streams'+'/'+directory+'/'+Date.now()+'.'+fileMine_image.ext,
+                    Body: buffer_image,  
+                  };
+                  S3.putObject(params, function(err, data) {
+                      if (err) {
+                          console.log(err)  
+                          done(true, err)
+                      }
+                      else {
+                          console.log('File uploaded successfully.Tag:',data) 
+                          result.image = params.Bucket+'/'+params.Key;
+                          result['directory'] = directory
+                          done(null, result)   
+                      }        
+                  });
+                })
+                .catch((err)=>{
+                  done(true, err)
+                })    
+            }     
+        }else{
+              result['image'] = null;
+              done(null, result)
+        }      
+      },
+      two : function(done) { 
+            if(result.pdf) { 
+                if(mode == 'offline'){ 
+                  var array = ['.pdf']
+                  deleteFilesFromMinioServer(array, directory)// delete previous pdf file if any
+                  .then(()=>{
+                    console.log('previous pdf file deleted sucessfully')
+                    // get preSignedUrl for new pdf file to upload.
+                    var params = {
+                        bucketname : 'talkd',
+                        filename   : 'streams'+'/'+directory+'/'+Date.now()+'.'+'pdf',
+                        expiry:  24*60*60
+                    } 
+                    S3.presignedPutObject(params.bucketname, params.filename, params.expiry, function(err, presignedUrl){
+                        if(err){
+                          console.log(err)  
+                          done(true, err)
+                        } 
+                      result.presignedUrl = presignedUrl;
+                      result.pdf = params.bucketname+'/'+params.filename;
+                      result['directory'] = directory
+                      done(null, result)
+                    })
+                  })
+                  .catch((err)=>{
+                    done(true, err)
+                  })
+                }else{ //online
+                  var array = ['.pdf']
+                  deleteFilesFromS3(array, directory)// delete previous pdf file if any
+                  .then(()=>{
+                    console.log('previous pdf file deleted sucessfully')
+                    // get preSignedUrl for new pdf file to upload.
+                    var params = {
+                      Bucket: 'talkd',
+                      Key: 'streams'+'/'+directory+'/'+Date.now()+'.'+'pdf',
+                      Expires:  24*60*60
+                    }
+                    S3.getSignedUrl('putObject', params, function(err, presignedUrl){
+                      if(err){
+                        console.log(err)  
+                        done(true, err)
+                      }
+                    result.presignedUrl = presignedUrl;
+                    result.pdf = params.Bucket+'/'+params.Key;
+                    result['directory'] = directory
+                    done(null, result)
+                    })  
+                  })
+                  .catch((err)=>{
+                    done(true, err)
+                  })
+                }
+            }else{
+                result['pdf'] = null;
+                done(null, result)
+            } 
+          }
+    },function(err, data){ //console.log(err, data,result)
+      if(err){
+        return reject("unable to upload data")
+      }
+      resolve(result) 
+    }) 
+  })
+}
+
+
+function update_streams (result) { 
   var params = {
     TableName: database.Table[0].TableName,
     Key: {
@@ -133,7 +352,7 @@ function update_streams (result) {
       } else if (Object.keys(data).length == 0) {
         reject('no item found')
       } else {
-        console.log('deleted succeeded', data)
+        // console.log('deleted succeeded', data)
         var params = {
           TableName: database.Table[0].TableName,
           Item: {
@@ -165,14 +384,17 @@ function update_streams (result) {
           var publish = params.Item.publish ? 1 : 0
           params.Item.id = params.Item.language + '_' + publish + '_' + show_first
         }
-        console.log('params', params)
+        // console.log('params', params)
         docClient.put(params, function (err, data) {
           if (err) {
             console.error('Error:', JSON.stringify(err, null, 2))
             reject(err.message)
           } else {
             console.log('Successfully updated:', data)
-            result['result'] = {'message': 'Successfully updated'}
+            result['result'] = {
+              'message': 'Successfully updated',
+              'pdfPresignedUrl': result.presignedUrl
+            }
             resolve(result)
           }
         })
