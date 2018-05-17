@@ -11,7 +11,9 @@
   "dependencies": {
     "googleapis": "^29.0.0",
     "mocha": "^5.1.1",
+    "node-async-loop": "^1.2.2",
     "youtube-dl": "^1.12.2",
+    "youtube-parser": "^1.1.0",
     "youtube-playlist-info": "^1.1.2"
   }
 }

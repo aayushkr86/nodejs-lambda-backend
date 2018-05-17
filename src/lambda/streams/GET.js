@@ -35,10 +35,6 @@ const getSchema = {
       type: 'string',
       enum: ['en_1_0']
     },
-    date: {
-      type: 'string',
-      format: 'date'
-    },
     LastEvaluatedKey:{
       type:"object",
       properties:{
@@ -46,11 +42,11 @@ const getSchema = {
           type: 'string',
           enum: ['en_1_0']
         },
-        date: {
+        updatedAt: {
           type: 'number',
         },
       },
-      required : ["id","date"]
+      required : ["id","updatedAt"]
     }
   },
   required: ['id']
@@ -64,18 +60,17 @@ var validate = ajv.compile(getSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { 
-  if(data['LastEvaluatedKey.id'] && data['LastEvaluatedKey.date'] && data['LastEvaluatedKey.updatedAt']) {
+  if(data['LastEvaluatedKey.id'] && data['LastEvaluatedKey.updatedAt']) {
     var LastEvaluatedKey = {
         'id'   : data['LastEvaluatedKey.id'],
-        'date' : parseInt(data['LastEvaluatedKey.date']),
         'updatedAt' : parseInt(data['LastEvaluatedKey.updatedAt'])
     };
     data.LastEvaluatedKey = LastEvaluatedKey
   }
-  else if(!data['LastEvaluatedKey.id'] && !data['LastEvaluatedKey.date'] && !data['LastEvaluatedKey.updatedAt']) {
+  else if(!data['LastEvaluatedKey.id'] && !data['LastEvaluatedKey.updatedAt']) {
   }
-  else if(!data['LastEvaluatedKey.id'] || !data['LastEvaluatedKey.date'] || !data['LastEvaluatedKey.updatedAt']) {
-    return response({code: 400, err: {"error":"LastEvaluatedKey.id,LastEvaluatedKey.date,LastEvaluatedKey.updatedAt are required"}}, callback)
+  else if(!data['LastEvaluatedKey.id'] || !data['LastEvaluatedKey.updatedAt']) {
+    return response({code: 400, err: {"error":"LastEvaluatedKey.id, LastEvaluatedKey.updatedAt are required"}}, callback)
   }
   validate_all(validate, data)
     .then(function (result) {
@@ -112,7 +107,6 @@ function validate_all (validate, data) {
 function get_streams (result) { 
   var params = {
     TableName: database.Table[0].TableName,
-    IndexName: 'idIndex',
     KeyConditionExpression: 'id = :value',
     ExpressionAttributeValues: {
       ':value': 'en_1_0'
@@ -137,10 +131,13 @@ function get_streams (result) {
   return new Promise(function (resolve, reject) {
     async.waterfall([
       function (done) {
-        docClient.query(params, function (err, data) {
+        docClient.query(params, function (err, data) { 
           if (err) {
             console.error('Unable to query. Error:', JSON.stringify(err, null, 2))
             done(true, err)
+          }
+          else if(data.Items.length == 0){
+            done(true, 'no item found')
           }
           else {
             done(null, data)
@@ -169,12 +166,11 @@ function get_streams (result) {
           if (publish.Items.length == 6) {
             publish.Items.splice(5, 1)
             publish.LastEvaluatedKey.id = publish.Items[4].id
-            publish.LastEvaluatedKey.date = publish.Items[4].date
             publish.LastEvaluatedKey.updatedAt = publish.Items[4].updatedAt
           }
         }
         
-        result['result'] = {'items': publish.Items, LastEvaluatedKey : publish.LastEvaluatedKey }
+        result['result'] = {'items': publish.Items, 'LastEvaluatedKey' : publish.LastEvaluatedKey }
         resolve(result)
       }
     ], function (err, data) {

@@ -50,18 +50,18 @@ var patchSchema = {
       minLength: 5,
       maxLength: 50
     },
-    date: {
+    updatedAt: {
       type: 'number'
     },
     newdate: {
       type: 'number'
     },
-    intro_text: {
+    introText: {
       type: 'string',
       minLength: 2,
       maxLength: 50
     },
-    news_text: {
+    newsText: {
       type: 'string',
       minLength: 2,
       maxLength: 50
@@ -75,11 +75,11 @@ var patchSchema = {
     publish: {
       type: 'boolean'
     },
-    show_at_first_place: {
+    showAtFirstPlace: {
       type: 'boolean'
     }
   },
-  required: ['id', 'date']
+  required: ['id', 'updatedAt']
 }
 
 var validate = ajv.compile(patchSchema)
@@ -100,6 +100,15 @@ function execute (data, callback) {
     })
     .then(function (result) {
       return update_streams(result)
+    })
+    .then(function (result) {
+      if(result.showAtFirstPlace == true){
+         update_Show_at_first_place()
+         return result;
+      }
+      else{
+        return result
+      }
     })
     .then(function (result) {
       response({code: 200, body: result.result}, callback)
@@ -210,7 +219,6 @@ function upload_files(result) { //console.log(result)
             if(mode == 'offline') { 
               var array = ['.jpg', '.jpeg', '.png', '.gif']
               deleteFilesFromMinioServer(array, directory)// delete previous image file if any
-              console.log('previous image file deleted sucessfully')
               .then(()=>{
                 console.log('previous image file deleted sucessfully')
                 // upload new image file
@@ -340,7 +348,7 @@ function update_streams (result) {
     TableName: database.Table[0].TableName,
     Key: {
       'id': result.id,
-      'date': result.date
+      'updatedAt': result.updatedAt
     },
     ReturnValues: 'ALL_OLD' // optional (NONE | ALL_OLD)
   }
@@ -360,27 +368,27 @@ function update_streams (result) {
           }
         }
         params.Item.id = result.id
-        params.Item.date = result.newdate ? result.newdate : data.Attributes.date,
+        params.Item.date = result.date ? result.date : data.Attributes.date,
         params.Item.uuid = result.uuid ? result.uuid : data.Attributes.uuid,
         params.Item.userid = result.userid ? result.userid : data.Attributes.userid,
         params.Item.language = result.language ? result.language : data.Attributes.language,
         params.Item.title = result.title ? result.title : data.Attributes.title,
-        params.Item.intro_text = result.intro_text ? result.intro_text : data.Attributes.intro_text,
-        params.Item.news_text = result.news_text ? result.news_text : data.Attributes.news_text,
+        params.Item.introText = result.introText ? result.introText : data.Attributes.introText,
+        params.Item.newsText = result.newsText ? result.newsText : data.Attributes.newsText,
         params.Item.image = result.image ? result.image : data.Attributes.image,
         params.Item.pdf = result.pdf ? result.pdf : data.Attributes.pdf,
         params.Item.publish = data.Attributes.publish,
-        params.Item.show_at_first_place = data.Attributes.show_at_first_place,
-        params.Item.createdAt = result.createdAt ? result.createdAt : data.Attributes.createdAt
+        params.Item.showAtFirstPlace = data.Attributes.showAtFirstPlace,
+        params.Item.createdAt = data.Attributes.createdAt
         if (result.publish != undefined) {
           params.Item.publish = result.publish
           var publish = result.publish ? 1 : 0
-          var show_first = params.Item.show_at_first_place ? 1 : 0
+          var show_first = params.Item.showAtFirstPlace ? 1 : 0
           params.Item.id = params.Item.language + '_' + publish + '_' + show_first
         }
-        if (result.show_at_first_place != undefined) {
-          params.Item.show_at_first_place = result.show_at_first_place
-          var show_first = result.show_at_first_place ? 1 : 0
+        if (result.showAtFirstPlace != undefined) {
+          params.Item.showAtFirstPlace = result.showAtFirstPlace
+          var show_first = result.showAtFirstPlace ? 1 : 0
           var publish = params.Item.publish ? 1 : 0
           params.Item.id = params.Item.language + '_' + publish + '_' + show_first
         }
@@ -402,6 +410,88 @@ function update_streams (result) {
     })
   })
 }
+
+function update_Show_at_first_place() {
+  return new Promise((resolve, reject) => { 
+      async.waterfall([
+        function (done) {
+          var params1 = {
+            TableName: database.Table[0].TableName,
+            KeyConditionExpression: 'id = :value',
+            ExpressionAttributeValues: {
+              ':value': 'en_1_1'
+            },
+            ScanIndexForward: false,
+            Limit: 2
+          }
+          docClient.query(params1, function (err, data) {
+            if (err) {
+              done(true, err)
+            } else if (data.Items.length == 0) {
+              done(true, 'no showAtFirstPlace data found')
+            } else {
+              done(null, data)
+            }
+          })
+        },
+        function (query, done) {
+          var params2 = {
+            TableName: database.Table[0].TableName,
+            Key: {
+              'id': 'en_1_1',
+              'updatedAt': query.Items[1].updatedAt                 //update the previous item
+            },
+            ReturnValues: 'ALL_OLD' // optional (NONE | ALL_OLD)
+          }
+          docClient.delete(params2, function (err, data) {
+            if (err) {
+              done(true, err)
+            } else if (Object.keys(data).length == 0) {
+              done(true, 'no item found to be deleted')
+            } else {
+              console.log('deletion succeeded', data)
+              done(null, data)
+            }
+          })
+        },
+        function (create, done) {
+          const pub = create.Attributes.publish ? 1 : 0
+          var params3 = {
+            TableName: database.Table[0].TableName,
+            Item: {
+              'id': create.Attributes.language + '_' + pub + '_' + '0',
+              'date': create.Attributes.date,
+              'uuid': create.Attributes.uuid,
+              'userid': create.Attributes.userid,
+              'language': create.Attributes.language,
+              'title': create.Attributes.title,
+              'introText': create.Attributes.introText,
+              'newsText': create.Attributes.newsText,
+              'image': create.Attributes.image,
+              'pdf': create.Attributes.pdf,
+              'publish': create.Attributes.publish,
+              'showAtFirstPlace': false,
+              'directory': create.Attributes.directory,
+              'createdAt': create.Attributes.createdAt,
+              'updatedAt': new Date().getTime()
+            }
+          }
+          docClient.put(params3, function (err, data) {
+            if (err) {
+              done(true, err)
+            } else {
+              console.log('Successfully updated previous show at first place')
+              resolve('Successfully updated previous show at first place')
+            }
+          })
+        }
+      ], function (err, data) {
+        console.log(err, data)
+        resolve(data)
+      })
+  })
+}
+
 /**
  * last line of code
  * @json {main_object}

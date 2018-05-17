@@ -23,6 +23,7 @@ if (process.env.AWS_REGION == 'local') {
  * modules list
  */
 const ypi = require('youtube-playlist-info');
+const youtubedl = require('youtube-dl');
 
 /**
  * This is the Promise caller which will call each and every function based
@@ -53,19 +54,54 @@ function fecthVideos () {
         }
         ypi(process.env.GOOGLE_API_KEY, playlistId[1], options)
         .then((items)=> {
-            // console.log(items);
-            var result = [];
-            for(var i=0; i < items.length; i++) { 
-                var data = {}
-                for(var key in items[i]) { 
-                    if(key != 'description') { 
-                        data[key] = items[i][key]
-                    }
-                }
-                result.push(data)
+            var urls = []; 
+            items.forEach((elem)=>{
+                var videoId = elem.resourceId.videoId;
+                var url = 'http://www.youtube.com/watch?v='+videoId;
+                urls.push(url)
+            })
+            var videos = [];
+            function delay(url) { //console.log(url)
+                return new Promise((resolve)=>{ 
+                    youtubedl.getInfo(url, function(err, info) { console.log(info.length)
+                        if (err) {
+                            console.log(err); 
+                        }
+                        info.forEach((elem)=>{
+                        var itemObj = {
+                            'id' : elem.id,
+                            'title' : elem.title,
+                            'thumbnail' : elem.thumbnail,
+                            'filename' : elem._filename,
+                            'format' : elem.format,
+                            'url' : elem.url
+                        }; 
+                        // console.log(itemObj);
+                        videos.push(itemObj)
+                        })
+                        resolve()
+                    });  
+                }) 
             }
-            
-            resolve({'items' : result})
+            // series
+            async function youtube(array) {
+                for(var i=0; i<array.length; i=i+5) {
+                    var item = [];
+                    for(var j=0; j<5; j++) {
+                        if(array[i+j] != undefined) {
+                            item.push(array[j+i]);
+                        }
+                    }
+                // console.log(item);
+                await delay(item)
+                }
+                console.log('DONE');
+                // console.log("videos", videos);
+                resolve({'items' : videos});
+            }
+
+            youtube(urls)
+
         }).catch((error)=> {
             console.log(error);
             reject("something went wrong")

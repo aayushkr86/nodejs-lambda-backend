@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "lambda-wrapper": "^0.2.2",
+    "youtube-dl": "^1.12.2",
     "youtube-playlist-info": "^1.1.2"
   }
 }
