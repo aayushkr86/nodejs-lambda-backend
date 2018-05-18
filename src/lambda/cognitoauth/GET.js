@@ -2,13 +2,8 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 		= require('aws-sdk');
 const response 	= require('./lib/response.js');
-<<<<<<< HEAD
-const database 	= require('./lib/database')
-
-=======
 AWS.config.region 	= "eu-central-1";
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
->>>>>>> development-vinay
 
 if(process.env.AWS_REGION == "local"){
 	mode 		= "offline";
@@ -29,10 +24,6 @@ if(process.env.AWS_REGION == "local"){
 const uuid 		= require('uuid');
 //call another lambda
 // const execute_lambda = require('./lib/lambda')('sample2');
-<<<<<<< HEAD
-
-module.exports={execute};
-=======
 const Ajv 			= require('ajv');
 const setupAsync 	= require('ajv-async');
 const ajv 			= setupAsync(new Ajv);
@@ -51,7 +42,6 @@ const getSchema = {
 
 const validate = ajv.compile(getSchema);
 
->>>>>>> development-vinay
 
 /**
  * This is the Promise caller which will call each and every function based
@@ -59,42 +49,6 @@ const validate = ajv.compile(getSchema);
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
-<<<<<<< HEAD
-function execute(data,callback) {
-	login_details()
-		.then(function(result) {
-				response({code:200, body:result}, callback);
-		})
-		.catch(function(err) {
-			response({code:400, err:{err}}, callback);
-		})
-}
-
-function login_details() {
-	return new Promise((resolve,reject)=>{
-		var params = {
-			TableName: database.Table[0].TableName,
-			KeyConditionExpression: '#HASH = :value', 
-			ExpressionAttributeNames : {
-				'#HASH'  : 'status',
-			},
-			ExpressionAttributeValues: { 
-			  ':value': 'active',
-			},
-			// Limit: 20,
-		};
-		docClient.query(params, function(err, data) { 
-			if (err) {
-				console.log(err);
-				reject(err)
-			}
-			else if(data.Items.length == 0) {
-				reject('no user loggedin details found')
-			}
-			else { 
-				resolve({'message' : data.Items}) 
-			} 
-=======
 
 function execute(data,callback){
 	validate_all(validate,data)
@@ -125,13 +79,10 @@ function general(data){
 		cognitoidentityserviceprovider.adminInitiateAuth(params, function(err, data) {
 		  if (err) reject(err.message) // an error occurred
 		  else resolve(data);           // successful response
->>>>>>> development-vinay
 		});
 	})
 }
 
-<<<<<<< HEAD
-=======
 /**
  * validate the data to the categories
  * @param  {[type]} data [description]
@@ -155,4 +106,3 @@ function validate_all (validate,data) {
  */
 module.exports={execute};
 //code deployed on the aws
->>>>>>> development-vinay

@@ -11,11 +11,7 @@
   "dependencies": {
     "ajv": "^6.4.0",
     "ajv-async": "^1.0.1",
-<<<<<<< HEAD
     "async": "^2.6.0",
     "nodemailer": "^4.6.4"
-=======
-    "aws-lambda-multipart-parser": "^0.1.2"
->>>>>>> development-vinay
   }
 }

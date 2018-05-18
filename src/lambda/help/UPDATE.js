@@ -80,16 +80,11 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { // console.log(data)
-<<<<<<< HEAD
     if (typeof data === 'string') {
         data = JSON.parse(data)
     }
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
-=======
-  return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
->>>>>>> development-vinay
 		    resolve(res)
     }).catch(function (err) {
 		  console.log(JSON.stringify(err, null, 6))

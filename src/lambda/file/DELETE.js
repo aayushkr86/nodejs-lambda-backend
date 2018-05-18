@@ -1,9 +1,5 @@
 ///// ...................................... start default setup ............................................////
-<<<<<<< HEAD
-const mode,sns,dynamodb,docClient,S3;
-=======
 let mode,sns,dynamodb,docClient,S3;
->>>>>>> development-vinay
 const AWS = require('aws-sdk');
 const response = require('./lib/response.js');
 const database = require('./lib/database.js');

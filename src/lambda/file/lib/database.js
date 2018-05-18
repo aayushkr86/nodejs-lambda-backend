@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // production
 // module.exports={
 // 	"Table":[
@@ -12,7 +10,6 @@
 // 	]
 
 // development
->>>>>>> development-vinay
 module.exports={
 	"Table":[
 		{
