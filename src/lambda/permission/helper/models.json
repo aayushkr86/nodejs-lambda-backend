@@ -1,0 +1,254 @@
+{
+	"Models":{
+		"Company":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "properties": {
+		        "Name" : {
+		            "type": "string"
+		        },
+		        "Description":{
+		            "type":"string"
+		        },
+		        "CreatedAt":{
+		        	"type":"string"
+		        }
+		    },
+		    "required" : ["Name","CreatedAt"]
+		},
+		"Main":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "properties": {
+		        "Name" : {
+		            "type": "string"
+		        },
+		        "Description":{
+		            "type":"string"
+		        }
+		    },
+		    "required" : ["Name"]
+		},
+		"Permissions":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "properties": {
+		        "Name" : {
+		            "type": "string"
+		        },
+		        "Description":{
+		            "type":"string"
+		        }
+		    },
+		    "required" : ["Name"]
+		},
+		"Projects":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"Description":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		},
+		"Modules":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"Description":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		},
+		"SubModules":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"Description":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		},
+		"Functionalities":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"Description":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		},
+		"Roles":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"Description":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		},
+		"Groups":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"Description":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		},
+		"Users":{
+			"$async":true,
+		    "type": "object",
+		    "additionalProperties": false,
+		    "required" : ["Name","CreatedAt"],
+		    "properties":{
+		    	"Name":{
+		    		"type":"string"
+		    	},
+		    	"id":{
+		    		"type":"string"
+		    	},
+		    	"CreatedAt":{
+		    		"type":"string"
+		    	}
+		    }
+		}
+	},
+	"Relationships":{
+		"Users":{
+			"relate":["Company","Projects","Modules","SubModules","Functionalities","Groups","Roles","Main","Permissions"],
+			"relation":":access",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false,
+			    "required" : ["Name"],
+			    "properties":{
+			    	"Name":{
+			    		"type":"string"
+			    	}
+			    }
+			}
+		},
+		"Groups":{
+			"relate":["Company","Projects","Modules","SubModules","Functionalities","Roles","Main","Permissions"],
+			"relation":":access",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false
+			}
+		},
+		"Roles":{
+			"relate":["Company","Projects","Modules","SubModules","Functionalities","Roles","Main","Permissions"],
+			"relation":":access",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false
+			}
+		},
+		"Company":{
+			"relate":["Projects","Main","Permissions"],
+			"relation":":have",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false,
+			    "required" : ["blah"],
+			    "properties":{
+			    	"blah":{
+			    		"type":"string"
+			    	}
+			    }
+			}
+		},
+		"Projects":{
+			"relate":["Modules"],
+			"relation":":have",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false
+			}
+		},
+		"Modules":{
+			"relate":["SubModules","Functionalities"],
+			"relation":":have",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false
+			}
+		},
+		"SubModules":{
+			"relate":["Functionalities"],
+			"relation":":have",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false
+			}
+		},
+		"Main":{
+			"relate":["Permissions"],
+			"relation":":have",
+			"value":{
+				"$async":true,
+			    "type": "object",
+			    "additionalProperties": false
+			}
+		}
+	}
+}

@@ -4,4 +4,4 @@ cd ..
 cd src/lambda
 echo $1
 mkdir -p $1
-cp -r sample/* $1
+cp -r ../../offline/sample/* $1

@@ -7,5 +7,63 @@
       "$paramName" : "$util.escapeJavaScript($allParams.get($paramName))"
       #if($foreach.hasNext),#end
       #end
+    },
+    "headers": {
+        #foreach($param in $input.params().header.keySet())
+        "$param": "$util.escapeJavaScript($input.params().header.get($param))"
+        #if($foreach.hasNext),#end
+        #end
     }
 }
+
+
+
+
+
+
+
+
+    "sample": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"salestool-nodejs-backend/deploy/src/sample.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend sample",
+        "FunctionName": "talkd_sample",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+        "Runtime": "nodejs6.10",
+        "Timeout": "10"
+      }
+    },
+
+
+    "sample": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"salestool-nodejs-backend/deploy/src/sample.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend sample",
+        "FunctionName": "talkd_sample",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/swaggerhub-lambda",
+        "Runtime": "nodejs6.10",
+        "Timeout": "10"
+      }
+    },

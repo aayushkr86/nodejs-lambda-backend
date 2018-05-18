@@ -30,7 +30,7 @@ const ajv 			= setupAsync(new Ajv);
 const putSchema = {
 	"$async":true,
 	"additionalProperties": false,
-	"required": [ "fileId","fileOrder","fileName","fileType"],
+	"required": [ "fileId","fileOrder","fileName","fileType","fileFormat"],
 	"type":"object",
 	"properties":{
 	    "fileId":{"type":"string"},
@@ -40,6 +40,14 @@ const putSchema = {
 	    "fileThumbnailId":{"type":"string"},
 	    "fileSize":{"type":"number"},
 	    "fileType":{"type":"string"},
+	    "fileFormat":{
+	    	"type":"string",
+	    	"enum":[
+	    		"document",
+	    		"NormalVideo",
+	    		"TeaserVideo"
+	    	]
+	    }
 	 }
 };
 
@@ -64,6 +72,7 @@ const validate = ajv.compile(putSchema);
  * @return {[type]}            [description]
  */
 function execute(data,callback){
+	console.log(data);
 	if(typeof data == "string"){
 		data = JSON.parse(data);
 	}
@@ -74,7 +83,42 @@ function execute(data,callback){
 			result['createAt']=Date.now()+"";
 			result['createBy']="anonymus";
 
-			return post_file(result);
+			/** apply restriction when fileId == "Normal" && fileId =="Teaser" only allowing fileType to mov */
+			/** and also deny fileType of other format if not pdf 
+			condition request to be something like allow for format
+			*/
+			//if fileId is start with video then allow it to upload 
+			if( result.fileId.startsWith("Videos_") ){
+				let allow = false;
+				switch(result.fileType){
+					case 'mp4':
+					case 'mov':
+					case 'webm':
+					case 'wmv':allow =true;
+						break;
+					default:
+				}
+				if(allow == true){
+					result['fileS3Key']="public/TeaserVideo/"+result['fileS3Key'];
+					result['fileLoc']="https://s3.eu-central-1.amazonaws.com/"+result['fileS3Bucket']+"/"+result['fileS3Key']+"."+result['fileType'];
+					return post_file(result);
+				}else{
+					return new Promise((resolve,reject)=>{
+						reject("Only support video format");
+					})
+				}
+			}else{
+				if(result.fileFormat){
+					delete result.fileFormat;
+				}
+				if(result.fileType == "pdf"){
+					return post_file(result);
+				}else{
+					return new Promise((resolve,reject)=>{
+						reject("Only support pdf format");
+					})
+				}
+			}
 		})
 		.then(function(result){
 			console.log(result);
@@ -131,6 +175,7 @@ function validate_all (validate,data) {
  * @return {[type]}          [description]
  */
 function signed_url(data,response){
+	
 	var params = {
 		Bucket:data.fileS3Bucket,
 		Key:data.fileS3Key+"."+data.fileType,
@@ -138,7 +183,6 @@ function signed_url(data,response){
 	};
 	if( mode == "offline"){
 		/** convert to the params in minio format */
-		
 		S3.presignedPutObject(params.Bucket, params.Key, params.Expires,function(err,url){
 			if(err){
 				console.log(err);
@@ -156,7 +200,6 @@ function signed_url(data,response){
 				response({url});
 			}
 		});
-
 	}
 }
 

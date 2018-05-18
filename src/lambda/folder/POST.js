@@ -2,6 +2,7 @@
 let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
+const database 		= require('./lib/database');
 
 if(process.env.AWS_REGION == "local"){
 	mode 			= "offline";
@@ -55,7 +56,11 @@ function execute(data,callback){
 	validate_all(validate,data)
 		.then(function(result){
 			//default values
-			result["folderSub"]=uuid.v4();
+			if(result.folderId == "Movies"){
+				result["folderSub"]="Videos_"+uuid.v4();
+			}else{
+				result["folderSub"]=uuid.v4();
+			}
 			result["folderSubCount"]=0;
 			return post_categories(result);
 		})

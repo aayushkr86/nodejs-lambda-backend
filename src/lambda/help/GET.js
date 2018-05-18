@@ -4,7 +4,11 @@ const AWS 			= require('aws-sdk')
 const response 		= require('./lib/response.js')
 const database 	= require('./lib/database')
 
+<<<<<<< HEAD
 if (process.env.AWS_REGION == 'local') { 
+=======
+if (process.env.AWS_REGION == 'local') {
+>>>>>>> development-vinay
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
@@ -68,7 +72,11 @@ var validate = ajv.compile(getSchema)
  * @param  {Function} callback [need to send response with]
  * @return {[type]}            [description]
  */
+<<<<<<< HEAD
 function execute (data, callback) {
+=======
+function execute (data, callback) { 
+>>>>>>> development-vinay
   if(data['LastEvaluatedKey.userid'] && data['LastEvaluatedKey.createdAt'] &&
      data['LastEvaluatedKey.uuid']   && data['LastEvaluatedKey.status']) {
     LastEvaluatedKey = {
@@ -105,9 +113,12 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { 
+<<<<<<< HEAD
   if(typeof data == 'string'){
     data = JSON.parse(data)
   }
+=======
+>>>>>>> development-vinay
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)
@@ -146,7 +157,11 @@ function get_helps (result) {
         } 
         else {
             // console.log("Query succeeded",data);
+<<<<<<< HEAD
             result['result'] = {'items': data.Items, LastEvaluatedKey : data.LastEvaluatedKey}
+=======
+            result['result'] = {'items': data.Items}
+>>>>>>> development-vinay
             resolve(result) 
         }
     })    

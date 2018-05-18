@@ -50,6 +50,12 @@ const validate = ajv.compile(deleteSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { // console.log(data)
+<<<<<<< HEAD
+=======
+  if (typeof data === 'string') {
+    data = JSON.parse(data)
+  }
+>>>>>>> development-vinay
   validate_all(validate, data)
     .then(function (result) {
       return delete_help(result)
@@ -69,9 +75,12 @@ function execute (data, callback) { // console.log(data)
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { // console.log(data)
+<<<<<<< HEAD
   if (typeof data === 'string') {
     data = JSON.parse(data)
   }
+=======
+>>>>>>> development-vinay
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)

@@ -14,7 +14,7 @@ if(process.env.AWS_REGION == "local") {
 	sns 		= new AWS.SNS();
 	docClient 	= new AWS.DynamoDB.DocumentClient({});
 	S3 			= new AWS.S3();
-	dynamodb    = new AWS.DynamoDB();
+	// dynamodb    = new AWS.DynamoDB();
 }
 ///// ...................................... end default setup ............................................////
 
@@ -30,7 +30,7 @@ if(process.env.AWS_REGION == "local") {
  * @return {[type]}            [description]
  */
 function execute(data,callback){
-	response({code:404,err:{err:"Page Not Found"},callback});
+	response({code:404,err:{"err":"Page Not Found"}},callback);
 }
 /**
  * last line of code

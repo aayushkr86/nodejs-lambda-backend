@@ -1,0 +1,221 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters":{
+    "Bucket":{
+      "Type":"String",
+      "Description":"bucket Name"
+    }
+  },
+  "Resources": {
+    "emails": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/emails.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend emails",
+        "FunctionName": "talkd_emails",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "cognitoauth": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/cognitoauth.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend cognitoauth",
+        "FunctionName": "talkd_cognitoauth",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "comments": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/comments.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend comments",
+        "FunctionName": "talkd_comments",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "extra": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/extra.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend extra",
+        "FunctionName": "talkd_extra",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "file": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/file.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend file",
+        "FunctionName": "talkd_file",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "folder": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/folder.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend folder",
+        "FunctionName": "talkd_folder",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "help": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/help.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend help",
+        "FunctionName": "talkd_help",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "logo": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/logo.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend logo",
+        "FunctionName": "talkd_logo",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    },
+    "sendtoclient": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/sendtoclient.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend sendtoclient",
+        "FunctionName": "talkd_sendtoclient",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "20"
+      }
+    },
+    "streams": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {"Ref":"Bucket"},
+          "S3Key":"deploy/src/streams.zip"
+        },
+        "Environment": {
+          "Variables": {
+            
+            }
+        },
+        "Description": "salestool-nodejs-backend streams",
+        "FunctionName": "talkd_streams",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Role": "arn:aws:iam::188097494660:role/LambdaaccesstodynamoDB",
+        "Runtime": "nodejs6.10",
+        "Timeout": "5"
+      }
+    }
+  }
+}

@@ -101,11 +101,19 @@ Resources:
   #         Properties:
   #           Path: /logo
   #           Method: any
+<<<<<<< HEAD
   # lambda_help:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     Runtime: nodejs6.10
   #     Handler: src/lambda/help/index.handler
+=======
+  # lambda_file:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/file/index.handler
+>>>>>>> development-vinay
   #     timeout: 10
   #     Environment:
   #       Variables:
@@ -114,6 +122,7 @@ Resources:
   #       AllProduct:
   #         Type: Api
   #         Properties:
+<<<<<<< HEAD
   #           Path: /help
   #           Method: any
   # lambda_users:
@@ -121,6 +130,15 @@ Resources:
   #   Properties:
   #     Runtime: nodejs6.10
   #     Handler: src/lambda/users/index.handler
+=======
+  #           Path: /file
+  #           Method: any
+  # cognito_auth:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/cognitoauth/index.handler
+>>>>>>> development-vinay
   #     timeout: 10
   #     Environment:
   #       Variables:
@@ -129,6 +147,7 @@ Resources:
   #       AllProduct:
   #         Type: Api
   #         Properties:
+<<<<<<< HEAD
   #           Path: /users
   #           Method: any
 
@@ -143,10 +162,39 @@ Resources:
   #         AWS_REGION: local
   #         PLAYLIST_URL: https://www.youtube.com/playlist?list=PL35F93FA3C740F3BB
   #         GOOGLE_API_KEY: AIzaSyCkS6vUvK1MkCxu4iP-hs6tePdKkCXuCzs
+=======
+  #           Path: /cognitoauth
+  #           Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/sendtoclient/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
   #     Events:
   #       AllProduct:
   #         Type: Api
   #         Properties:
+  #           Path: /sendtoclient
+  #           Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/comments/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+>>>>>>> development-vinay
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+<<<<<<< HEAD
   #           Path: /youtube
   #           Method: ANY
             
@@ -156,6 +204,31 @@ Resources:
       Runtime: nodejs6.10
       Handler: src/lambda/cognitoauth/index.handler
       timeout: 10
+=======
+  #           Path: /comments
+  #           Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/extra/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /extra
+  #           Method: any
+  lambda_sendtoclient:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/permission/index.handler
+      timeout: 20
+>>>>>>> development-vinay
       Environment:
         Variables:
           AWS_REGION: local
@@ -163,5 +236,10 @@ Resources:
         AllProduct:
           Type: Api
           Properties:
+<<<<<<< HEAD
             Path: /cognitoauth
             Method: any          
+=======
+            Path: /permission
+            Method: any
+>>>>>>> development-vinay
