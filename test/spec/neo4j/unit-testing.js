@@ -76,6 +76,7 @@ function TEST(session){
 			})
 	});
 }
+
 /**
  * [ADD - Add nodes in the Neo4j]
  * @param {[json]} session [This is the session of Neo4j connection]
