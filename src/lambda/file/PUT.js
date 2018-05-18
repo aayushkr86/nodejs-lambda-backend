@@ -183,7 +183,6 @@ function signed_url(data,response){
 	};
 	if( mode == "offline"){
 		/** convert to the params in minio format */
-		
 		S3.presignedPutObject(params.Bucket, params.Key, params.Expires,function(err,url){
 			if(err){
 				console.log(err);
@@ -201,7 +200,6 @@ function signed_url(data,response){
 				response({url});
 			}
 		});
-
 	}
 }
 

@@ -1,10 +1,22 @@
+// production
+// module.exports={
+// 	"Table":[
+// 		{
+// 			"TableName":"talkd_Files",
+// 		},
+// 		{
+// 			"TableName":"talkd_Folders",
+// 		}
+// 	]
+
+// development
 module.exports={
 	"Table":[
 		{
-			"TableName":"talkd_Files",
+			"TableName":"FILES",
 		},
 		{
-			"TableName":"talkd_Folders",
+			"TableName":"FOLDERS",
 		}
 	]
 };

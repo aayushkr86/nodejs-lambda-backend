@@ -1,10 +1,11 @@
-
+// try{
 let POST = require('./POST');
 let PUT = require('./PUT');
 // let UPDATE = require('./UPDATE');
-// let DELETE = require('./DELETE');
+let DELETE = require('./DELETE');
 let GET = require('./GET');
 let DUMP = require('./DUMP');
+// }catch(e){console.log(e);}
 /**
  * Main field where we will fetch all the content and passer
  * @param  {[type]}   event    [description]
@@ -23,8 +24,8 @@ exports.handler = function  (event,context,callback) {
 					break;
 		// case 'UPDATE': UPDATE.execute(event.body,callback);
 		// 			break;
-		// case 'DELETE': DELETE.execute(event.body,callback);
-					// break;
+		case 'DELETE': DELETE.execute(event.body,callback);
+					break;
 		default : DUMP.execute({},callback);
 	}
 }

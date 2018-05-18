@@ -1,5 +1,5 @@
 ///// ...................................... start default setup ............................................////
-// let mode,sns,dynamodb,docClient,S3;
+let mode,sns,dynamodb,docClient,S3;
 const AWS 			= require('aws-sdk');
 const response 		= require('./lib/response.js');
 const database 		= require('./lib/database');
@@ -55,6 +55,18 @@ function execute(data,callback){
 			return delete_categories(result);
 		})
 		.then(function(result){
+			console.log(result);
+			return find_parent_folder(result);
+		})
+		.then(function(result){
+			console.log(arguments);
+			if(result.decrease== undefined){
+				return result;
+			}else{
+				return remove_folderCount(result);
+			}
+		})
+		.then(function(result){
 			console.log("result");
 			response({code:200,body:result.result},callback);
 		})
@@ -104,6 +116,64 @@ function delete_categories(result){
 			resolve(result);
 		})
 	});
+}
+
+/**
+ * find_parent_folder description
+ * @param  {[type]} result [description]
+ * @return {[type]}        [description]
+ */
+function find_parent_folder(result){
+	var params = {
+		TableName: database.Table[0].TableName,
+	    IndexName: 'folderSub-index',
+	    KeyConditionExpression: 'folderSub = :value', 
+	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+	      ':value': result.folderId
+	    },
+	    Limit: 1, // optional (limit the number of items to evaluate)
+	};
+	return new Promise((resolve,reject)=>{
+		docClient.query(params,function(err,folder){
+			if(err){
+				reject(err.message);
+			}
+			console.log(folder);
+			if(folder.Items[0] != undefined){
+				let content = folder.Items[0];
+				result['decrease']=content;
+			}
+			resolve(result);
+		})
+	})
+}
+
+/**
+ * remove_folderCount description
+ * @param  {[type]} result [description]
+ * @return {[type]}        [description]
+ */
+function remove_folderCount(result){
+	let decrease = result.decrease;
+	var params = {
+	    TableName: database.Table[0].TableName,
+	    Key: {
+	        folderId: decrease.folderId,
+	        folderOrder: decrease.folderOrder  
+	    },
+	    UpdateExpression: 'SET folderSubCount = folderSubCount - :value', 
+	    ExpressionAttributeValues: { // a map of substitutions for all attribute values
+	        ':value': 1
+	    }
+	};
+	return new Promise((resolve,reject)=>{
+		docClient.update(params, function(err, folder) {
+		   	if(err){
+				reject(err.message);
+			}
+				resolve(result);
+		});
+	})
 }
 
 /**

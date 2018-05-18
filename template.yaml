@@ -146,21 +146,21 @@ Resources:
   #         Properties:
   #           Path: /sendtoclient
   #           Method: any
-  lambda_sendtoclient:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs6.10
-      Handler: src/lambda/comments/index.handler
-      timeout: 20
-      Environment:
-        Variables:
-          AWS_REGION: local
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /comments
-            Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/comments/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /comments
+  #           Method: any
   # lambda_sendtoclient:
   #   Type: AWS::Serverless::Function
   #   Properties:
@@ -176,3 +176,18 @@ Resources:
   #         Properties:
   #           Path: /extra
   #           Method: any
+  lambda_sendtoclient:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/permission/index.handler
+      timeout: 20
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /permission
+            Method: any

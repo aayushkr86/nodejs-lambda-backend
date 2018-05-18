@@ -29,7 +29,7 @@ if(process.env.AWS_REGION == "local"){
  * @return {[type]}            [description]
  */
 function execute(data,callback){
-	response({code:404,err:{err:"Page Not Found"},callback});
+	response({code:404,err:{err:"Page Not Found"}},callback);
 }
 /**
  * last line of code
