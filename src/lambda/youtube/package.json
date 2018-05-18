@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^6.5.0",
+    "ajv-async": "^1.0.1",
     "lambda-wrapper": "^0.2.2",
     "youtube-dl": "^1.12.2",
     "youtube-playlist-info": "^1.1.2"

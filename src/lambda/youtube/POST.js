@@ -22,7 +22,7 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 		 = require('uuid')
+const youtubedl  = require('youtube-dl');
 const Ajv 	     = require('ajv')
 const setupAsync = require('ajv-async')
 const ajv 		 = setupAsync(new Ajv())
@@ -31,11 +31,13 @@ var postSchema = {
   $async:true,
   type: "object",
   properties: {
-    'urls' : {
+    'videoIds' : {
         type: "array",
+        maxItems:5,
+        minItems:1
     },
   },
-  required : ["urls"]
+  required : ["videoIds"]
 }
 
 var validate = ajv.compile(postSchema)
@@ -67,22 +69,55 @@ function validate_all (validate, data) {
     if(typeof data == 'string'){
         data = JSON.parse(data)
     }
-  return new Promise((resolve, reject) => {
-    validate(data).then(function (res) {
-		resolve(res)
-    }).catch(function (err) {
-        console.log(JSON.stringify(err, null, 6))
-        reject(err.errors[0].dataPath + ' ' + err.errors[0].message)
+    return new Promise((resolve, reject) => {
+        validate(data).then(function (res) {
+            resolve(res)
+        }).catch(function (err) {
+            console.log(JSON.stringify(err, null, 6))
+            reject(err.errors[0].dataPath + ' ' + err.errors[0].message)
+        })
     })
-  })
 }
 
-function getUrl(result){
+function getUrl(result){ 
     return new Promise((resolve, reject)=>{
-
-
-        
-      resolve()
+        var urls = []; 
+        result.videoIds.forEach((videoId)=>{
+            var url = 'http://www.youtube.com/watch?v='+videoId;
+            urls.push(url)
+        });
+        youtubedl.getInfo(urls, function(err, info) { //console.log(info.url)
+            if (err) {
+                console.log(err);
+                reject(err) 
+            }
+            var videos = [];
+            if(info.length){
+                info.forEach((elem)=>{
+                var itemObj = {
+                    'id' : elem.id,
+                    'title' : elem.title,
+                    'thumbnail' : elem.thumbnail,
+                    'filename' : elem._filename,
+                    'format' : elem.format,
+                    'url' : elem.url
+                }; 
+                videos.push(itemObj)
+                })
+                resolve({'urls' : videos})
+            }else{
+                var itemObj = {
+                    'id' : info.id,
+                    'title' : info.title,
+                    'thumbnail' : info.thumbnail,
+                    'filename' : info._filename,
+                    'format' : info.format,
+                    'url' : info.url
+                }; 
+                videos.push(itemObj)
+                resolve({'urls' : videos})
+            } 
+        });  
     })
 }
 

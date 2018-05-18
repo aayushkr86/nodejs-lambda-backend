@@ -132,36 +132,36 @@ Resources:
   #           Path: /users
   #           Method: any
 
-  lambda_youtube:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs8.10
-      Handler: src/lambda/youtube/index.handler
-      timeout: 300
-      Environment:
-        Variables:
-          AWS_REGION: local
-          PLAYLIST_URL: https://www.youtube.com/playlist?list=PL35F93FA3C740F3BB
-          GOOGLE_API_KEY: AIzaSyCkS6vUvK1MkCxu4iP-hs6tePdKkCXuCzs
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /youtube
-            Method: ANY
-            
-  # cognito_auth:
+  # lambda_youtube:
   #   Type: AWS::Serverless::Function
   #   Properties:
-  #     Runtime: nodejs6.10
-  #     Handler: src/lambda/cognitoauth/index.handler
-  #     timeout: 10
+  #     Runtime: nodejs8.10
+  #     Handler: src/lambda/youtube/index.handler
+  #     timeout: 300
   #     Environment:
   #       Variables:
   #         AWS_REGION: local
+  #         PLAYLIST_URL: https://www.youtube.com/playlist?list=PL35F93FA3C740F3BB
+  #         GOOGLE_API_KEY: AIzaSyCkS6vUvK1MkCxu4iP-hs6tePdKkCXuCzs
   #     Events:
   #       AllProduct:
   #         Type: Api
   #         Properties:
-  #           Path: /cognitoauth
-  #           Method: any          
+  #           Path: /youtube
+  #           Method: ANY
+            
+  cognito_auth:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+      Handler: src/lambda/cognitoauth/index.handler
+      timeout: 10
+      Environment:
+        Variables:
+          AWS_REGION: local
+      Events:
+        AllProduct:
+          Type: Api
+          Properties:
+            Path: /cognitoauth
+            Method: any          
