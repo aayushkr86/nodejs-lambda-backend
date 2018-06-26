@@ -117,7 +117,7 @@ function get_files(result){
 	    },
 	    ExclusiveStartKey:result.lastEvaluatedKey,
 	    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
-	    Limit: 1, // optional (limit the number of items to evaluate)
+	    Limit: 10, // optional (limit the number of items to evaluate)
 	    ConsistentRead: false
 	};
 	

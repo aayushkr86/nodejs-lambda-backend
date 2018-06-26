@@ -1,0 +1,49 @@
+image: sookcha/docker-awscli-with-zip
+
+pipelines:
+  tags:
+    deploy*:
+        - step:
+            script:
+                - apt-get install zip -y
+                - aws configure set aws_access_key_id $ACCESS_KEY 
+                - aws configure set aws_secret_access_key $SECERT_KEY
+                - aws configure set region $REGION
+                - aws configure set default_output_format json
+                - cd deploy/bash
+                - bash push.sh
+    deploy-api-overwrite:
+        - step:
+            script:
+                - apt-get install zip -y
+                - aws configure set aws_access_key_id $ACCESS_KEY 
+                - aws configure set aws_secret_access_key $SECERT_KEY
+                - aws configure set region $REGION
+                - aws configure set default_output_format json
+                - cd deploy/bash
+                - bash apigateway.sh overwrite
+    deploy-api:
+        - step:
+            script:
+                - apt-get install zip -y
+                - aws configure set aws_access_key_id $ACCESS_KEY 
+                - aws configure set aws_secret_access_key $SECERT_KEY
+                - aws configure set region $REGION
+                - aws configure set default_output_format json
+                - cd deploy/bash
+                - bash apigateway.sh merge
+  live:
+      - step:
+          script:
+            - apt-get install zip -y
+            - aws configure set aws_access_key_id $ACCESS_KEY 
+            - aws configure set aws_secret_access_key $SECERT_KEY
+            - aws configure set region $REGION
+            - aws configure set default_output_format json
+            - cd deploy
+            - mkdir -p src
+            - cd src
+            - mkdir -p lib
+            - cd ..
+            - bash deploy.sh
+            - bash push.sh

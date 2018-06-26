@@ -18,7 +18,17 @@
         "MicroserviceStack":{
             "Type":"AWS::CloudFormation::Stack",
             "Properties":{
-                "TemplateURL":"https://s3.eu-central-1.amazonaws.com/salestoool-nodejs-backend/cloudformation/(4)microservices.json",
+                "TemplateURL":"https://s3.eu-central-1.amazonaws.com/salestool-nodejs-backend/cloudformation/database.json",
+                "TimeoutInMinutes":"60",
+                "Parameters":{
+                    "Bucket":{ "Ref":"Bucket2"}
+                }
+            }
+        },
+        "Lambdas":{
+            "Type":"AWS::CloudFormation::Stack",
+            "Properties":{
+                "TemplateURL":"https://s3.eu-central-1.amazonaws.com/salestool-nodejs-backend/cloudformation/lambdas.json",
                 "TimeoutInMinutes":"60",
                 "Parameters":{
                     "Bucket":{ "Ref":"Bucket2"}
@@ -50,7 +60,7 @@
                 "BodyS3Location":{
                     "Bucket" : {"Ref":"Bucket2"},
                     "ETag" : {"Ref":"ETag"},
-                    "Key" : "cloudformation/(2)swagger.json"
+                    "Key" : "cloudformation/swagger.json"
                     },
                 "Description":"Sample API for Edare",
                 "Name":{ "Fn::Sub": [ "${NAME}API", { "NAME": {"Ref" : "Name" }} ]}

@@ -8,13 +8,13 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
   // sns 			= require('../../../offline/sns');
   docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  S3 			= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -34,11 +34,11 @@ var deleteSchema = {
     id: {
       type: 'string'
     },
-    date: {
+    updatedAt: {
       type: 'number'
     }
   },
-  required: ['id', 'date']
+  required: ['id', 'updatedAt']
 }
 
 const validate = ajv.compile(deleteSchema)
@@ -50,9 +50,7 @@ const validate = ajv.compile(deleteSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { // console.log(data)
-  if (typeof data === 'string') {
-    data = JSON.parse(data)
-  }
+  
   validate_all(validate, data)
     .then(function (result) {
       return delete_stream(result)
@@ -71,7 +69,10 @@ function execute (data, callback) { // console.log(data)
  * @param  {[type]} data [description]
  * @return {[type]}      [description]
  */
-function validate_all (validate, data) { // console.log(data)
+function validate_all (validate, data) { 
+  if (typeof data === 'string') {
+    data = JSON.parse(data)
+  }
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)
@@ -87,7 +88,7 @@ function delete_stream (result) { // console.log(result)
     TableName: database.Table[0].TableName,
     Key: {
       'id': result.id,
-      'date': result.date
+      'updatedAt': result.updatedAt
     },
     ReturnValues: 'ALL_OLD' // optional (NONE | ALL_OLD)
   }

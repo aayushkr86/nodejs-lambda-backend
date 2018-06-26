@@ -6,12 +6,11 @@ var params = {
     TableName : "users",
     KeySchema: [       
         { AttributeName: "username", KeyType: "HASH" },
-        { AttributeName: "createdAt", KeyType: "RANGE" }
     ],
     AttributeDefinitions: [       
         { AttributeName: "username", AttributeType: "S" },
-        { AttributeName: "createdAt", AttributeType: "N" },
-        { AttributeName: "uuid", AttributeType: "S" },
+        { AttributeName: "updatedAt", AttributeType: "N" },
+        { AttributeName: "id", AttributeType: "S" },
     ],
     ProvisionedThroughput: {       
         ReadCapacityUnits: 1, 
@@ -19,10 +18,10 @@ var params = {
     },
     GlobalSecondaryIndexes: [ 
         { 
-            IndexName: 'uuidIndex', 
+            IndexName: 'idIndex', 
             KeySchema: [
-                { AttributeName: 'uuid', KeyType: 'HASH', },
-                { AttributeName: 'createdAt', KeyType: 'RANGE', }
+                { AttributeName: 'id', KeyType: 'HASH', },
+                { AttributeName: 'updatedAt', KeyType: 'RANGE', }
             ],
             Projection: { 
                 ProjectionType: 'ALL',

@@ -41,26 +41,11 @@ Resources:
   #           Path: /sns/Email
   #           Method: any
 # List of lambda microservice ==================================================================
-  lambda_sample:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs6.10
-      Handler: src/lambda/folder/index.handler
-      timeout: 10
-      Environment:
-        Variables:
-          AWS_REGION: local
-      Events:
-        AllProduct:
-          Type: Api
-          Properties:
-            Path: /folder
-            Method: any
-  # lambda_streams:
+  # lambda_sample:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     Runtime: nodejs6.10
-  #     Handler: src/lambda/streams/index.handler
+  #     Handler: src/lambda/folder/index.handler
   #     timeout: 10
   #     Environment:
   #       Variables:
@@ -69,7 +54,7 @@ Resources:
   #       AllProduct:
   #         Type: Api
   #         Properties:
-  #           Path: /streams
+  #           Path: /folder
   #           Method: any
   # lambda_streams:
   #   Type: AWS::Serverless::Function
@@ -90,6 +75,21 @@ Resources:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     Runtime: nodejs6.10
+  #     Handler: src/lambda/streams/index.handler
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /streams
+  #           Method: any
+  # lambda_logo:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
   #     Handler: src/lambda/emails/index.handler
   #     timeout: 10
   #     Environment:
@@ -99,6 +99,7 @@ Resources:
   #       AllProduct:
   #         Type: Api
   #         Properties:
+<<<<<<< HEAD
   #           Path: /emails
   #           Method: any
   # lambda_logo:
@@ -106,21 +107,22 @@ Resources:
   #   Properties:
   #     Runtime: nodejs6.10
   #     Handler: src/lambda/logo/index.handler
-  #     timeout: 10
-  #     Environment:
-  #       Variables:
-  #         AWS_REGION: local
-  #     Events:
-  #       AllProduct:
-  #         Type: Api
-  #         Properties:
+=======
   #           Path: /logo
   #           Method: any
+<<<<<<< HEAD
   # lambda_help:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     Runtime: nodejs6.10
   #     Handler: src/lambda/help/index.handler
+=======
+  # lambda_file:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/file/index.handler
+>>>>>>> development-vinay
   #     timeout: 10
   #     Environment:
   #       Variables:
@@ -129,14 +131,123 @@ Resources:
   #       AllProduct:
   #         Type: Api
   #         Properties:
+<<<<<<< HEAD
   #           Path: /help
   #           Method: any
-  lambda_users:
+  # lambda_users:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/users/index.handler
+=======
+  #           Path: /file
+  #           Method: any
+  # cognito_auth:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/cognitoauth/index.handler
+>>>>>>> development-vinay
+>>>>>>> b6b09a338e183da0786386eee9b02afd1081ae5d
+  #     timeout: 10
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+<<<<<<< HEAD
+  #           Path: /logo
+=======
+<<<<<<< HEAD
+  #           Path: /users
+  #           Method: any
+
+  # lambda_youtube:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs8.10
+  #     Handler: src/lambda/youtube/index.handler
+  #     timeout: 300
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #         PLAYLIST_URL: https://www.youtube.com/playlist?list=PL35F93FA3C740F3BB
+  #         GOOGLE_API_KEY: AIzaSyCkS6vUvK1MkCxu4iP-hs6tePdKkCXuCzs
+=======
+  #           Path: /cognitoauth
+  #           Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/sendtoclient/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /sendtoclient
+  #           Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/comments/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+>>>>>>> development-vinay
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+<<<<<<< HEAD
+  #           Path: /youtube
+  #           Method: ANY
+            
+  cognito_auth:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: nodejs6.10
+      Handler: src/lambda/cognitoauth/index.handler
+      timeout: 10
+=======
+  #           Path: /comments
+>>>>>>> b6b09a338e183da0786386eee9b02afd1081ae5d
+  #           Method: any
+  # lambda_sendtoclient:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Runtime: nodejs6.10
+  #     Handler: src/lambda/extra/index.handler
+  #     timeout: 20
+  #     Environment:
+  #       Variables:
+  #         AWS_REGION: local
+  #     Events:
+  #       AllProduct:
+  #         Type: Api
+  #         Properties:
+  #           Path: /extra
+  #           Method: any
+  lambda_sendtoclient:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs6.10
+<<<<<<< HEAD
       Handler: src/lambda/users/index.handler
       timeout: 10
+=======
+      Handler: src/lambda/permission/index.handler
+      timeout: 20
+>>>>>>> development-vinay
+>>>>>>> b6b09a338e183da0786386eee9b02afd1081ae5d
       Environment:
         Variables:
           AWS_REGION: local
@@ -144,5 +255,15 @@ Resources:
         AllProduct:
           Type: Api
           Properties:
+<<<<<<< HEAD
             Path: /sendtoclient
             Method: any
+=======
+<<<<<<< HEAD
+            Path: /cognitoauth
+            Method: any          
+=======
+            Path: /permission
+            Method: any
+>>>>>>> development-vinay
+>>>>>>> b6b09a338e183da0786386eee9b02afd1081ae5d

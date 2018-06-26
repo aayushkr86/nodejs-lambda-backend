@@ -22,11 +22,11 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			= require('uuid')
-const async = require('async')
-const Ajv 			= require('ajv')
-const setupAsync 	= require('ajv-async')
-const ajv 			= setupAsync(new Ajv())
+const uuid 			 = require('uuid')
+const async      = require('async')
+const Ajv 			 = require('ajv')
+const setupAsync = require('ajv-async')
+const ajv 			 = setupAsync(new Ajv())
 
 var getSchema = {
   $async:true,
@@ -92,6 +92,9 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { 
+  if(typeof data == 'string'){
+    data = JSON.parse(data)
+  }
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)
@@ -129,7 +132,7 @@ function get_logos (result) {
         } 
         else {
             // console.log("Query succeeded",data);
-            result['result'] = {'items': data.Items}
+            result['result'] = {'items': data.Items,  LastEvaluatedKey : data.LastEvaluatedKey}
             resolve(result) 
         }
     })    

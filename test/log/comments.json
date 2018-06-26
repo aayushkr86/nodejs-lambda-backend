@@ -1,0 +1,52 @@
+{
+	"get":[
+		{
+			"fileId":"asd",
+			"fileOrder":1
+		},
+		{
+			"fileId":"as",
+			"fileOrder":3
+		}
+	],
+	"post":[
+		{
+			"fileId" : "asd",
+			"fileOrder":2,
+	        "commentOrder" : 1,
+	        "reply" : "",
+	        "comment" : "asdasd",
+	        "location": {
+	            "some":{
+
+	            }
+	        },
+	        "tags" : {
+	        	"userid":["ASD","ASD","ASD"],
+	        	"links":["asd"]
+	        }
+		}
+	],
+	"update":[
+		{
+			"fileId":"key",
+			"fileOrder":1,
+			"commentOrder":1,
+			"reply":"", 
+			"comment":"askjdnasdlkdas",
+			"location":{
+				"ss":{
+					"asd":"asd"
+				}
+			},
+			"tags":["asd","asdasdasd"]
+		}
+	],
+	"delete":[
+		{
+			"fileId":"key",
+			"fileOrder":1,
+			"commentOrder":1
+		}
+	]
+}

@@ -10,7 +10,7 @@ let DUMP = require('./DUMP.js');
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-exports.handler = function  (event, context, callback) { //console.log(event.headers['Content-Type'])
+exports.handler = function  (event, context, callback) { 
 	switch(event.httpMethod) {
 		case 'GET': GET.execute(event.queryStringParameters, callback);
 					break;

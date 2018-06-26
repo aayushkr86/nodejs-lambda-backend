@@ -1,21 +1,20 @@
 /// // ...................................... start default setup ............................................////
 let mode,sns,dynamodb,docClient,S3;
-const AWS 			= require('aws-sdk')
-const response 		= require('./lib/response.js')
-const database 	= require('./lib/database')
-const email_database = require('../emails/lib/database')
+const AWS 		= require('aws-sdk')
+const response 	= require('./lib/response.js')
+const email_database 	= require('./lib/database')
 
 if (process.env.AWS_REGION == 'local') {
   mode 			= 'offline'
-  // sns 			= require('../../../offline/sns');
-  docClient 		= require('../../../offline/dynamodb').docClient
-  // S3 			= require('../../../offline/S3');
+  // sns 		= require('../../../offline/sns');
+  docClient 	= require('../../../offline/dynamodb').docClient
+  // S3 		= require('../../../offline/S3');
   // dynamodb 	= require('../../../offline/dynamodb').dynamodb;
 } else {
   mode 			= 'online'
-  // sns 			= new AWS.SNS();
-  docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  // sns 		= new AWS.SNS();
+  docClient 	= new AWS.DynamoDB.DocumentClient({})
+  // S3 		= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -23,12 +22,12 @@ if (process.env.AWS_REGION == 'local') {
 /**
  * modules list
  */
-const uuid 			  = require('uuid')
-const async       = require('async')
-const nodemailer  = require('nodemailer')
-const Ajv 			  = require('ajv')
-const setupAsync 	= require('ajv-async')
-const ajv 			  = setupAsync(new Ajv())
+const uuid 		 = require('uuid')
+const async      = require('async')
+const nodemailer = require('nodemailer')
+const Ajv 	     = require('ajv')
+const setupAsync = require('ajv-async')
+const ajv 		 = setupAsync(new Ajv())
 
 var postSchema = {
   $async:true,
@@ -72,7 +71,7 @@ function execute (data, callback) {
       response({code: 200, body: result.result}, callback)
     })
     .catch(function (err){
-      // console.log(err);
+      console.log(err);
       response({code: 400, err: {err}}, callback)
     })
 }
@@ -83,8 +82,11 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { 
+    if (typeof data === 'string') {
+        data = JSON.parse(data)
+    }
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
+    validate(data).then(function (res) {
 		    resolve(res)
     }).catch(function (err) { // console.log(err)
 		  console.log(JSON.stringify(err, null, 6))
@@ -128,15 +130,15 @@ function send_email(email_array, str) {
         // port: 587,
         // secure: false, // true for 465, false for other ports
         auth: {
-            user: 'aayushkr90@gmail.com', 
-            pass: 'Qwerty12345#' 
+            user: 'testcodefive@gmail.com', 
+            pass: '1qazxsw23edc@#@!' 
             },
         tls: {
                 rejectUnauthorized : false
             }
     });
     let mailOptions = {
-        from    : 'aayushkr90@gmail.com', 
+        from    : 'testcodefive@gmail.com', 
         to      : email_array, // list of receivers
         subject : 'Ticket created', 
         text    : str
@@ -172,8 +174,11 @@ function user_email_notifications(result) {
                 if (err) {
                     console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
                     done(true, err.message)
-                } else {
-                    // console.log("Email Query succeeded",data);
+                } else if(data.Items.length == 0){
+                    done(true, 'query raised but mail not send to users because (key: Help Desk User) not set in emails table')
+                }
+                else {
+                    console.log("Email Query succeeded",data);
                     done(null, data)
                 }
             })
@@ -226,8 +231,11 @@ function admin_email_notifications(result) {
                 if (err) {
                     console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
                     done(true, err.message)
-                } else {
-                    // console.log("Email Query succeeded",data);
+                } else if(data.Items.length == 0){
+                    done(true, 'query raised but mail not send to admins because (key: Help Desk Admin) not set in emails table')
+                } 
+                else {
+                    console.log("Email Query succeeded",data);
                     done(null, data)
                 }
             })

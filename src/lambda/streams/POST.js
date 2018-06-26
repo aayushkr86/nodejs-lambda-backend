@@ -14,7 +14,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -57,12 +57,12 @@ var postSchema = {
       type: 'string',
       format: 'date'
     },
-    intro_text: {
+    introText: {
       type: 'string',
       minLength: 2,
       maxLength: 50
     },
-    news_text: {
+    newsText: {
       type: 'string',
       minLength: 2,
       maxLength: 50
@@ -76,11 +76,11 @@ var postSchema = {
     publish: {
       type: 'boolean'
     },
-    show_at_first_place: {
+    showAtFirstPlace: {
       type: 'boolean'
     }
   },
-  required: ['userid', 'title', 'date', 'intro_text', 'show_at_first_place', 'publish']
+  required: ['userid', 'title', 'date', 'introText', 'showAtFirstPlace', 'publish']
 }
 
 var validate = ajv.compile(postSchema)
@@ -96,7 +96,7 @@ function execute (data, callback) { // console.log(data)
       return upload_files(result)
     })
     .then(function (result) {
-      if(result.show_at_first_place == true){
+      if(result.showAtFirstPlace == true){
          update_Show_at_first_place()
          return result;
       }
@@ -125,11 +125,7 @@ function execute (data, callback) { // console.log(data)
 function validate_all (validate, data) { 
   return new Promise((resolve, reject) => {
     if(typeof data === 'string'){
-      try {
         data = JSON.parse(data)
-      }catch(err){
-        return reject("Error in JSON")
-      }
     }
     validate(data).then(function (res) {
 		    resolve(res)
@@ -142,63 +138,97 @@ function validate_all (validate, data) {
 
 function upload_files(result) { //console.log(result)
   return new Promise((resolve, reject) => {
-    var buffer_image = Buffer.from(result.image.replace(/^data:image\/\w+;base64,/, ""),"base64");
-    var buffer_pdf = Buffer.from(result.pdf.replace(/^data:image\/\w+;base64,/, ""),"base64");
-    var fileMine_image = fileType(buffer_image)
-    var fileMine_pdf = fileType(buffer_pdf)
-    console.log(fileMine_image)
-    console.log(fileMine_pdf)
-    if(fileMine_image === null && fileMine_pdf === null) {
+    if(result.image){
+      var buffer_image = Buffer.from(result.image.replace(/^data:image\/\w+;base64,/, ""),"base64");
+      var fileMine_image = fileType(buffer_image)
+      console.log(fileMine_image)
+    }
+    if(fileMine_image === undefined && result.pdf === undefined) {
       return reject('No image or pdf file')
     }
-
     var directory = uuid.v1();
     async.parallel({
       one : function(done) {
         if(fileMine_image) {
-              var params = {
-                  bucketname : 'streams',
-                  filename   : Date.now()+'.'+fileMine_image.ext,
-                  file       : buffer_image
-              }
-              S3.putObject(params.bucketname, directory+'/'+params.filename, params.file, 'image/jpeg', function(err, etag) {
-                if (err) {
-                  console.log(err)  
-                  done(true, err)
-                }
-                else {
-                  console.log('Image file uploaded successfully.Tag:',etag) 
-                  result.image = params.bucketname+'/'+directory+'/'+params.filename;
-                  result['directory'] = directory
-                  done(null, result)  
-                } 
-              });
+            if(mode == 'offline'){
+                  var params = {
+                      bucketname : 'talkd',
+                      filename   : 'streams'+'/'+directory+'/'+Date.now()+'.'+fileMine_image.ext,
+                      file       : buffer_image
+                  }
+                  S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+                    if (err) {
+                      console.log(err)  
+                      done(true, err)
+                    }
+                    else {
+                      console.log('Image file uploaded successfully.Tag:',etag) 
+                      result.image = params.bucketname+'/'+params.filename;
+                      result['directory'] = directory
+                      done(null, result)  
+                    } 
+                  });
+            }else{
+                  var params = {
+                    Bucket: "talkd",
+                    Key: 'streams'+'/'+directory+'/'+Date.now()+'.'+fileMine_image.ext,
+                    Body: buffer_image,  
+                  };
+                  S3.putObject(params, function(err, data) {
+                      if (err) {
+                          console.log(err)  
+                          done(true, err)
+                      }
+                      else {
+                          console.log('File uploaded successfully.Tag:',data) 
+                          result.image = params.Bucket+'/'+params.Key;
+                          result['directory'] = directory
+                          done(null, result)   
+                      }        
+                  });
+            }     
         }else{
-              result.image = null;
+              result['image'] = null;
               done(null, result)
         }      
       },
       two : function(done) {
-            if(fileMine_pdf) {
-                var params = {
-                      bucketname : 'streams',
-                      filename   : Date.now()+'.'+fileMine_pdf.ext,
-                      file       : buffer_pdf
-                }
-                S3.putObject(params.bucketname, directory+'/'+params.filename, params.file, 'application/pdf', function(err, etag) {
-                  if (err) {
-                    console.log(err)  
-                    done(true, err)
-                  }
-                  else {
-                    console.log('Pdf file uploaded successfully.Tag:',etag) 
-                    result.pdf = params.bucketname+'/'+directory+'/'+params.filename;
+            if(result.pdf) {
+                if(mode == 'offline'){ 
+                  var params = {
+                      bucketname : 'talkd',
+                      filename   : 'streams'+'/'+directory+'/'+Date.now()+'.'+'pdf',
+                      expiry:  24*60*60
+                  } 
+                  S3.presignedPutObject(params.bucketname, params.filename, params.expiry, function(err, presignedUrl){
+                      if(err){
+                        console.log(err)  
+                        done(true, err)
+                      }
+                    result.presignedUrl = presignedUrl;
+                    result.pdf = params.bucketname+'/'+params.filename;
                     result['directory'] = directory
                     done(null, result)
-                  } 
-                });
+                  })
+                }else{ 
+                    var params = {
+                        Bucket: 'talkd',
+                        Key: 'streams'+'/'+directory+'/'+Date.now()+'.'+'pdf',
+                        Expires:  24*60*60
+                    }
+                    S3.getSignedUrl('putObject', params, function(err, presignedUrl){
+                      if(err){
+                        console.log(err)  
+                        done(true, err)
+                      }
+                    result.presignedUrl = presignedUrl;
+                    result.pdf = params.Bucket+'/'+params.Key;
+                    result['directory'] = directory
+                    done(null, result)
+                    })
+                }
             }else{
-                result.pdf = null;
+                result['pdf'] = null;
                 done(null, result)
             } 
           }
@@ -229,7 +259,7 @@ function update_Show_at_first_place() {
             if (err) {
               done(true, err)
             } else if (data.Items.length == 0) {
-              done(true, 'no show_at_first_place data found')
+              done(true, 'no showAtFirstPlace data found')
             } else {
               done(null, data)
             }
@@ -240,7 +270,7 @@ function update_Show_at_first_place() {
             TableName: database.Table[0].TableName,
             Key: {
               'id': 'en_1_1',
-              'date': query.Items[0].date
+              'updatedAt': query.Items[0].updatedAt
             },
             ReturnValues: 'ALL_OLD' // optional (NONE | ALL_OLD)
           }
@@ -266,12 +296,13 @@ function update_Show_at_first_place() {
               'userid': create.Attributes.userid,
               'language': create.Attributes.language,
               'title': create.Attributes.title,
-              'intro_text': create.Attributes.intro_text,
-              'news_text': create.Attributes.news_text,
+              'introText': create.Attributes.introText,
+              'newsText': create.Attributes.newsText,
               'image': create.Attributes.image,
               'pdf': create.Attributes.pdf,
               'publish': create.Attributes.publish,
-              'show_at_first_place': false,
+              'showAtFirstPlace': false,
+              'directory': create.Attributes.directory,
               'createdAt': create.Attributes.createdAt,
               'updatedAt': new Date().getTime()
             }
@@ -280,7 +311,7 @@ function update_Show_at_first_place() {
             if (err) {
               done(true, err)
             } else {
-              console.log('Successfully updated')
+              console.log('Successfully updated previous show at first place')
               resolve('Successfully updated previous show at first place')
             }
           })
@@ -294,7 +325,7 @@ function update_Show_at_first_place() {
 
 function post_stream(result) { 
 	const publish = result.publish ? 1 : 0;
-	const show_at_first_place = result.show_at_first_place ? 1 : 0;
+	const showAtFirstPlace = result.showAtFirstPlace ? 1 : 0;
 
 	var x = result.date;
 	var d = new Date();
@@ -305,18 +336,18 @@ function post_stream(result) {
 	var params = {
 		TableName: database.Table[0].TableName,
 		Item: {
-			"id"         : result.language+"_"+publish+"_"+show_at_first_place,
+			"id"         : result.language+"_"+publish+"_"+showAtFirstPlace,
 			"date"       : Date.parse(new Date(z)),
-			"uuid"       : uuid.v1(),
+			"uuid"       : result.directory, //uuid and directory containing image & pdf are same 
 			"userid"     : result.userid,
 			"language"   : result.language,
 			"title"      : result.title,
-			"intro_text" : result.intro_text,
-			"news_text"  : result.news_text,
+			"introText" : result.introText,
+			"newsText"  : result.newsText,
 			"image"      : result.image,
 			"pdf"        : result.pdf,
 			"publish"    : result.publish,
-			"show_at_first_place" : result.show_at_first_place,
+			"showAtFirstPlace" : result.showAtFirstPlace,
 			"createdAt" : new Date().getTime(),
       "updatedAt" : new Date().getTime(),
       "directory" : result.directory 
@@ -331,7 +362,10 @@ function post_stream(result) {
         reject(err.message)
       } else {
         console.log('Item added:', data)
-        result['result'] = {'message': 'New Stream Inserted Successfully'}
+        result['result'] = {
+          'message': 'New Stream Inserted Successfully',
+          'pdfPresignedUrl': result.presignedUrl
+        }
         resolve(result)
       }
     })

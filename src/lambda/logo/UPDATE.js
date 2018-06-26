@@ -14,7 +14,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -88,8 +88,11 @@ function execute (data, callback) {
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { // console.log(data)
+    if(typeof data == 'string'){
+        data = JSON.parse(data)
+    }
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) {
+    validate(data).then(function (res) {
 		    resolve(res)
     }).catch(function (err) {
 		  console.log(JSON.stringify(err, null, 6))
@@ -100,30 +103,49 @@ function validate_all (validate, data) { // console.log(data)
 
 function upload_logo(result) { 
     return new Promise((resolve, reject) => {
-      var buffer = Buffer.from(result.logo.replace(/^data:image\/\w+;base64,/, ""),"base64");
-      var fileMine = fileType(buffer)
-      console.log(fileMine)
-      if(fileMine === null) {
-       return reject('not a image file')
-      }
-      var params = {
-            bucketname : 'logo',
-            filename   : Date.now()+'.'+fileMine.ext,
-            file       : buffer
-      }
-    S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
-      if (err) {
-           console.log(err)  
-           reject(err)
+        var buffer = Buffer.from(result.logo.replace(/^data:image\/\w+;base64,/, ""),"base64");
+        var fileMine = fileType(buffer)
+        console.log(fileMine)
+        if(fileMine === null) {
+        return reject('not a image file')
         }
-      else {
-        console.log('File uploaded successfully.Tag:',etag) 
-        result['logo'] = params.bucketname+'/'+params.filename;
-        resolve(result)  
-      } 
-      });
+        if(mode == 'offline') {
+            var params = {
+                bucketname : 'talkd',
+                filename   : 'logo'+'/'+Date.now()+'.'+fileMine.ext,
+                file       : buffer
+            }
+            S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+                if (err) {
+                    console.log(err)  
+                    reject(err)
+                    }
+                else {
+                    console.log('File uploaded successfully.Tag:',etag) 
+                    result['logo'] = params.bucketname+'/'+params.filename;
+                    resolve(result)  
+                } 
+            });
+        }else{
+            var params = {
+                Bucket: "talkd",
+                Key: 'logo'+'/'+Date.now()+'.'+fileMine.ext,
+                Body: buffer,  
+            };
+            S3.putObject(params, function(err, data) {
+                if (err) {
+                    console.log(err)  
+                    reject(err)
+                }
+                else {
+                    console.log('File uploaded successfully.Tag:',data) 
+                    result['logo']= params.Bucket+'/'+params.Key;
+                    resolve(result)  
+                }        
+            });
+        }
     })
-  }
+}
 
 function update_logo (result) { 
     var params = {
@@ -145,7 +167,7 @@ function update_logo (result) {
                         done(true, "no item found")
                     } 
                     else {
-                        console.log("deleted succeeded",data);
+                        // console.log("deleted succeeded",data);
                         done(null, data)
                     }
                 })
@@ -165,7 +187,7 @@ function update_logo (result) {
                         console.error("Error:", JSON.stringify(err, null, 2));
                         done(true, err.message)
                     } else {
-                        console.log("Successfully updated:", data);
+                        // console.log("Successfully updated:", data);
                         result['result'] = {'message': 'Successfully updated'}
                         resolve(result)
                     }

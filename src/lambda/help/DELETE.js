@@ -50,9 +50,6 @@ const validate = ajv.compile(deleteSchema)
  * @return {[type]}            [description]
  */
 function execute (data, callback) { // console.log(data)
-  if (typeof data === 'string') {
-    data = JSON.parse(data)
-  }
   validate_all(validate, data)
     .then(function (result) {
       return delete_help(result)
@@ -72,6 +69,9 @@ function execute (data, callback) { // console.log(data)
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { // console.log(data)
+  if (typeof data === 'string') {
+    data = JSON.parse(data)
+  }
   return new Promise((resolve, reject) => {
     validate(data).then(function (res) {
 		    resolve(res)

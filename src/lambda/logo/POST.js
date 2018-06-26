@@ -14,7 +14,7 @@ if (process.env.AWS_REGION == 'local') {
   mode 			= 'online'
   // sns 			= new AWS.SNS();
   docClient 		= new AWS.DynamoDB.DocumentClient({})
-  // S3 			= new AWS.S3();
+  S3 			= new AWS.S3();
   // dynamodb 	= new AWS.DynamoDB();
 }
 /// // ...................................... end default setup ............................................////
@@ -78,8 +78,11 @@ function execute (data, callback) { //console.log(data)
  * @return {[type]}      [description]
  */
 function validate_all (validate, data) { //console.log(event)
+  if(typeof data == 'string'){
+    data = JSON.parse(data)
+  }
   return new Promise((resolve, reject) => {
-    validate(JSON.parse(data)).then(function (res) { //console.log(res)
+    validate(data).then(function (res) { //console.log(res)
 		    resolve(res)
     }).catch(function (err) { 
 		  console.log(JSON.stringify(err, null, 6))
@@ -96,22 +99,42 @@ function upload_logo(result) {
     if(fileMine === null) {
      return reject('not a image file')
     }
-    var params = {
-          bucketname : 'logo',
-          filename   : Date.now()+'.'+fileMine.ext,
+    if(mode == 'offline') {
+      var params = {
+          bucketname : 'talkd',
+          filename   : 'logo'+'/'+Date.now()+'.'+fileMine.ext,
           file       : buffer
-    }
-  S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
-    if (err) {
-         console.log(err)  
-         reject(err)
       }
-    else {
-      console.log('File uploaded successfully.Tag:',etag) 
-      result['logo'] = params.bucketname+'/'+params.filename;
-      resolve(result)  
-    } 
-    });
+      S3.putObject(params.bucketname, params.filename, params.file, 'image/jpeg', function(err, etag) {
+        if (err) {
+            console.log(err)  
+            reject(err)
+        }
+        else {
+          console.log('File uploaded successfully.Tag:',etag) 
+          result['logo'] = params.bucketname+'/'+params.filename;
+          resolve(result)  
+        } 
+      });
+    }else{
+      var params = {
+        Bucket: "talkd",
+        Key: 'logo'+'/'+Date.now()+'.'+fileMine.ext,
+        Body: buffer,  
+      };
+      S3.putObject(params, function(err, data) {
+          if (err) {
+              console.log(err)  
+              reject(err)
+          }
+          else {
+              console.log('File uploaded successfully.Tag:',data) 
+              result['logo']= params.Bucket+'/'+params.Key;
+              resolve(result)  
+          }        
+      });
+    }
+    
   })
 }
 

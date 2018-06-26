@@ -14,13 +14,23 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/code_5/salestool-nodejs-backend#readme",
   "dependencies": {
+<<<<<<< HEAD
+    "ajv": "^6.5.0",
+    "ajv-async": "^1.0.1",
+    "all": "0.0.0",
+    "amazon-cognito-identity-js": "^2.0.3",
+    "aws-sdk": "^2.224.1",
+    "file-type": "^7.7.1",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^8.2.1",
+    "minio": "^5.0.0",
+=======
     "ajv": "^6.4.0",
     "ajv-async": "^1.0.1",
     "amazon-cognito-identity-js": "^2.0.3",
     "aws-sdk": "^2.224.1",
-    "file-type": "^7.6.0",
-    "fs": "0.0.1-security",
-    "minio": "^5.0.0",
+    "minio": "^5.0.2",
+>>>>>>> development-vinay
     "neo4j": "^2.0.0-RC2",
     "neo4j-driver": "^1.5.0",
     "nodemailer": "^4.6.4",

@@ -10,7 +10,7 @@
         "Folders": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
-				"TableName": "FOLDERS",
+				"TableName": "talkd_Folders",
 				"KeySchema": [
 					{
 						"AttributeName": "folderId",
@@ -40,7 +40,7 @@
         "Files":{
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
-				"TableName": "FILES",
+				"TableName": "talkd_Files",
 				"KeySchema": [
 					{
 						"AttributeName": "fileId",
@@ -66,6 +66,36 @@
 					"WriteCapacityUnits": 1
 				}
 			}
-        }
+        },
+        "COMMENTS":{
+        	"Type": "AWS::DynamoDB::Table",
+            "Properties": {
+			    "TableName": "talkd_Comments",
+			    "KeySchema": [
+			        {
+			            "AttributeName": "commentId",
+			            "KeyType": "HASH"
+			        },
+			        {
+			            "AttributeName": "commentOrder", 
+			            "KeyType": "RANGE"
+			        }
+			    ],
+			    "AttributeDefinitions": [
+			        {
+			            "AttributeName": "commentId",
+			            "AttributeType": "S"
+			        },
+			        {
+			            "AttributeName": "commentOrder",
+			            "AttributeType": "N"
+			        }
+			    ],
+			    "ProvisionedThroughput": {
+			        "ReadCapacityUnits": 1, 
+			        "WriteCapacityUnits": 1
+			    }
+			}
+    	}
     }
 }

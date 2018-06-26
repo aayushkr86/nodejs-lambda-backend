@@ -1,7 +1,11 @@
 
 module.exports = function (execution,callback) {
 	var response = {};
+<<<<<<< HEAD
+	// console.log(execution);
+=======
 	console.log(execution);
+>>>>>>> development-vinay
 	if(execution.err){
 		response = {
 			statusCode: execution.code || 406,
@@ -21,6 +25,10 @@ module.exports = function (execution,callback) {
 		    body: JSON.stringify(execution.body) || {}
 		};
 	}
+<<<<<<< HEAD
+	// console.log(response);
+=======
 	console.log(response);
+>>>>>>> development-vinay
 	callback(null,response);
 }
